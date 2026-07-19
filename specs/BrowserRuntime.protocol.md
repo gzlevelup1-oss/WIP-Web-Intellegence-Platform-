@@ -50,6 +50,12 @@ Observations output an immutable Snapshot reference.
 ### 5.3. Interaction
 - **Request:** `Interaction.click`
   - *Params:* `{"sessionId": "sess-123", "nodeId": "node-45"}`
+- **Request:** `Interaction.type`
+  - *Params:* `{"sessionId": "sess-123", "nodeId": "node-45", "text": "hello world"}`
+
+### 5.4. Viewport
+- **Request:** `Viewport.scroll`
+  - *Params:* `{"sessionId": "sess-123", "distanceY": 500}`
 
 ## 6. Event Stream
 - **`Event.Network.RequestSent`** / **`Event.Network.ResponseReceived`**

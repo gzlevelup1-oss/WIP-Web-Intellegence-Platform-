@@ -20,7 +20,7 @@ Implement the core deterministic capabilities.
 ## Phase 3 — The Agent & Orchestration
 Introduce the AI reasoning layer. Given a Mission, the agent explores, hypothesizes, understands semantics, reconstructs, and self-evaluates. The agent uses tools; it never manipulates browsers directly.
 *   **Mission 12:** Coordinator Agent Implementation (Gemini 2.5 Flash / Pro)
-*   **Mission 13:** Specialized Internal Workers (Navigation, DOM, CSS, Geometry)
+*   **Mission 13:** Specialized Internal Workers (Component Miner, Design Token Extractor, Layout Analyzer)
 
 ## Phase 4 — Validation Loop
 Original Website → Observation → Model → Reconstruction → Validation → Repair → Repeat. The loop ends when predefined quality thresholds (Pixel-Level MSE/SSIM + Structural diffing) are met.

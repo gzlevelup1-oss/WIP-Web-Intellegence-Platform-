@@ -32,8 +32,7 @@ Every Observation must be explicitly classified into one of the following catego
 - **Resource:** Loaded images, fonts, scripts.
 - **Performance:** Frame timings, layout shifts.
 - **Network:** Outbound requests, status codes, payload sizes.
-- **Semantic (Deterministically Derived):** Tags inherently carrying meaning (e.g., `<nav>`, `<button>`).
-- **Validation:** Visual diff results, structural diffs.
+- **Semantic (Deterministically Derived):** Tags inherently carrying meaning (e.g., `<nav>`, `<button>`). Note: this only refers to structurally evident semantics, not AI inferences.
 
 ## 4. Observation Identity
 Every Observation possesses a globally unique identity that survives storage changes. Conceptually:

@@ -11,32 +11,32 @@ The **Website Intelligence Platform (WIP)** represents a fundamental paradigm sh
 WIP resolves this by implementing a strict **separation of observation from reasoning**. 
 
 ```
-Reality (Website Runtime)
-       │
-       ▼
-Browser Runtime API (Deterministic Measurements)
-       │
-       ▼
-Execution Kernel (Scheduling, Transactions, Policy)
-       │
-       ▼
-Observation Graph (Structured Knowledge & Relationships)
-       │
-       ▼
 Coordinator Agent (Gemini Semantic Reasoning & Planning)
        │
-       ▼
-Reconstructed Model (Representation & Semantic Graph)
+Protocol
        │
-       ▼
-Visual & Structural Validation (Continuous Repair Loop)
+Execution Kernel (Scheduling, Transactions, Policy)
+       │
+Browser Runtime API (Deterministic Measurements)
+       │
+Reality (Browser Executing Website)
+```
+
+The system enforces a strict decoupling of conceptual reality from storage formats by utilizing the **Observation Model**.
+
+```
+Observation Model (Conceptual Definition of Facts)
+       │
+Observation Graph (Relationship Representation)
+       │
+Observation Store (Persistence)
 ```
 
 By wrapping a real browser runtime in a suite of **deterministic instruments**, we turn web inspection into a precise physical science. The AI agent never speculates on computed styles, bounding boxes, or font metrics; it asks the instrumentation layer to measure them, constructs a queryable graph of relationships, and applies reasoning *on top* of verified, empirical facts.
 
 ---
 
-### 2. The Browser Laboratory & Runtime (Phase 1)
+### 2. The Browser Laboratory & Runtime
 
 The laboratory acts as the execution container. It runs a headless browser instance, exposing low-level APIs that measure the actual layout and state of a webpage exactly as rendered by a layout engine (Chromium/Webkit).
 
@@ -55,9 +55,9 @@ The laboratory acts as the execution container. It runs a headless browser insta
 
 ---
 
-### 3. The Observation Engine (Phase 2)
+### 3. The Observation Model
 
-The Observation Engine sits directly above the Runtime. It takes continuous "measurements" of the browser state and packages them into immutable, structured observations.
+The **Observation Model** defines the formal structure of "measurements" of the browser state and packages them into immutable, structured observations.
 
 #### The anatomy of a single observation event:
 
@@ -138,7 +138,7 @@ export interface ObservationSnapshot {
 
 ---
 
-### 4. The Observation Model & Graph (Phase 3)
+### 4. The Observation Graph
 
 The system enforces a strict decoupling of conceptual reality from storage formats:
 
@@ -225,7 +225,7 @@ export interface ObservationGraph {
 
 ---
 
-### 5. The Coordinator Agent & Execution Kernel (Phase 4)
+### 5. The Coordinator Agent & Execution Kernel
 
 The Coordinator Agent (powered by **Gemini 2.5 Flash / Pro**) sits atop the system. It is a **Planner** that executes loops of exploration, forms hypotheses about webpage structures, and controls the deterministic tool suite.
 
@@ -293,7 +293,7 @@ export interface ObservationToolbox {
 
 ---
 
-### 6. Specialized Deterministic Workers (Phase 5)
+### 6. Specialized Deterministic Workers
 
 Rather than passing massive arrays of raw CSS styles and DOM lists directly into the LLM context (which creates immense noise, latency, and context bloat), WIP uses **Specialized Deterministic Workers**. 
 

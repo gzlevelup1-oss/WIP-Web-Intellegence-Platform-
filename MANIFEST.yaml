@@ -10,10 +10,10 @@ governance:
   status: frozen
 
 current_phase:
-  Specification
+  Implementation (Pending Spec Lock)
 
 current_mission:
-  Observation Model Specification
+  Browser Laboratory Implementation
 
 locked:
   - Observation Graph (Governance)

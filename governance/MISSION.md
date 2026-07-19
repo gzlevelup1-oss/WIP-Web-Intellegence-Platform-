@@ -1,31 +1,28 @@
 # Current Mission
 
-**Mission:** Observation Model Specification  
-**Status:** Design Review Required  
-**ID:** M-003  
+**Mission:** Browser Laboratory Implementation  
+**Status:** Draft (Blocked by Governance)  
+**ID:** M-009  
 
 ## Objective
-Produce the complete, implementation-independent specification for the Observation Model. This specification defines the concepts before data structures (Observation, Snapshot, Timeline, Session, Graph) and establishes the Observation Ontology.
+Begin the implementation phase by developing the Browser Laboratory (Phase 1 & 2 Prototype). This involves building the interactive workbench, observation lab, and integrating a headless browser runtime to measure and export snapshots.
 
 ## Mission Deliverables
-- `specs/OBSERVATION_MODEL.md` v1.0.0
-
-*No production code. No framework-specific decisions beyond what has already been approved.*
+- Technical Design Document for the Browser Laboratory.
+- `src/` implementation of the Browser Laboratory (UI and API).
 
 ## Scope
-
 **In Scope:**
-- Definition of Core Concepts (Observation, Snapshot, Timeline, Session, Graph)
-- Observation Ontology (Structural, Visual, Geometric, Behavioral, Semantic, Accessibility, Performance, Network, Resource, Temporal)
-- Decoupling from Storage Formats
+- WIP Interactive Lab UI layout.
+- Observation Lab tools (URL input, Inspector, Real-time snapshot).
+- Headless browser/simulator integration.
 
 **Out of Scope:**
-- Specific Graph Schema
-- Specific DB schemas (Relational, Document, Graph DB details)
-- Browser Runtime Implementation
-- Playwright/Puppeteer code
+- Validation Suite and Visual Diffing.
+- Coordinator Sandbox integration.
 
 ## Next Steps
-- Verify the completed specification against architectural invariants.
-- Prepare `specs/OBSERVATION_MODEL.md` for locking.
-- Proceed to Mission 4: Observation Graph Specification.
+- **WARNING: Architecture Invariant Check:** The Engineering Constitution states "No implementation code is to be written until specifications and protocols are locked." As Missions 3-8 are currently pending review and not locked, coding cannot proceed until they are approved.
+- Draft the Technical Design and Implementation Plan for the Browser Laboratory.
+
+

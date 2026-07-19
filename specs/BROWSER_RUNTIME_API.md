@@ -25,7 +25,7 @@ These principles are architectural invariants for the runtime:
 ## 3. Responsibilities
 **The Browser Runtime is responsible for:**
 - Launching and terminating browser instances safely.
-- Exposing deterministic Interaction primitives (Click, Scroll).
+- Exposing deterministic Interaction primitives (Click, Type, Scroll).
 - Fulfilling observation requests (DOM, CSS, Geometry, Screenshots).
 - Executing atomic browser actions dispatched by the Kernel.
 
