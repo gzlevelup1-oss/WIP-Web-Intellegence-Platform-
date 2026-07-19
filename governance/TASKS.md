@@ -81,17 +81,21 @@
 - [x] Task 4: Review and prepare spec for locking.
 
 ## Mission 9: Browser Laboratory Implementation
-*Status: DRAFT (BLOCKED)*
+*Status: COMPLETED*
 
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 9.
 - [x] Task 2: Draft Technical Design for the Browser Laboratory.
 - [x] Task 3: Obtain user approval to lock all prior specifications (Missions 3-8).
-- [ ] Task 4: Begin implementation of the WIP Interactive Lab UI.
+- [x] Task 4: Begin implementation of the WIP Interactive Lab UI.
+- [x] Task 5: Implement simulated Headless Browser Runtime backend API.
+- [x] Task 6: Implement observation graph live capture and processing logic.
+- [x] Task 7: Integrate the Coordinator Sandbox (Gemini genai SDK) inside the workbench.
+- [x] Task 8: Implement Validation Suite visual diffing prototype.
 
 ## Future Missions (Implementation)
 
 ## Mission 10: Monorepo Architecture Migration
-*Status: ACTIVE*
+*Status: COMPLETED*
 - [x] Task 1: Update `MANIFEST.yaml` and `MISSION.md` for Mission 10.
 - [x] Task 2: Create `apps/browser-lab` and move current implementation.
 - [x] Task 3: Update root `package.json` with workspace configuration.
