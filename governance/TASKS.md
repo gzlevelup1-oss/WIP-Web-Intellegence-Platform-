@@ -110,3 +110,14 @@
 - [x] Task 5: Integrate Execution Kernel with the Browser Laboratory (Session Manager).
 - [x] Task 6: Implement Checkpointing mechanisms for hard and soft aborts.
 - [x] Task 7: Implement Request Proxying from Coordinator to Browser Runtime.
+
+## Mission 12: Specialized Deterministic Workers Implementation
+*Status: COMPLETED*
+- [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 12.
+- [x] Task 2: Draft Technical Design (`docs/WorkersDesign.md`) for the 3 Specialized Workers.
+- [x] Task 3: Obtain user approval for Technical Design.
+- [x] Task 4: Initialize `packages/workers` NPM package.
+- [x] Task 5: Implement Design Token Extractor.
+- [x] Task 6: Implement Component Miner.
+- [x] Task 7: Implement Layout Analyzer.
+- [x] Task 8: Integrate Workers into `apps/browser-lab/server.ts` via API routes.

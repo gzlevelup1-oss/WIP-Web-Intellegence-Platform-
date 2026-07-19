@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { ExecutionKernel } from '@wip/execution-kernel';
+import { DesignTokenExtractor, ComponentMiner, LayoutAnalyzer } from '@wip/workers';
 import { chromium, Browser } from 'playwright';
 
 dotenv.config();
@@ -12,6 +13,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let browserInstance: Browser | null = null;
 const kernel = new ExecutionKernel();
+const tokenExtractor = new DesignTokenExtractor();
+const componentMiner = new ComponentMiner();
+const layoutAnalyzer = new LayoutAnalyzer();
+
 
 async function getBrowser() {
   if (!browserInstance) {
@@ -273,6 +278,39 @@ async function createServer() {
         success: true,
         logs,
       });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post('/api/workers/tokens', async (req, res) => {
+    try {
+      const { graph } = req.body;
+      if (!graph) return res.status(400).json({ error: 'Observation Graph is required' });
+      const result = tokenExtractor.extract(graph);
+      res.json(result);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post('/api/workers/mine', async (req, res) => {
+    try {
+      const { graph, containerNodeId } = req.body;
+      if (!graph || !containerNodeId) return res.status(400).json({ error: 'Graph and containerNodeId required' });
+      const result = componentMiner.mine(graph, containerNodeId);
+      res.json(result);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post('/api/workers/layout', async (req, res) => {
+    try {
+      const { graph, containerNodeId } = req.body;
+      if (!graph || !containerNodeId) return res.status(400).json({ error: 'Graph and containerNodeId required' });
+      const result = layoutAnalyzer.analyze(graph, containerNodeId);
+      res.json(result);
     } catch (e: any) {
       res.status(500).json({ error: e.message });
     }

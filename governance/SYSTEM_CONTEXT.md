@@ -10,7 +10,7 @@ To separate observation from reasoning. AI models guess layouts and styles poorl
 Phase 2 - Implementation (Pending Spec Lock)
 
 **Current Mission:**
-Mission 9: Execution Kernel Implementation
+Mission 9: Specialized Deterministic Workers Implementation
 
 **Mission Status:**
 Draft (Blocked by Governance)
