@@ -33,14 +33,14 @@
 - [x] Task 7: Prepare for Mission 3 (Observation Model Specification).
 
 ## Mission 3: Observation Model Specification
-*Status: READY FOR LOCK*
+*Status: LOCKED*
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 3.
 - [x] Task 2: Draft `specs/OBSERVATION_MODEL.md` (Core Concepts).
 - [x] Task 3: Add Observation Ontology.
 - [x] Task 4: Review and prepare spec for locking.
 
 ## Mission 4: Observation Graph Specification
-*Status: READY FOR LOCK*
+*Status: LOCKED*
 
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 4.
 - [x] Task 2: Define specific node types and properties in `specs/OBSERVATION_GRAPH.md`.
@@ -49,7 +49,7 @@
 - [x] Task 5: Review and prepare spec for locking.
 
 ## Mission 5: Execution Kernel Specification
-*Status: READY FOR LOCK*
+*Status: LOCKED*
 
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 5.
 - [x] Task 2: Draft `specs/EXECUTION_KERNEL.md` core concepts (transactions, permissions, scheduling).
@@ -57,7 +57,7 @@
 - [x] Task 4: Review and prepare spec for locking.
 
 ## Mission 6: Coordinator Protocol Specification
-*Status: READY FOR LOCK*
+*Status: LOCKED*
 
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 6.
 - [x] Task 2: Draft `specs/COORDINATOR_PROTOCOL.md` core concepts (planning loop, structured tools).
@@ -65,7 +65,7 @@
 - [x] Task 4: Review and prepare spec for locking.
 
 ## Mission 7: Worker Specifications
-*Status: READY FOR LOCK*
+*Status: LOCKED*
 
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 7.
 - [x] Task 2: Draft `specs/WORKER_SPECIFICATIONS.md` core concepts.
@@ -73,7 +73,7 @@
 - [x] Task 4: Review and prepare spec for locking.
 
 ## Mission 8: Validation Engine Specification
-*Status: READY FOR LOCK*
+*Status: LOCKED*
 
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 8.
 - [x] Task 2: Draft `specs/VALIDATION_ENGINE.md` core concepts (Visual and Structural Diffing).
@@ -84,8 +84,8 @@
 *Status: DRAFT (BLOCKED)*
 
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 9.
-- [ ] Task 2: Draft Technical Design for the Browser Laboratory.
-- [ ] Task 3: Obtain user approval to lock all prior specifications (Missions 3-8).
+- [x] Task 2: Draft Technical Design for the Browser Laboratory.
+- [x] Task 3: Obtain user approval to lock all prior specifications (Missions 3-8).
 - [ ] Task 4: Begin implementation of the WIP Interactive Lab UI.
 
 ## Future Missions (Implementation)

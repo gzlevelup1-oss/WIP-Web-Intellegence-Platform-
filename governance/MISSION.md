@@ -1,7 +1,7 @@
 # Current Mission
 
 **Mission:** Browser Laboratory Implementation  
-**Status:** Draft (Blocked by Governance)  
+**Status:** Active  
 **ID:** M-009  
 
 ## References
@@ -29,9 +29,8 @@ Begin the implementation phase by developing the Browser Laboratory (Phase 1 & 2
 - Coordinator Sandbox integration.
 
 ## Next Steps
-- **Architecture Invariant Check Completed:** The critical governance gaps in Missions 3-8 (missing schemas, state machines, error contracts, thresholds, and serialization formats) have been resolved.
-- **RFC Traceability Restored:** RFCs 001-005 have been created and linked to ADRs and Missions.
-- **Source Ownership Assigned:** `src/` files now declare explicit ownership mapping to Mission M-009.
-- **Pending User Approval:** Awaiting final design review and approval from the Product Owner / System Architect to formally lock Missions 3-8. Once locked, we will unblock Mission M-009 and begin the technical design for the Browser Laboratory.
+- **Architecture Invariant Check Completed:** Missions 3-8 specifications have been formally approved and locked by the Product Owner / System Architect. 
+- **Current Action:** Drafting the Browser Laboratory Technical Design document.
+- **Following Action:** Upon technical design approval, commence the UI and API implementation for the Browser Laboratory in `src/`.
 
 
