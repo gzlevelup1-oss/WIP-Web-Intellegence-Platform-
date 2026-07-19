@@ -1,0 +1,6 @@
+{
+  "name": "Website Intelligence Platform",
+  "description": "An AI-powered browser laboratory, observation engine, and validation platform.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

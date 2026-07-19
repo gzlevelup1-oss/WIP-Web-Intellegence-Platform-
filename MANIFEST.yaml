@@ -1,0 +1,35 @@
+project:
+  name: Website Intelligence Platform
+  version: 0.1.0
+
+architecture:
+  version: 1.0.0
+
+governance:
+  constitution: AGENTS.md
+  status: frozen
+
+current_phase:
+  Specification
+
+current_mission:
+  Observation Model Specification
+
+locked:
+  - Observation Graph (Governance)
+  - Validation Protocol (Governance)
+  - Session Manager (Governance)
+  - Mission 1 (Minimum Viable Governance)
+  - Mission 2 (Browser Runtime API Specification)
+  - Browser Runtime API (v1.0.0)
+  - Browser Runtime Protocol (v1.0.0)
+
+active_adrs:
+  - ADR-001
+  - ADR-002
+  - ADR-003
+  - ADR-004
+  - ADR-005
+
+status:
+  implementation: false
