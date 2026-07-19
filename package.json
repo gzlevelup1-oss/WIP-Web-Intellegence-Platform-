@@ -13,11 +13,9 @@
     "lint": "npm run lint --workspaces"
   },
   "dependencies": {
-    "jsdom": "^29.1.1",
     "react-window": "^2.2.7"
   },
   "devDependencies": {
-    "@types/jsdom": "^28.0.3",
     "@types/react-window": "^1.8.8"
   }
 }

@@ -3,11 +3,20 @@ import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import { JSDOM } from 'jsdom';
+import { chromium, Browser } from 'playwright';
 
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+let browserInstance: Browser | null = null;
+
+async function getBrowser() {
+  if (!browserInstance) {
+    browserInstance = await chromium.launch({ headless: true });
+  }
+  return browserInstance;
+}
 
 async function createServer() {
   const app = express();
@@ -34,104 +43,139 @@ async function createServer() {
       
       const logs = [`Navigating to ${url}...`];
 
-      // Use standard fetch to get the raw HTML
-      const response = await fetch(url, {
-        headers: { 'User-Agent': 'BrowserLab-Simulated-Headless/1.0' }
-      });
+      const browser = await getBrowser();
+      const context = await browser.newContext();
+      const page = await context.newPage();
       
-      if (!response.ok) {
-        throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
-      }
-      
-      const html = await response.text();
-      logs.push('Page HTML retrieved successfully.');
-      
-      // Parse with JSDOM
-      const dom = new JSDOM(html, { url });
-      const document = dom.window.document;
-      
+      await page.goto(url, { waitUntil: 'networkidle' });
+      logs.push('Page loaded successfully.');
+
       const snapshotId = `snap-${Date.now()}`;
-      const graph = {
-        snapshot: {
-          id: snapshotId,
-          timestamp: Date.now(),
-          url
-        },
-        nodes: [] as any[],
-        edges: [] as any[]
-      };
-      
-      // Add SnapshotNode to nodes array
-      graph.nodes.push({
-        id: snapshotId,
-        type: 'SnapshotNode',
-        properties: {
-          url,
-          viewportWidth: 1024,
-          viewportHeight: 768
-        }
-      });
-      
-      let nodeIdCounter = 0;
-      
-      const traverse = (el: Element, parentId: string | null, depth: number) => {
-        const id = `node-${nodeIdCounter++}`;
-        const classes = el.className && typeof el.className === 'string' ? el.className.split(' ').filter(c => c) : [];
-        
-        // Extract direct text content (simplified)
-        let text = '';
-        for (const child of Array.from(el.childNodes)) {
-          if (child.nodeType === dom.window.Node.TEXT_NODE && child.textContent?.trim()) {
-            text += child.textContent.trim() + ' ';
-          }
-        }
-        
-        // Push DOMNode
-        const properties: any = {
-          tagName: el.tagName.toLowerCase(),
-          nodeType: el.nodeType,
-          classes,
-          depth // Adding depth to properties to help the UI rendering
+
+      // Evaluate script in the browser to extract the Observation Graph
+      const graphResult = await page.evaluate(({ snapshotId, url }) => {
+        const graph: any = {
+          snapshot: {
+            id: snapshotId,
+            timestamp: Date.now(),
+            url
+          },
+          nodes: [],
+          edges: []
         };
         
-        if (text.trim()) {
-          properties.text = text.trim();
-        }
-        
         graph.nodes.push({
-          id,
-          type: 'DOMNode',
-          properties
+          id: snapshotId,
+          type: 'SnapshotNode',
+          properties: {
+            url,
+            viewportWidth: window.innerWidth,
+            viewportHeight: window.innerHeight
+          }
         });
         
-        // Link to parent or snapshot
-        if (parentId) {
-          graph.edges.push({
-            source: id,
-            target: parentId,
-            type: 'CHILD_OF'
-          });
-        } else {
-          graph.edges.push({
-            source: id,
-            target: snapshotId,
-            type: 'BELONGS_TO'
-          });
-        }
+        let nodeIdCounter = 0;
         
-        for (const child of Array.from(el.children)) {
-          traverse(child, id, depth + 1);
-        }
-      };
+        const traverse = (el: Element, parentId: string | null, depth: number) => {
+          const domNodeId = `node-${nodeIdCounter++}`;
+          const geoNodeId = `geo-${nodeIdCounter++}`;
+          const styleNodeId = `style-${nodeIdCounter++}`;
+          
+          const classes = el.className && typeof el.className === 'string' ? el.className.split(' ').filter(c => c) : [];
+          
+          let text = '';
+          for (const child of Array.from(el.childNodes)) {
+            if (child.nodeType === Node.TEXT_NODE && child.textContent?.trim()) {
+              text += child.textContent.trim() + ' ';
+            }
+          }
+          
+          const properties: any = {
+            tagName: el.tagName.toLowerCase(),
+            nodeType: el.nodeType,
+            classes,
+            depth
+          };
+          
+          if (text.trim()) {
+            properties.text = text.trim();
+          }
+          
+          // 1. Add DOMNode
+          graph.nodes.push({
+            id: domNodeId,
+            type: 'DOMNode',
+            properties
+          });
+          
+          // 2. Add GeometryNode
+          const rect = el.getBoundingClientRect();
+          graph.nodes.push({
+            id: geoNodeId,
+            type: 'GeometryNode',
+            properties: {
+              x: rect.x,
+              y: rect.y,
+              width: rect.width,
+              height: rect.height,
+              top: rect.top,
+              right: rect.right,
+              bottom: rect.bottom,
+              left: rect.left
+            }
+          });
+          
+          // 3. Add StyleNode (just a few key properties to avoid massive payloads)
+          const computed = window.getComputedStyle(el);
+          graph.nodes.push({
+            id: styleNodeId,
+            type: 'StyleNode',
+            properties: {
+              display: computed.display,
+              position: computed.position,
+              backgroundColor: computed.backgroundColor,
+              color: computed.color,
+              fontFamily: computed.fontFamily,
+              fontSize: computed.fontSize,
+              margin: computed.margin,
+              padding: computed.padding,
+              opacity: computed.opacity,
+              zIndex: computed.zIndex
+            }
+          });
+          
+          // Edges
+          graph.edges.push({ source: domNodeId, target: geoNodeId, type: 'HAS_GEOMETRY' });
+          graph.edges.push({ source: domNodeId, target: styleNodeId, type: 'HAS_STYLE' });
+          
+          if (parentId) {
+            graph.edges.push({ source: domNodeId, target: parentId, type: 'CHILD_OF' });
+          } else {
+            graph.edges.push({ source: domNodeId, target: snapshotId, type: 'BELONGS_TO' });
+          }
+          
+          for (const child of Array.from(el.children)) {
+            traverse(child, domNodeId, depth + 1);
+          }
+        };
+        
+        traverse(document.documentElement, null, 0);
+        return graph;
+      }, { snapshotId, url });
       
-      traverse(document.documentElement, null, 0);
-      logs.push(`Snapshot extracted. Found ${graph.nodes.length} nodes and ${graph.edges.length} edges.`);
+      logs.push(`Snapshot extracted. Found ${graphResult.nodes.length} nodes and ${graphResult.edges.length} edges.`);
+
+      // Capture real screenshot
+      const screenshotBuffer = await page.screenshot({ type: 'png' });
+      const screenshotUrl = 'data:image/png;base64,' + screenshotBuffer.toString('base64');
+      
+      await context.close();
 
       res.json({
         success: true,
-        graph,
+        graph: graphResult,
         logs,
-        screenshotUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1920&auto=format&fit=crop'
+        screenshotUrl
       });
     } catch (e: any) {
       res.status(500).json({ error: e.message });
