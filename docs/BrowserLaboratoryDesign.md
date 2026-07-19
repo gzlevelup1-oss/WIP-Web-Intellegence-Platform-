@@ -52,7 +52,11 @@ The Browser Laboratory follows the separation of concerns defined in the Archite
 - Must adhere strictly to the Observation Graph format.
 - Visuals must exactly match the headless output (no mock rendering).
 
-## 7. Open Questions / Deferred Decisions
-- *WebSocket Validation:* Based on industry standards for remote browser viewers (e.g., Browserless, Playwright Server), WebSockets are the required approach for the live viewport to stream low-latency CDP events and screen updates. Polling will only be used for discrete Observation Graph retrieval.
-- *Graph Complexity:* How to optimize the UI rendering of the Observation Graph if a page contains >10,000 nodes?
+## 7. Security & Sandboxing
+- **SSRF Mitigation:** Because the Express server running the headless browser accepts arbitrary URLs, it is highly susceptible to Server-Side Request Forgery (SSRF).
+- **Network Isolation:** The Session Manager must enforce strict network boundaries. The headless browser must not be able to resolve or navigate to internal network addresses (e.g., `localhost`, `127.0.0.1`, `169.254.169.254`, or private subnets like `10.0.0.0/8`).
+- **Input Validation:** All URL inputs must be strictly validated on the server side to ensure they belong to allowed schemes (e.g., `http:`, `https:`) and are structurally valid before being passed to the browser engine.
 
+## 8. Open Questions / Deferred Decisions
+- *WebSocket Validation:* Based on industry standards for remote browser viewers (e.g., Browserless, Playwright Server), WebSockets are the required approach for the live viewport to stream low-latency CDP events and screen updates. Polling will only be used for discrete Observation Graph retrieval.
+- *Graph Complexity:* To optimize the UI rendering of the Observation Graph (which may contain >10,000 nodes), the UI MUST utilize DOM Virtualization/Windowing libraries (e.g., `react-window` or `react-virtuoso`) to prevent the React application from crashing or stalling.

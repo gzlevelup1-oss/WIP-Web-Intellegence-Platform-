@@ -11,6 +11,7 @@ current_phase:
 current_mission:
   Browser Laboratory Implementation
 locked:
+  - Mission 10 (Monorepo Migration)
   - Observation Graph (Governance)
   - Validation Protocol (Governance)
   - Session Manager (Governance)
@@ -31,6 +32,7 @@ locked:
   - Mission 8 (Validation Engine Specification)
   - Validation Engine (v1.0.0)
 active_adrs:
+  - ADR-006
   - ADR-001
   - ADR-002
   - ADR-003

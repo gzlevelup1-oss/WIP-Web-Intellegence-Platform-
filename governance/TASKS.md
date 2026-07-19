@@ -89,3 +89,10 @@
 - [ ] Task 4: Begin implementation of the WIP Interactive Lab UI.
 
 ## Future Missions (Implementation)
+
+## Mission 10: Monorepo Architecture Migration
+*Status: ACTIVE*
+- [x] Task 1: Update `MANIFEST.yaml` and `MISSION.md` for Mission 10.
+- [x] Task 2: Create `apps/browser-lab` and move current implementation.
+- [x] Task 3: Update root `package.json` with workspace configuration.
+- [x] Task 4: Verify `npm install` and ensure dev servers are working.
