@@ -121,3 +121,13 @@
 - [x] Task 6: Implement Component Miner.
 - [x] Task 7: Implement Layout Analyzer.
 - [x] Task 8: Integrate Workers into `apps/browser-lab/server.ts` via API routes.
+
+## Mission 13: Coordinator Agent Implementation
+*Status: DRAFT*
+- [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 13.
+- [x] Task 2: Draft Technical Design (`docs/CoordinatorDesign.md`) for the Coordinator Agent.
+- [x] Task 3: Obtain user approval for Technical Design.
+- [ ] Task 4: Initialize `packages/coordinator` NPM package.
+- [x] Task 5: Implement `CoordinatorAgent` core loop (ReAct pattern).
+- [x] Task 6: Implement Tool schemas and handlers mapping to Kernel and Workers.
+- [x] Task 7: Integrate Coordinator into `apps/browser-lab` (API and UI).

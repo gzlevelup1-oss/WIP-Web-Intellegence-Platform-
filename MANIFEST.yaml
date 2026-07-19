@@ -9,7 +9,7 @@ governance:
 current_phase:
   Implementation
 current_mission:
-  Specialized Deterministic Workers Implementation
+  Coordinator Agent Implementation
   Browser Laboratory Implementation
 locked:
   - Mission 10 (Monorepo Migration)

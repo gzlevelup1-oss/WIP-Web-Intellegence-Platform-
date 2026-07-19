@@ -1,6 +1,6 @@
 # Current Mission
 **Mission:** Coordinator Agent Implementation
-**Status:** DRAFT
+**Status:** Ready for Lock
 **ID:** M-013
 
 ## References
@@ -12,7 +12,7 @@ Implement the Coordinator Agent, the AI orchestrator that delegates tasks to spe
 ## Scope
 **In Scope:**
 - Initializing `packages/coordinator` NPM package.
-- Implementation of the Coordinator AI agent using Gemini 2.5 SDK.
+- Implementation of the Coordinator AI agent using Gemini SDK (ReAct loop).
 - Integration of Coordinator Protocol (structured tools for Workers, Execution Kernel).
 - Setup of the planning loop logic.
 
@@ -21,6 +21,5 @@ Implement the Coordinator Agent, the AI orchestrator that delegates tasks to spe
 - Scaling/Parallelization.
 
 ## Next Steps
-- Define tasks in `TASKS.md` for Mission 13.
-- Draft Technical Design for Coordinator Agent.
-- Get approval to proceed.
+- Mission 13 is ready for lock and archiving.
+- Awaiting user review/approval to transition to Mission 14.

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { ExecutionKernel } from '@wip/execution-kernel';
 import { DesignTokenExtractor, ComponentMiner, LayoutAnalyzer } from '@wip/workers';
+import { CoordinatorAgent, IExecutionKernelAdapter, IWorkerAdapter } from '@wip/coordinator';
 import { chromium, Browser } from 'playwright';
 
 dotenv.config();
@@ -311,6 +312,49 @@ async function createServer() {
       if (!graph || !containerNodeId) return res.status(400).json({ error: 'Graph and containerNodeId required' });
       const result = layoutAnalyzer.analyze(graph, containerNodeId);
       res.json(result);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+
+  app.post('/api/coordinator/start', async (req, res) => {
+    try {
+      const { objective, sessionId } = req.body;
+      if (!objective) return res.status(400).json({ error: 'Objective required' });
+      if (!process.env.GEMINI_API_KEY) return res.status(500).json({ error: 'GEMINI_API_KEY not set' });
+      
+      const kernelAdapter: IExecutionKernelAdapter = {
+        captureObservation: async () => {
+          return { status: 'mock_captured', snapshotId: 'snap-123' };
+        },
+        click: async (nodeId: string) => {
+          return { status: 'mock_clicked', nodeId };
+        },
+        type: async (nodeId: string, text: string) => {
+          return { status: 'mock_typed', nodeId, text };
+        },
+        goto: async (url: string) => {
+          return { status: 'mock_navigated', url };
+        }
+      };
+
+      const workerAdapter: IWorkerAdapter = {
+        extractDesignTokens: async (snapshotId: string) => {
+           return { tokens: 'mock_tokens' };
+        },
+        mineComponents: async (snapshotId: string, containerNodeId: string) => {
+           return { components: 'mock_components' };
+        },
+        analyzeLayout: async (snapshotId: string, containerNodeId: string) => {
+           return { layout: 'mock_layout' };
+        }
+      };
+
+      const agent = new CoordinatorAgent(process.env.GEMINI_API_KEY, kernelAdapter, workerAdapter);
+      const result = await agent.start(objective);
+      
+      res.json({ success: true, result });
     } catch (e: any) {
       res.status(500).json({ error: e.message });
     }
