@@ -72,8 +72,52 @@ Edges connect nodes deterministically. Edges are directional.
    - `HAS_VALIDATION`: Links a `SnapshotNode` to a `ValidationNode`.
 
 ## 5. Serialization Format
-To pass the graph between the Runtime, the Coordinator, and Workers, it is serialized as a JSON-compatible adjacency list format. 
+To pass the graph between the Runtime, the Coordinator, and Workers, it is serialized as a JSON-compatible adjacency list format conforming to this strict JSON Schema:
 
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["snapshot", "nodes", "edges"],
+  "properties": {
+    "snapshot": {
+      "type": "object",
+      "required": ["id", "timestamp", "url"],
+      "properties": {
+        "id": { "type": "string" },
+        "timestamp": { "type": "number" },
+        "url": { "type": "string", "format": "uri" }
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "properties"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string", "enum": ["DOMNode", "StyleNode", "GeometryNode", "A11yNode", "InteractiveNode", "NetworkRequestNode", "ResourceNode", "TemporalNode", "PerformanceNode", "ValidationNode", "SnapshotNode"] },
+          "properties": { "type": "object", "additionalProperties": true }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "target", "type"],
+        "properties": {
+          "source": { "type": "string" },
+          "target": { "type": "string" },
+          "type": { "type": "string" }
+        }
+      }
+    }
+  }
+}
+```
+
+Example payload:
 ```json
 {
   "snapshot": {
@@ -109,9 +153,24 @@ To pass the graph between the Runtime, the Coordinator, and Workers, it is seria
 ```
 
 ## 6. Stability and Hashing
-To enable diffing between snapshots, the graph must support deterministic hashing.
-- **Node Hash**: Calculated by hashing the node's sorted properties.
-- **Sub-tree Hash**: Calculated by hashing the node's hash combined with the sorted sub-tree hashes of its `CHILD_OF` relations. This allows O(1) comparison of DOM subtrees across snapshots to detect changes.
+To enable high-performance structural diffing between snapshots, the graph utilizes Merkle-tree style deterministic hashing.
+
+### 6.1 Node Hash Algorithm
+1. Extract all key-value pairs from `properties`.
+2. Filter out transient properties (e.g., scroll position if ignoring scroll, random generated IDs if normalization rules apply).
+3. Sort keys alphabetically.
+4. Serialize to a compact JSON string: `{"a":1,"b":"text"}`.
+5. Compute `SHA-256(Type + ":" + SerializedProperties)`.
+
+### 6.2 Sub-tree Hash Algorithm
+To calculate the structural signature of a DOM subtree:
+1. Let `H_node` be the Node Hash of the `DOMNode`.
+2. Find all child `DOMNode`s via `CHILD_OF` edges.
+3. Recursively calculate the Sub-tree Hash for each child.
+4. Concatenate the child hashes in DOM order: `ChildHashes = Hash_C1 + Hash_C2 + ...`
+5. Compute `SubTreeHash = SHA-256(H_node + ChildHashes)`.
+
+This enables O(1) comparison: if `SubTreeHash(A) == SubTreeHash(B)`, the entire DOM sub-tree, including styles and geometry, is identical.
 
 ## 7. Invariants
 - A `DOMNode` must have exactly one `HAS_GEOMETRY` edge (even if the geometry is hidden/zero).

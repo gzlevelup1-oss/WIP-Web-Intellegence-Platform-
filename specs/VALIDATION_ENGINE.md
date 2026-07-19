@@ -17,17 +17,39 @@ Structural Diffing compares the "Original Observation Graph" with the "Reconstru
 - **Node Matching:** Attempts to map DOMNodes between both graphs based on structural signatures and semantics.
 - **Hierarchy Verification:** Ensures the `CHILD_OF` relationships reflect a similar semantic nesting depth.
 - **A11y Verification:** Compares the `A11yNode` sub-graphs to ensure aria-labels, roles, and focus orders are preserved identically.
+- **Normalization Rules:**
+  - Dynamic ID Stripping: Auto-generated React/Vue IDs (e.g., `id="v-1a2b"`) are stripped before tree hashing.
+  - Class Name Normalization: BEM modifiers and hashed CSS-in-JS classes are ignored for structural diffing.
+  - Text Content Trimming: Leading/trailing whitespace in text nodes is normalized to a single space.
 
 ## 4. Visual Diffing
 Visual Diffing ensures the layout renders identically to the human eye.
 - **Pixel-Level Diffing (MSE / SSIM):** Calculates Structural Similarity Index Measure (SSIM) and Mean Squared Error between the original and reconstructed screenshots. 
 - **Bounding Box Verification:** Compares the `x`, `y`, `width`, and `height` properties of matched `GeometryNodes` in the Observation Graphs to catch subtle shifts (e.g., font rendering differences pushing a button 2px down).
-- **Tolerance Thresholds:** Allows a configurable deviation percentage (e.g., > 98% SSIM) to account for cross-platform rendering artifacts.
+- **Thresholds (Strict Mode):**
+  - SSIM `> 0.98`
+  - MSE `< 0.05`
+  - Bounding Box Tolerance: Max `2px` absolute deviation per edge.
+  - Color Tolerance: Maximum `DeltaE < 2.0`.
+- **Test Fixtures:** The validation is executed across 3 standard viewport sizes: Mobile (`375x812`), Tablet (`768x1024`), and Desktop (`1440x900`).
 
-## 5. The Feedback Loop
+## 5. The Feedback Loop & Failure Semantics
 If the Validation Engine determines the reconstructed model falls below acceptable thresholds, it generates a **Discrepancy Report**.
 - The Validation Engine acts as an interceptor. It is automatically invoked by the system when the Coordinator invokes the `Mission.complete(resultPayload)` tool.
 - If the output passes validation, the Mission terminates successfully.
-- If it fails, the `Mission.complete` call is rejected. The system injects the Discrepancy Report (formatted as structured JSON containing specific failure points, e.g., "Node-45 overlaps Node-46 by 12px", "Missing primary navigation role") back into the Coordinator's context as a tool error.
-- The Coordinator Agent receives this report, plans a semantic repair step (Phase 5 in `WIP_PLAN.md`), and dispatches new adjustments.
-- This loop continues until validation passes or a max-retry threshold is hit.
+- If it fails, the `Mission.complete` call is rejected. The system injects the Discrepancy Report (formatted as structured JSON containing specific failure points) back into the Coordinator's context as a tool error.
+
+**Failure Semantics Payload Example:**
+```json
+{
+  "status": "ValidationFailed",
+  "ssim": 0.92,
+  "mse": 0.12,
+  "violations": [
+    { "type": "Structural", "message": "Missing navigation role", "expectedNodeId": "node-10" },
+    { "type": "Visual", "message": "Bounding box shifted 15px down", "nodeId": "node-45" }
+  ]
+}
+```
+- The Coordinator Agent receives this report, plans a semantic repair step, and dispatches new adjustments.
+- This loop continues until validation passes or a max-retry threshold (default: 3) is hit. If max retries are exceeded, the system triggers `Mission.fail(ValidationExhausted)`.

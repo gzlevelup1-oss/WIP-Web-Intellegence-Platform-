@@ -1,6 +1,6 @@
 # Browser Runtime Protocol Specification
 
-**Version:** 1.0.0-Draft  
+**Version:** 1.0.0-Locked  
 **Protocol Type:** Message-based RPC (JSON-RPC 2.0 compatible)  
 
 ## 1. Overview
@@ -43,25 +43,38 @@ Observations output an immutable Snapshot reference.
     "snapshotId": "snap-abc",
     "timestamp": 1690000001,
     "hash": "sha256-xyz...",
-    "data": { ... }
+    "data": {
+      "domTree": [{ "nodeId": "1", "tag": "body" }],
+      "accessibilityTree": [{ "nodeId": "a1", "role": "document" }],
+      "computedStyles": { "1": { "display": "block", "color": "#000" } },
+      "geometry": { "1": { "x": 0, "y": 0, "width": 800, "height": 600 } }
+    }
   }
   ```
 
 ### 5.3. Interaction
 - **Request:** `Interaction.click`
-  - *Params:* `{"sessionId": "sess-123", "nodeId": "node-45"}`
+  - *Params:* `{"sessionId": "sess-123", "nodeId": "node-45", "modifiers": ["shift"]}`
 - **Request:** `Interaction.type`
-  - *Params:* `{"sessionId": "sess-123", "nodeId": "node-45", "text": "hello world"}`
+  - *Params:* `{"sessionId": "sess-123", "nodeId": "node-45", "text": "hello world", "delay": 10}`
 
 ### 5.4. Viewport
 - **Request:** `Viewport.scroll`
-  - *Params:* `{"sessionId": "sess-123", "distanceY": 500}`
+  - *Params:* `{"sessionId": "sess-123", "distanceY": 500, "behavior": "smooth"}`
 
 ## 6. Event Stream
-- **`Event.Network.RequestSent`** / **`Event.Network.ResponseReceived`**
+The runtime emits real-time events over a WebSocket or SSE connection.
+
+- **`Event.Network.RequestSent`** 
+  - *Payload:* `{"requestId": "req-1", "url": "https://...", "method": "GET"}`
+- **`Event.Network.ResponseReceived`**
+  - *Payload:* `{"requestId": "req-1", "status": 200, "mimeType": "application/json"}`
 - **`Event.Page.Console`**
+  - *Payload:* `{"type": "error", "message": "Failed to load resource"}`
 - **`Event.Lifecycle.FontsReady`**
+  - *Payload:* `{"timestamp": 1690000005}`
 - **`Event.Lifecycle.AnimationsStable`**
+  - *Payload:* `{"timestamp": 1690000006}`
 
 ## 7. Error Codes
 | Code | Category |

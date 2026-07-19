@@ -1,3 +1,4 @@
+Reference: docs/rfc/RFC-001.md
 # ADR-005: Execution Kernel
 
 **Status:** Approved

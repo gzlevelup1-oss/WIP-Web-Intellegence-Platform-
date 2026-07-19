@@ -33,14 +33,14 @@
 - [x] Task 7: Prepare for Mission 3 (Observation Model Specification).
 
 ## Mission 3: Observation Model Specification
-*Status: DESIGN REVIEW REQUIRED*
+*Status: READY FOR LOCK*
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 3.
 - [x] Task 2: Draft `specs/OBSERVATION_MODEL.md` (Core Concepts).
 - [x] Task 3: Add Observation Ontology.
 - [x] Task 4: Review and prepare spec for locking.
 
 ## Mission 4: Observation Graph Specification
-*Status: DESIGN REVIEW REQUIRED*
+*Status: READY FOR LOCK*
 
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 4.
 - [x] Task 2: Define specific node types and properties in `specs/OBSERVATION_GRAPH.md`.
@@ -49,7 +49,7 @@
 - [x] Task 5: Review and prepare spec for locking.
 
 ## Mission 5: Execution Kernel Specification
-*Status: DESIGN REVIEW REQUIRED*
+*Status: READY FOR LOCK*
 
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 5.
 - [x] Task 2: Draft `specs/EXECUTION_KERNEL.md` core concepts (transactions, permissions, scheduling).
@@ -57,7 +57,7 @@
 - [x] Task 4: Review and prepare spec for locking.
 
 ## Mission 6: Coordinator Protocol Specification
-*Status: DESIGN REVIEW REQUIRED*
+*Status: READY FOR LOCK*
 
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 6.
 - [x] Task 2: Draft `specs/COORDINATOR_PROTOCOL.md` core concepts (planning loop, structured tools).
@@ -65,7 +65,7 @@
 - [x] Task 4: Review and prepare spec for locking.
 
 ## Mission 7: Worker Specifications
-*Status: DESIGN REVIEW REQUIRED*
+*Status: READY FOR LOCK*
 
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 7.
 - [x] Task 2: Draft `specs/WORKER_SPECIFICATIONS.md` core concepts.
@@ -73,7 +73,7 @@
 - [x] Task 4: Review and prepare spec for locking.
 
 ## Mission 8: Validation Engine Specification
-*Status: DESIGN REVIEW REQUIRED*
+*Status: READY FOR LOCK*
 
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 8.
 - [x] Task 2: Draft `specs/VALIDATION_ENGINE.md` core concepts (Visual and Structural Diffing).

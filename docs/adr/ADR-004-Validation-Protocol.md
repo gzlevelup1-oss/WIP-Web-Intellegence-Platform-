@@ -1,3 +1,4 @@
+Reference: docs/rfc/RFC-001.md
 # ADR-004: Validation Protocol
 
 **Status:** Approved

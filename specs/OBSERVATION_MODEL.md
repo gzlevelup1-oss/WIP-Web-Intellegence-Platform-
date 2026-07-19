@@ -34,19 +34,31 @@ Every Observation must be explicitly classified into one of the following catego
 - **Network:** Outbound requests, status codes, payload sizes.
 - **Semantic (Deterministically Derived):** Tags inherently carrying meaning (e.g., `<nav>`, `<button>`). Note: this only refers to structurally evident semantics, not AI inferences.
 
-## 4. Observation Identity
-Every Observation possesses a globally unique identity that survives storage changes. Conceptually:
+## 4. Observation Identity & Evidence Schema
+Every Observation possesses a globally unique identity that survives storage changes. The schema for an observation explicitly links it to its evidence.
 
 ```json
 {
-  "ObservationID": "obs-1234",
-  "SnapshotID": "snap-abc",
-  "Subject": "node-45",
-  "Property": "backgroundColor",
-  "Value": "#FFFFFF",
-  "Evidence": "window.getComputedStyle",
-  "Timestamp": 1690000000,
-  "Version": "1.0"
+  "type": "object",
+  "properties": {
+    "ObservationID": { "type": "string", "pattern": "^obs-[a-f0-9]{8}$" },
+    "SnapshotID": { "type": "string", "pattern": "^snap-[a-f0-9]{8}$" },
+    "Subject": { "type": "string", "description": "The unique NodeID this observation describes" },
+    "Property": { "type": "string", "enum": ["backgroundColor", "bounds", "role", "isVisible"] },
+    "Value": { "type": ["string", "number", "boolean", "object"] },
+    "Evidence": {
+      "type": "object",
+      "properties": {
+        "source": { "type": "string", "enum": ["CDP", "DOM_API", "A11Y_TREE"] },
+        "method": { "type": "string", "example": "DOMSnapshot.captureSnapshot" },
+        "timestamp": { "type": "number", "description": "High-resolution monotonic time" }
+      },
+      "required": ["source", "method", "timestamp"]
+    },
+    "Confidence": { "type": "number", "enum": [1.0], "description": "Must be exactly 1.0. Probabilistic data is forbidden." },
+    "Version": { "type": "string" }
+  },
+  "required": ["ObservationID", "SnapshotID", "Subject", "Property", "Value", "Evidence", "Confidence"]
 }
 ```
 
@@ -58,22 +70,21 @@ The model distinguishes between what is directly measured and what is determinis
 
 ## 6. Confidence
 In the Observation Model, confidence isn't probabilistic. It is a statement that the fact is reproducible under the same conditions.
-- Measurement Confidence = `1.0`
-- Deterministic Derivation Confidence = `1.0`
-- AI Classification = Not stored here.
+- **Measurement Confidence = 1.0**: Raw data extracted via CDP.
+- **Deterministic Derivation Confidence = 1.0**: Calculated via exact geometric or layout algorithms.
+- **AI Classification = Not Allowed**: Any value `< 1.0` or requiring probabilistic inference MUST be stored in the semantic layer, never the Observation Graph.
 
 ## 7. Invariants
-The Observation Model enforces the following foundational laws:
-1. Every observation belongs to exactly one snapshot.
-2. Every snapshot belongs to exactly one timeline.
-3. Every timeline belongs to exactly one session.
-4. Every observation has at least one evidence source.
-5. Observations are immutable after creation.
-6. Observations never reference AI hypotheses.
-7. Relationships are deterministic.
-8. Time is monotonic within a timeline.
-9. Snapshots are internally consistent.
-10. Evidence is traceable.
+The Observation Model enforces the following foundational laws, which are validated before persistence:
+1. **Uniqueness:** Every observation belongs to exactly one snapshot.
+2. **Hierarchy:** Every snapshot belongs to exactly one timeline. Every timeline belongs to exactly one session.
+3. **Traceability:** Every observation has at least one evidence source conforming to the Evidence schema.
+4. **Immutability:** Observations are immutable after creation.
+5. **No AI Bleed:** Observations never reference AI hypotheses.
+6. **Determinism:** Relationships are deterministic.
+7. **Monotonicity:** Time is monotonic within a timeline.
+8. **Consistency:** Snapshots are internally consistent (e.g., bounding boxes cannot be larger than the viewport).
+9. **Confidence:** Confidence is always exactly `1.0`.
 
 ## 8. What the Observation Model Must Never Contain (Non-Goals)
 The Observation Model must remain a faithful representation of browser-observable reality. It is strictly forbidden to store:

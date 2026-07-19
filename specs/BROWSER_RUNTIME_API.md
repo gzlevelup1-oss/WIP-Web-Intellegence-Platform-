@@ -1,6 +1,6 @@
 # Browser Runtime API Specification
 
-**Version:** 1.0.0-Draft  
+**Version:** 1.0.0-Locked  
 **Related ADR:** ADR-002  
 
 ## 1. Purpose & Separation of Concerns

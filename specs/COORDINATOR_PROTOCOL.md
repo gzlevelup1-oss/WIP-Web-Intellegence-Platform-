@@ -26,20 +26,53 @@ The Coordinator operates in a strict ReAct (Reason + Act) loop:
 The Coordinator does NOT write scripts or interact with Playwright directly. It communicates exclusively via a predefined JSON-schema tool suite.
 
 ### 4.1. Execution Tools (Dispatched to Kernel)
-- `Navigation.open(url)`
-- `Navigation.back()`
-- `Viewport.scroll(distanceY)`
-- `Interaction.click(nodeId)`
-- `Interaction.type(nodeId, text)`
+```json
+{
+  "name": "Interaction.click",
+  "description": "Click an element by NodeID.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "nodeId": { "type": "string", "description": "The target NodeID from the Observation Graph" },
+      "modifiers": { "type": "array", "items": { "type": "string", "enum": ["shift", "ctrl", "alt"] } }
+    },
+    "required": ["nodeId"]
+  }
+}
+```
+*Other tools: `Navigation.open(url)`, `Navigation.back()`, `Viewport.scroll(distanceY)`, `Interaction.type(nodeId, text)`*
 
 ### 4.2. Observation Tools (Dispatched to Kernel)
-- `Observation.capture(levels)`: Requests a new Snapshot and returns the SnapshotID.
-- `Observation.queryGraph(snapshotId, cypherQuery)`: Retrieves specific sub-graphs without loading the entire DOM into context.
+```json
+{
+  "name": "Observation.capture",
+  "description": "Requests a new Snapshot of the current state.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "levels": { "type": "array", "items": { "type": "string", "enum": ["DOM", "A11Y", "STYLE", "GEOMETRY"] } }
+    },
+    "required": ["levels"]
+  }
+}
+```
+*Other tools: `Observation.queryGraph(snapshotId, cypherQuery)`*
 
 ### 4.3. Delegation Tools (Dispatched to Workers)
-- `Worker.extractDesignTokens(snapshotId)`
-- `Worker.mineComponents(snapshotId, containerNodeId)`
-- `Worker.analyzeLayout(snapshotId, containerNodeId)`
+```json
+{
+  "name": "Worker.extractDesignTokens",
+  "description": "Dispatches the Design Token worker to extract the global design system.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "snapshotId": { "type": "string" }
+    },
+    "required": ["snapshotId"]
+  }
+}
+```
+*Other tools: `Worker.mineComponents(snapshotId, containerNodeId)`, `Worker.analyzeLayout(snapshotId, containerNodeId)`*
 
 ### 4.4. Mission Tools
 - `Mission.complete(resultPayload)`: Marks the mission as successful. The `resultPayload` contains the final reconstructed UI code (e.g., HTML/CSS, React) and the semantic mappings. **Note:** Calling this tool implicitly triggers the Validation Engine. If validation fails, the system intercepts the completion, keeps the mission active, and returns a `ValidationFailed` error containing a Discrepancy Report for the Coordinator to repair.

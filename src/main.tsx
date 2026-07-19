@@ -1,3 +1,7 @@
+/* 
+ * Mission: M-009 Browser Laboratory Implementation
+ * Owner: Execution
+ */
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import App from './App.tsx';

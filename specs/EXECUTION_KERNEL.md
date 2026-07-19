@@ -25,26 +25,44 @@ Execution within the Kernel follows a strict hierarchy:
 
 ## 4. Transactions and Checkpoints
 ### 4.1. Transactions
-The Kernel enforces transactional safety over the Browser Runtime. Transactions are submitted by the Coordinator as atomic tool invocations. The Kernel internally manages the transaction lifecycle:
-- **Begin**: The Kernel captures the initial state and starts tracking changes.
-- **Commit**: The Kernel marks the sequence as complete and irreversible if all Tasks succeed.
-- **Abort**: If any Task fails (e.g., terminal error or retry exhaustion), the Kernel rolls back to the last Checkpoint before returning control to the Coordinator.
+The Kernel enforces transactional safety over the Browser Runtime. Transactions are submitted by the Coordinator as atomic tool invocations. The Kernel internally manages the transaction lifecycle with the following states:
 
-### 4.2. Checkpoints
-Since browsers are highly stateful, true rollback requires checkpointing.
-- The Kernel automatically captures a Checkpoint (using Session Manager) before any `Transaction.begin()`.
-- A Checkpoint captures the DOM Observation Graph root, local storage, cookies, and navigation history.
-- If a `Transaction.abort()` is called, the Kernel restores the session to the exact Checkpoint state before returning control to the Coordinator.
+- **`PENDING`**: Transaction received, waiting for scheduler lock.
+- **`ACTIVE`**: Actions are executing.
+- **`COMMITTED`**: All actions succeeded.
+- **`ABORTING`**: A failure occurred, rollback is in progress.
+- **`ABORTED`**: Rollback complete, error returned to Coordinator.
+
+### 4.2. Checkpoint Format
+A checkpoint represents a restorable state.
+
+```json
+{
+  "checkpointId": "chk-999",
+  "sessionId": "sess-123",
+  "timestamp": 1690000000,
+  "state": {
+    "url": "https://example.com/checkout",
+    "historyIndex": 2,
+    "cookies": [{"name": "session", "value": "xyz"}],
+    "localStorage": {"cart": "{...}"},
+    "snapshotHash": "sha256-..."
+  }
+}
+```
+
+If a `Transaction.abort()` is called, the Kernel restores the session to the exact Checkpoint state before returning control to the Coordinator.
 
 ### 4.3. Soft Checkpointing (Extension Runtime)
 When the Kernel interfaces with a Runtime operating under `IsolationLevel: Shared` (e.g., the Chrome Extension Runtime), hard state wipes (clearing cookies, local storage) are strictly forbidden to prevent logging the user out.
 - **Soft Abort**: The Kernel relies on reverse-navigation (`history.back()`) or simply halts execution to yield control back to the Coordinator, logging the transaction as a soft abort rather than restoring a complete hard checkpoint.
 
 ## 5. Concurrency and Event Ordering
-The Browser Runtime executes one deterministic Action at a time per Session. 
-- The Kernel queues concurrent Task requests and serializes them.
-- All Actions must have a monotonic sequence number.
-- The Kernel blocks further Actions during a navigation transition or animation stabilization phase until the `Observation Point` is reached (as defined in `BROWSER_RUNTIME_API.md`).
+The Kernel enforces Strict Serializability per Session.
+- **Mutual Exclusion**: Only one Transaction can be `ACTIVE` per Session at any given time.
+- **Queueing**: Concurrent requests block and wait in a FIFO queue.
+- **Monotonicity**: All Actions have a monotonic sequence number `seq_num`.
+- **Stabilization Lock**: The Kernel blocks all queue processing while the Browser Runtime is unstable (e.g., waiting for `Event.Lifecycle.AnimationsStable`).
 
 ## 6. Request Proxying and Context Injection
 The Coordinator is unaware of underlying connection details or session identifiers. When the Coordinator invokes a tool (e.g., `Interaction.click(nodeId)`), the Execution Kernel intercepts the request. The Kernel:
@@ -54,12 +72,24 @@ The Coordinator is unaware of underlying connection details or session identifie
 4. Manages the synchronous wait or asynchronous callback for the Transaction Result.
 
 ## 7. Permissions and Security
-The Kernel acts as a gatekeeper. Before an Action is dispatched to the Browser Runtime, the Kernel checks:
-- **Allowlist Policies:** E.g., block all requests to `*.analytics.com`.
-- **Capability Checks:** E.g., is `Interaction.type` allowed in the current Mission scope?
-- **Timeouts & Quotas:** Does this Mission have enough time/budget to execute this Action?
+The Kernel applies a strict RBAC/Policy model:
+```json
+{
+  "missionId": "m-001",
+  "permissions": {
+    "allowedDomains": ["*.example.com"],
+    "blockedDomains": ["*.analytics.com"],
+    "allowedCapabilities": ["Navigation", "Interaction", "Observation"],
+    "maxDurationMs": 300000,
+    "maxTransactions": 50
+  }
+}
+```
+Any action violating this policy immediately transitions the active Transaction to `ABORTING`.
 
 ## 8. Scheduling and Retries
-The Kernel handles deterministic failure modes without burdening the Coordinator:
-- **Transient Failures (e.g., `TimeoutError`):** Automatically retried up to 3 times with exponential backoff.
-- **Terminal Failures (e.g., `BrowserCrashError`):** Propagated immediately to the Coordinator, failing the Transaction.
+The Kernel handles deterministic failure modes using strict retry semantics:
+- **Transient Failures (e.g., `4002 TimeoutError`)**: Retried up to 3 times. 
+  - `Delay = base_ms * (2 ^ attempt)`. `base_ms = 500`.
+- **Stale Node Errors (e.g., node detached during execution)**: Retried exactly 1 time by forcing a silent internal re-Observation to fetch the new `nodeId`.
+- **Terminal Failures (e.g., `5001 BrowserCrashError`)**: Propagated immediately to the Coordinator, failing the Transaction.
