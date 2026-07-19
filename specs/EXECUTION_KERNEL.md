@@ -36,6 +36,10 @@ Since browsers are highly stateful, true rollback requires checkpointing.
 - A Checkpoint captures the DOM Observation Graph root, local storage, cookies, and navigation history.
 - If a `Transaction.abort()` is called, the Kernel restores the session to the exact Checkpoint state before returning control to the Coordinator.
 
+### 4.3. Soft Checkpointing (Extension Runtime)
+When the Kernel interfaces with a Runtime operating under `IsolationLevel: Shared` (e.g., the Chrome Extension Runtime), hard state wipes (clearing cookies, local storage) are strictly forbidden to prevent logging the user out.
+- **Soft Abort**: The Kernel relies on reverse-navigation (`history.back()`) or simply halts execution to yield control back to the Coordinator, logging the transaction as a soft abort rather than restoring a complete hard checkpoint.
+
 ## 5. Concurrency and Event Ordering
 The Browser Runtime executes one deterministic Action at a time per Session. 
 - The Kernel queues concurrent Task requests and serializes them.

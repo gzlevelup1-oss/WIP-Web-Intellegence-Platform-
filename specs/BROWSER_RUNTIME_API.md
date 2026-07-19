@@ -81,3 +81,12 @@ Future implementations of the Browser Runtime must preserve:
 - **API compatibility:** Semantic tool contracts (inputs/outputs).
 - **Snapshot compatibility:** Identical DOM/CSS serialization hashing mechanisms.
 - **Capability negotiation:** Forward-compatible capability flags.
+
+## 10. Dual Runtime Architecture (Extension vs. Headless)
+The WIP architecture supports a dual runtime model to address differing automation constraints. Both runtimes must conform to this exact API.
+- **Headless Runtime (Default):** Utilizes isolated browser contexts (e.g., Playwright). Best for CI/CD, Validation Engine sandboxing, and autonomous testing.
+- **Extension Runtime (In-Vivo):** Utilizes the `chrome.debugger` API running inside a genuine user browser. Unlocks authenticated session access, bot evasion, and passive observation.
+
+### 10.1 Extension Runtime Capabilities
+When the runtime metadata broadcasts as an Extension Runtime, it introduces specific `IsolationLevel` constraints:
+- `IsolationLevel: Shared`: Operations run within the user's primary profile. State (cookies, local storage) must NOT be wiped by the Kernel during transaction rollbacks.

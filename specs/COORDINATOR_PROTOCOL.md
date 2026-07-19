@@ -60,3 +60,8 @@ The Coordinator maintains an **Experience Graph** (separate from the Observation
 - The Coordinator MUST NOT generate Playwright, Puppeteer, or JavaScript code to be executed in the browser context.
 - The Coordinator MUST reference elements by `NodeID`, not by generating CSS selectors or XPath queries, ensuring it relies on the deterministic Observation Graph.
 - The Coordinator MUST explicitly handle Kernel transaction aborts.
+
+## 8. Passive Observation Mode (Extension Runtime)
+When connected to a runtime that supports passive observation (e.g., the Chrome Extension Runtime), the Coordinator can operate as an "Over-the-Shoulder Copilot":
+- Instead of exclusively issuing `Observation.capture` and `Interaction.click` tools autonomously, the Coordinator receives a passive stream of `Event.Interaction.Recorded` events over the protocol as a human user interacts with the page.
+- The Coordinator processes these events and the resulting Observation Graph in the background, updating its Experience Graph and hypotheses without taking autonomous control of the cursor.
