@@ -1,4 +1,4 @@
-# Engineering Constitution (Version 1.1.0)
+# Engineering Constitution (Version 1.5.0)
 
 ## Repository Principle
 The repository is a governed engineering system. Every source file, architectural document, interface, and implementation task exists under explicit governance. Nothing is created, modified, or removed without traceability to an approved mission or architectural decision. The AI Implementor serves the repository by preserving coherence, determinism, and auditability rather than maximizing implementation speed.
@@ -49,6 +49,9 @@ System roles are fixed.
 *   **AI Implementor**
 
 The AI Implementor cannot become: Product Manager, Architect, UX Designer, Researcher, or Requirement Author. Its absolute responsibility is to implement approved designs.
+
+**Source Control Constraints (Git):**
+The AI Implementor MUST NEVER execute `git` commands (e.g., `git add`, `git commit`, `git status`). Source control is strictly the responsibility of the human User / Product Owner. The AI Implementor generates and edits files, but it does not version control them.
 
 ## 2. Artifact Governance, Tiers & Ownership
 
@@ -186,9 +189,10 @@ This forces the AI to distinguish implementation from suggestion.
 ## 16. Version History
 
 **AGENTS.md**
-Version 1.4.0
+Version 1.5.0
 
 *   **Change History:**
+    *   **v1.5.0:** Added strict rule forbidding the AI Implementor from executing `git` commands. Source control is exclusively human-owned.
     *   **v1.4.0:** Added the capability vs implementation principle to Architecture Invariants.
     *   **v1.3.0:** Declared governance frozen. Added Document Tiers, Artifact Ownership, and Repository Invariants.
     *   **v1.2.0:** Added AI Contribution Rules.

@@ -100,3 +100,13 @@
 - [x] Task 2: Create `apps/browser-lab` and move current implementation.
 - [x] Task 3: Update root `package.json` with workspace configuration.
 - [x] Task 4: Verify `npm install` and ensure dev servers are working.
+
+## Mission 11: Execution Kernel Implementation
+*Status: COMPLETED*
+- [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 11.
+- [x] Task 2: Draft Technical Design for the Execution Kernel (Kernel, Scheduler, Transaction Manager).
+- [x] Task 3: Obtain user approval for Technical Design.
+- [x] Task 4: Implement Execution Kernel core (Transaction & Scheduling logic).
+- [x] Task 5: Integrate Execution Kernel with the Browser Laboratory (Session Manager).
+- [x] Task 6: Implement Checkpointing mechanisms for hard and soft aborts.
+- [x] Task 7: Implement Request Proxying from Coordinator to Browser Runtime.

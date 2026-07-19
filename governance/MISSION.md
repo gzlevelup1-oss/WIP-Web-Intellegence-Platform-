@@ -1,22 +1,26 @@
 # Current Mission
-**Mission:** Browser Laboratory Implementation
+**Mission:** Execution Kernel Implementation
 **Status:** Ready for Lock
-**ID:** M-009
+**ID:** M-011
+
+## References
+- `ADR-005-Execution-Kernel`
+- `specs/EXECUTION_KERNEL.md`
 
 ## Objective
-Begin the implementation phase by developing the Browser Laboratory (Phase 1 & 2 Prototype). This involves building the interactive workbench, observation lab, and integrating a headless browser runtime to measure and export snapshots.
+Implement the core Execution Kernel, acting as the operating system for the Platform. It must sit beneath the Coordinator Agent and above the Browser Runtime, handling transaction safety, scheduling, retries, checkpointing, and permissions.
 
 ## Scope
 **In Scope:**
-- WIP Interactive Lab UI layout.
-- Observation Lab tools (URL input, Inspector, Real-time snapshot).
-- Headless browser/simulator integration.
-- Code Review & Adherence to `OBSERVATION_GRAPH.md` Schema.
+- Execution Kernel core module (transaction and scheduling logic).
+- Checkpointing mechanisms (hard and soft aborts).
+- Request Proxying from Coordinator to Browser Runtime.
+- Integration with the existing Browser Laboratory (Session Manager).
 
 **Out of Scope:**
-- Full Validation Suite diffing logic (Prototype only).
-- Coordinator Sandbox full integration.
+- The Coordinator Agent itself.
+- Production scaling or Redis-based persistence (Memory-based implementation for prototype).
 
 ## Next Steps
-- **Mission Complete Gate:** Requirements Met, Interfaces Stable, Tests Green (Lint passed), Architecture Unchanged.
-- Waiting for user approval to archive Mission 9 and initiate the next mission (Execution Kernel Implementation).
+- Mission 11 is ready for lock and archiving.
+- Awaiting user review/approval to transition to Mission 12 (Coordinator Agent Implementation).

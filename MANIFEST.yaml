@@ -9,6 +9,7 @@ governance:
 current_phase:
   Implementation
 current_mission:
+  Execution Kernel Implementation
   Browser Laboratory Implementation
 locked:
   - Mission 10 (Monorepo Migration)
