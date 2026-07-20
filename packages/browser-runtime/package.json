@@ -1,5 +1,5 @@
 {
-  "name": "@wip/execution-kernel",
+  "name": "@wip/browser-runtime",
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,8 +10,12 @@
     "lint": "tsc --noEmit",
     "test": "vitest run"
   },
+  "dependencies": {
+    "playwright": "^1.61.1"
+  },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^4.1.10",
     "typescript": "^5.2.2"
   }
 }

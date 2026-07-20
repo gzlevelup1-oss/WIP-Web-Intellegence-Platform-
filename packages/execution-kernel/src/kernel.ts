@@ -1,27 +1,23 @@
 import { BrowserAction, ActionResult } from './types.js';
 import { Transaction, TransactionManager } from './transaction.js';
 import { Scheduler } from './scheduler.js';
-import { CheckpointManager, CheckpointData } from './checkpoint.js';
-import { BrowserContext, Page } from 'playwright';
+import { CheckpointData, ICheckpointAdapter } from './checkpoint.js';
 
 export class ExecutionKernel {
   private txManager = new TransactionManager();
   private scheduler = new Scheduler();
-  private checkpointManager = new CheckpointManager();
   private activeCheckpoints: Map<string, CheckpointData> = new Map();
-
-  private contexts: Map<string, { context: BrowserContext; page: Page }> = new Map();
-
-  public registerSession(sessionId: string, context: BrowserContext, page: Page) {
-    this.contexts.set(sessionId, { context, page });
+  private checkpointAdapter?: ICheckpointAdapter;
+  
+  constructor(checkpointAdapter?: ICheckpointAdapter) {
+    this.checkpointAdapter = checkpointAdapter;
   }
 
   public async beginTransaction(missionId: string, sessionId: string): Promise<Transaction> {
     const tx = await this.txManager.acquireLock(missionId, sessionId);
     
-    const sessionArgs = this.contexts.get(sessionId);
-    if (sessionArgs) {
-      const checkpoint = await this.checkpointManager.createCheckpoint(sessionArgs.context, sessionArgs.page);
+    if (this.checkpointAdapter) {
+      const checkpoint = await this.checkpointAdapter.createCheckpoint(sessionId);
       this.activeCheckpoints.set(tx.id, checkpoint);
     }
     
@@ -45,11 +41,10 @@ export class ExecutionKernel {
   public async abortTransaction(transaction: Transaction, soft: boolean = false): Promise<void> {
     transaction.status = 'ABORTING';
     
-    if (!soft) {
-      const sessionArgs = this.contexts.get(transaction.sessionId);
+    if (!soft && this.checkpointAdapter) {
       const checkpoint = this.activeCheckpoints.get(transaction.id);
-      if (sessionArgs && checkpoint) {
-        await this.checkpointManager.restoreCheckpoint(sessionArgs.context, sessionArgs.page, checkpoint);
+      if (checkpoint) {
+        await this.checkpointAdapter.restoreCheckpoint(transaction.sessionId, checkpoint);
       }
     }
     

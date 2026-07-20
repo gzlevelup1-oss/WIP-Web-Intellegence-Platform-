@@ -29,6 +29,11 @@ v1.0.0
 - ADR-004: Validation Protocol
 - ADR-005: Execution Kernel
 - ADR-006: Monorepo Architecture
+- ADR-007: Execution Kernel and Playwright Decoupling
+- ADR-008: Composition Roots
+- ADR-009: Public API Principle
+- AVP-001: Architecture Integrity Verification Protocol
+- AFR-001: Architecture Friction Report Protocol
 - ARCH-002: Corrected Architectural Assessment - Browser Runtime Extraction
 - ACP-003: Browser Runtime Extraction Migration Plan
 
@@ -38,3 +43,16 @@ v1.0.0
 
 **Next Milestone:**
 Complete extraction of `packages/browser-runtime` according to ACP-003.
+
+**System Boundaries & Ownership:**
+*   **Browser Runtime** owns Playwright, Browser lifecycle, Browser sessions, Browser checkpoints.
+*   **Coordinator** owns probabilistic reasoning.
+*   **Execution Kernel** owns deterministic execution.
+*   **Validation Engine** owns validation policies.
+*   **Observation Store** owns persisted observations.
+
+**Forbidden Dependency Matrix:**
+*   `execution-kernel` -> `playwright` (Forbidden)
+*   `validation-engine` -> `browser-runtime` (Forbidden)
+*   `workers` -> `react` (Forbidden)
+*   `packages/*` -> `apps/*` (Forbidden)

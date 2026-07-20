@@ -7,43 +7,38 @@ import { ExecutionKernel } from '@wip/execution-kernel';
 import { DesignTokenExtractor, ComponentMiner, LayoutAnalyzer } from '@wip/workers';
 import { CoordinatorAgent, IExecutionKernelAdapter, IWorkerAdapter } from '@wip/coordinator';
 import { MemoryObservationStore } from '@wip/observation-store';
-import { evaluateSnapshot } from './src/browser-script.js';
-import { chromium, Browser } from 'playwright';
+import { BrowserRuntime, PlaywrightAdapter } from '@wip/browser-runtime';
 
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-let browserInstance: Browser | null = null;
-const kernel = new ExecutionKernel();
+const browserAdapter = new PlaywrightAdapter();
+const browserRuntime = new BrowserRuntime(browserAdapter);
+
+const kernel = new ExecutionKernel({
+  createCheckpoint: async (sessionId: string) => {
+    return await browserRuntime.createCheckpoint(sessionId);
+  },
+  restoreCheckpoint: async (sessionId: string, checkpoint: any) => {
+    await browserRuntime.restoreCheckpoint(sessionId, checkpoint);
+  }
+});
 const tokenExtractor = new DesignTokenExtractor();
 const componentMiner = new ComponentMiner();
 const layoutAnalyzer = new LayoutAnalyzer();
 const observationStore = new MemoryObservationStore();
 
-
-async function getBrowser() {
-  if (!browserInstance) {
-    browserInstance = await chromium.launch({ 
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
-    });
-  }
-  return browserInstance;
-}
-
 async function createServer() {
   const app = express();
-
+  
   // Create Vite server in middleware mode
   const vite = await createViteServer({
     server: { middlewareMode: true },
-    appType: 'spa',
-    root: __dirname,
+    appType: 'spa'
   });
 
-
-  app.use(express.json());
+  app.use(express.json({ limit: '50mb' }));
 
   // API Route: Simulator Snapshot
   app.post('/api/simulator/snapshot', async (req, res) => {
@@ -55,37 +50,25 @@ async function createServer() {
       
       const logs = [`Navigating to ${url}...`];
 
-      const sessionId = `session-${Date.now()}`;
-      const browser = await getBrowser();
-      const context = await browser.newContext();
-      const page = await context.newPage();
-      
-      kernel.registerSession(sessionId, context, page);
+      const sessionId = await browserRuntime.createSession();
+      // Decoupled Kernel using ICheckpointAdapter
+
       const transaction = await kernel.beginTransaction('M-011', sessionId);
       
       const result = await kernel.executeAction(transaction, async () => {
         try {
-          await page.goto(url, { waitUntil: 'load' });
+          await browserRuntime.navigate(sessionId, url);
           logs.push('Page loaded successfully via Kernel.');
 
-          const snapshotId = `snap-${Date.now()}`;
-
-          // Evaluate script in the browser to extract the Observation Graph
-          const graphResult = await page.evaluate(
-            `(${evaluateSnapshot})({ snapshotId: "${snapshotId}", url: "${url}" })`
-          );
+          const captureResult = await browserRuntime.capture(sessionId, []);
           
-          logs.push(`Snapshot extracted. Found ${graphResult.nodes.length} nodes and ${graphResult.edges.length} edges.`);
-
-          // Capture real screenshot
-          const screenshotBuffer = await page.screenshot({ type: 'png' });
-          const screenshotUrl = 'data:image/png;base64,' + screenshotBuffer.toString('base64');
+          logs.push(`Snapshot extracted. Found ${captureResult.graph.nodes.length} nodes and ${captureResult.graph.edges.length} edges.`);
           
-          await observationStore.saveSnapshot(snapshotId, graphResult as any);
+          await observationStore.saveSnapshot(captureResult.snapshotId, captureResult.graph as any);
           
           return {
             success: true,
-            data: { graph: graphResult, screenshotUrl }
+            data: { graph: captureResult.graph, screenshotUrl: captureResult.visual }
           };
         } catch (e: any) {
           return { success: false, error: e.message };
@@ -94,12 +77,18 @@ async function createServer() {
 
       if (!result.success) {
         await kernel.abortTransaction(transaction, true);
-        await context.close();
-        return res.status(500).json({ error: result.error });
+        await browserRuntime.closeSession(sessionId);
+        
+        let status = 500;
+        if (result.error.includes('Timeout navigating')) status = 504;
+        else if (result.error.includes('Session not found')) status = 404;
+        else if (result.error.includes('Failed to capture')) status = 400;
+
+        return res.status(status).json({ error: result.error });
       }
 
       await kernel.commitTransaction(transaction);
-      await context.close();
+      await browserRuntime.closeSession(sessionId);
 
       res.json({
         success: true,
@@ -108,11 +97,57 @@ async function createServer() {
         screenshotUrl: result.data.screenshotUrl
       });
     } catch (e: any) {
-      res.status(500).json({ error: e.message });
+      let status = 500;
+      if (e.name === 'BrowserLaunchError') status = 500;
+      res.status(status).json({ error: e.message });
     }
   });
 
   // API Route: Simulator Command (Gemini Coordinator Sandbox)
+  
+  app.get('/api/simulator/metadata', async (req, res) => {
+    try {
+      const metadata = await browserRuntime.getMetadata();
+      const capabilities = await browserRuntime.getCapabilities();
+      res.json({ success: true, metadata, capabilities });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post('/api/simulator/click', async (req, res) => {
+    try {
+      const { sessionId, nodeId, modifiers } = req.body;
+      if (!sessionId || !nodeId) return res.status(400).json({ error: 'sessionId and nodeId are required' });
+      await browserRuntime.click(sessionId, nodeId, modifiers);
+      res.json({ success: true });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post('/api/simulator/type', async (req, res) => {
+    try {
+      const { sessionId, nodeId, text, delay } = req.body;
+      if (!sessionId || !nodeId || !text) return res.status(400).json({ error: 'sessionId, nodeId, and text are required' });
+      await browserRuntime.type(sessionId, nodeId, text, delay);
+      res.json({ success: true });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post('/api/simulator/scroll', async (req, res) => {
+    try {
+      const { sessionId, distanceY, behavior } = req.body;
+      if (!sessionId || distanceY === undefined) return res.status(400).json({ error: 'sessionId and distanceY are required' });
+      await browserRuntime.scroll(sessionId, distanceY, behavior);
+      res.json({ success: true });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   app.post('/api/simulator/command', async (req, res) => {
     try {
       const { command, snapshotId } = req.body;
@@ -139,10 +174,9 @@ async function createServer() {
         }
       });
       
-      // We pass a simplified version of the graph to Gemini to avoid blowing up the context window for large sites
       const simplifiedGraph = graph.nodes.map((n: any) => ({
         id: n.id, type: n.type, properties: { tagName: n.properties?.tagName, text: n.properties?.text?.substring(0, 50) }
-      })).slice(0, 300); // Take first 300 nodes to fit easily in the context for testing
+      })).slice(0, 300);
 
       const prompt = `
         You are the Coordinator Sandbox AI agent.
@@ -162,21 +196,17 @@ async function createServer() {
       const responseText = response.text || 'No response from model.';
       
       // Proxied Request via Execution Kernel
-      const sessionId = `session-${Date.now()}`;
-      const browser = await getBrowser();
-      const context = await browser.newContext();
-      const page = await context.newPage();
-      
-      kernel.registerSession(sessionId, context, page);
+      const sessionId = await browserRuntime.createSession();
+      // Decoupled from Playwright
+
       const transaction = await kernel.beginTransaction('M-011', sessionId);
       
       const actionResult = await kernel.executeAction(transaction, async () => {
-        // Here we would actually dispatch the Tool call (e.g., page.click())
         return { success: true, data: responseText };
       });
       
       await kernel.commitTransaction(transaction);
-      await context.close();
+      await browserRuntime.closeSession(sessionId);
 
       logs.push(`Coordinator (via Kernel): ${actionResult.data}`);
 
@@ -228,7 +258,6 @@ async function createServer() {
     }
   });
 
-
   app.post('/api/coordinator/start', async (req, res) => {
     try {
       const { objective, sessionId } = req.body;
@@ -237,16 +266,21 @@ async function createServer() {
       
       const kernelAdapter: IExecutionKernelAdapter = {
         captureObservation: async () => {
-          return { status: 'mock_captured', snapshotId: 'snap-123' };
+          const snapshot = await browserRuntime.capture(sessionId, [1]);
+          await observationStore.saveSnapshot(snapshot.snapshotId, snapshot.graph as any);
+          return { status: 'captured', snapshotId: snapshot.snapshotId };
         },
         click: async (nodeId: string) => {
-          return { status: 'mock_clicked', nodeId };
+          await browserRuntime.click(sessionId, nodeId);
+          return { status: 'clicked', nodeId };
         },
         type: async (nodeId: string, text: string) => {
-          return { status: 'mock_typed', nodeId, text };
+          await browserRuntime.type(sessionId, nodeId, text);
+          return { status: 'typed', nodeId, text };
         },
         goto: async (url: string) => {
-          return { status: 'mock_navigated', url };
+          await browserRuntime.navigate(sessionId, url);
+          return { status: 'navigated', url };
         }
       };
 
@@ -293,7 +327,8 @@ async function createServer() {
     }
   });
 
-  const port = process.env.PORT || 3000;
+  const port = 3000;
+  
   // Use vite's connect instance as middleware
   app.use(vite.middlewares);
 
@@ -303,5 +338,3 @@ async function createServer() {
 }
 
 createServer();
-
-// To be added inside app routes block

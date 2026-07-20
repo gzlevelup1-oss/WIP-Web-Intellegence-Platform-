@@ -1,18 +1,19 @@
 import { describe, it, expect, vi } from 'vitest';
 import { ExecutionKernel } from '../kernel.js';
-import { BrowserContext, Page } from 'playwright';
+import { ICheckpointAdapter } from '../checkpoint.js';
 
 describe('ExecutionKernel', () => {
+  const mockAdapter: ICheckpointAdapter = {
+    createCheckpoint: vi.fn().mockResolvedValue({ url: 'http://test.com', cookies: [] }),
+    restoreCheckpoint: vi.fn().mockResolvedValue(undefined)
+  };
+
   it('should begin and commit transaction', async () => {
-    const kernel = new ExecutionKernel();
-    // Register mock session
-    const mockContext = { cookies: vi.fn().mockResolvedValue([]) } as unknown as BrowserContext;
-    const mockPage = { url: vi.fn().mockReturnValue('http://test.com'), goto: vi.fn() } as unknown as Page;
-    
-    kernel.registerSession('s1', mockContext, mockPage);
+    const kernel = new ExecutionKernel(mockAdapter);
     
     const tx = await kernel.beginTransaction('m1', 's1');
     expect(tx.status).toBe('ACTIVE');
+    expect(mockAdapter.createCheckpoint).toHaveBeenCalledWith('s1');
     
     const actionResult = await kernel.executeAction(tx, async () => ({ success: true, data: 'ok' }));
     expect(actionResult.success).toBe(true);
@@ -23,12 +24,7 @@ describe('ExecutionKernel', () => {
   });
 
   it('should prevent action on inactive transaction', async () => {
-    const kernel = new ExecutionKernel();
-    
-    // Register mock session so aborting doesn't fail
-    const mockContext = { cookies: vi.fn().mockResolvedValue([]) } as unknown as BrowserContext;
-    const mockPage = { url: vi.fn().mockReturnValue('http://test.com'), goto: vi.fn() } as unknown as Page;
-    kernel.registerSession('s2', mockContext, mockPage);
+    const kernel = new ExecutionKernel(mockAdapter);
     
     const tx = await kernel.beginTransaction('m1', 's2');
     

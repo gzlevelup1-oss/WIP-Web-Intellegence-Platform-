@@ -179,14 +179,14 @@
 - [x] Task 5: Run tests.
 
 ## Mission 19: Browser Runtime Extraction
-*Status: APPROVED*
+*Status: COMPLETED*
 
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 19.
-- [ ] Task 2: Initialize `packages/browser-runtime` package (package.json, tsconfig.json).
-- [ ] Task 3: Extract `IBrowserAdapter` into `packages/browser-runtime/src/contracts/IBrowserAdapter.ts`.
-- [ ] Task 4: Implement `SessionManager` in `packages/browser-runtime/src/runtime/SessionManager.ts`.
-- [ ] Task 5: Implement `BrowserService` in `packages/browser-runtime/src/services/BrowserService.ts`.
-- [ ] Task 6: Implement `PlaywrightAdapter` in `packages/browser-runtime/src/adapters/PlaywrightAdapter.ts`.
-- [ ] Task 7: Implement `BrowserRuntime` programmatic façade in `packages/browser-runtime/src/runtime/BrowserRuntime.ts`.
-- [ ] Task 8: Implement transport adapters in `apps/browser-lab/server.ts` and convert it into a composition root.
-- [ ] Task 9: Validate implementation (UI functions identically, architecture invariants met).
+- [x] Task 2: Initialize `packages/browser-runtime` package (package.json, tsconfig.json).
+- [x] Task 3: Extract `IBrowserAdapter` into `packages/browser-runtime/src/contracts/IBrowserAdapter.ts`.
+- [x] Task 4: Implement `SessionManager` in `packages/browser-runtime/src/runtime/SessionManager.ts`.
+- [x] Task 5: Implement `BrowserService` in `packages/browser-runtime/src/services/BrowserService.ts`.
+- [x] Task 6: Implement `PlaywrightAdapter` in `packages/browser-runtime/src/adapters/PlaywrightAdapter.ts`.
+- [x] Task 7: Implement `BrowserRuntime` programmatic façade in `packages/browser-runtime/src/runtime/BrowserRuntime.ts`.
+- [x] Task 8: Implement transport adapters in `apps/browser-lab/server.ts` and convert it into a composition root.
+- [x] Task 9: Validate implementation (UI functions identically, architecture invariants met).

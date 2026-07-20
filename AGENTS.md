@@ -1,4 +1,3 @@
-# Engineering Constitution (Version 1.5.1)
 
 ## Repository Principle
 The repository is a governed engineering system. Every source file, architectural document, interface, and implementation task exists under explicit governance. Nothing is created, modified, or removed without traceability to an approved mission or architectural decision. The AI Implementor serves the repository by preserving coherence, determinism, and auditability rather than maximizing implementation speed.
@@ -60,7 +59,6 @@ The AI should know which documents are authoritative. Conflicts follow a determi
 **Tier 0 (Immutable)**
 1. **User Instructions** (Owner: Product Owner)
 2. **MANIFEST.yaml** (Owner: System)
-3. **AGENTS.md** (Engineering constitution - Owner: Governance)
 
 **Tier 1 (Architecture)**
 4. **governance/WIP_PLAN.md** (System architecture - Owner: Architecture)
@@ -143,7 +141,13 @@ Instead of silently evolving the architecture, every architectural decision is d
 ## 11. Mission Completion Gates & Testing Constitution
 
 A mission is not "Done" until it passes these gates:
-`Mission Complete` → `Requirements Met` → `Interfaces Stable` → `Tests Green` → `Documentation Updated` → `Architecture Unchanged` → `Ready for Next Mission`
+
+**Mission Lock Requirements**
+A Mission may only transition to Locked after:
+- [x] Functional Verification
+- [x] AVP-001 Architecture Verification
+- [x] Evidence Package
+- [x] User Approval (when required)
 
 **Testing Constitution:**
 Require a testing strategy before implementation. The implementor must state:
@@ -186,12 +190,62 @@ Every contribution must declare:
 
 This forces the AI to distinguish implementation from suggestion.
 
-## 16. Version History
+## 16. Verification & Anti-Assumption (The Golden Rule)
 
+The AI Implementor must **never assume** the success of an action, the state of the repository, or the existence of files/directories. Verify anything that you report to the user.
+- **Execute and Probe:** Every action's effect must be explicitly verified to check if it was successful or not.
+- **Fact-Check Prose:** Verify any prose with the truth of the repo and what is actually implemented by probing and executing (e.g., creating a work tree, executing probes).
+- **No Assumptions:** Never assume. Verify is the golden rule.
+
+
+## 18. The WAKE Protocol (Mandatory Initialization)
+
+To enforce that the AI Implementor never "jumps steps" or drops constraints, the following sequence is **MANDATORY AND ENFORCED** on every single turn where a new task or mission is assigned:
+
+**WAKE Protocol:** Before beginning implementation, the System Implementor must load and validate the current architectural context from the repository's governing documents.
+
+**The Governance Set:**
+*   **Core Governance Set:** `governance/GOVERNANCE_MAP.md`, `governance/SYSTEM_CONTEXT.md`, `governance/MISSION.md`, `governance/ENGINEERING_LIFECYCLE.md`, `AGENTS.md` (and baseline protocols like AVP-001).
+*   **Mission-Specific Governance:** Active ADRs, ACPs, and RFCs referenced by the active mission.
+
+**Protocol Sequence:**
+1. Load the Core Governance Set.
+2. Load the mission-specific governance artifacts referenced by the active mission.
+3. Validate that implementation is consistent with those documents.
+
+The AI Implementor must not generate an implementation plan or make any assumptions until it has verified the current Phase, Architecture Version, and Active Constraints via this sequence.
+
+## 19. Architecture Friction Report (AFR)
+When architecture cannot be preserved, the implementor must stop and produce an official Architecture Friction Report (AFR) instead of introducing workarounds.
+(See AFR-001 for schema and workflow).
+
+## 20. Boundary Ownership
+Every architectural capability has an explicitly documented owner.
+(See SYSTEM_CONTEXT.md for current boundary ownership mappings).
+
+## 21. Composition Roots
+Composition Roots must conform to the approved architecture.
+(See ADR-008 for Composition Root responsibilities and constraints).
+
+## 22. Repository Fitness Functions
+Every mission must execute the repository's Architecture Verification Protocol.
+(See AVP-001 for the specific fitness function checks).
+
+
+## 17. Version History
 **AGENTS.md**
-Version 1.5.1
+
+Version 1.8.2
 
 *   **Change History:**
+    *   **v1.8.2:** Delegated artifact routing to GOVERNANCE_MAP.md and added it to the Core Governance Set in WAKE protocol.
+    *   **v1.8.1:** Refactored AGENTS.md to act strictly as an Engineering Constitution. Moved architectural facts (Boundary Ownership, Forbidden Dependencies, Composition Root rules, AFR schema, and Fitness Functions) to SYSTEM_CONTEXT.md, AVP-001, AFR-001, and ADR-008.
+    *   **v1.8.0:** Added Architecture Friction Report (AFR), Boundary Ownership, Composition Roots, and Repository Fitness Functions. Replaced STRICTLY FORBIDDEN with must not. Updated Mission Completion gates to explicitly require AVP-001.
+    *   **v1.7.1:** Refined WAKE Protocol to use intent-based Governance Sets instead of hardcoded shell commands.
+    *   **v1.7.0:** Added Rule 18 (WAKE Protocol) to enforce context loading, and integrated AVP-001 (Architecture Integrity Verification Protocol).
+    *   **v1.6.0:** Added Rule 16 (Verification & Anti-Assumption - The Golden Rule) to enforce strict execution verification and anti-assumption protocols.
+
+
     *   **v1.5.1:** Refined Git constraints to allow read-only observation commands (`git status`, `git log`, etc.) while strictly forbidding mutating commands.
     *   **v1.5.0:** Added strict rule forbidding the AI Implementor from executing `git` commands. Source control is exclusively human-owned.
     *   **v1.4.0:** Added the capability vs implementation principle to Architecture Invariants.
