@@ -7,13 +7,13 @@ Website Intelligence Platform (WIP) is a Web Intelligence Operating System. It e
 To separate observation from reasoning. AI models guess layouts and styles poorly. By using a browser as a deterministic instrument, we can provide AI with precise, measured facts instead of relying on hallucinated inferences.
 
 **Current Phase:**
-Phase 2 - Implementation (Pending Spec Lock)
+Implementation 
 
 **Current Mission:**
-Mission 9: Validation Engine Implementation
+Mission 19: Browser Runtime Extraction
 
 **Mission Status:**
-Draft (Blocked by Governance)
+APPROVED
 
 **Current Architecture Version:**
 v1.0.0
@@ -28,10 +28,13 @@ v1.0.0
 - ADR-003: Session Manager
 - ADR-004: Validation Protocol
 - ADR-005: Execution Kernel
+- ADR-006: Monorepo Architecture
+- ARCH-002: Corrected Architectural Assessment - Browser Runtime Extraction
+- ACP-003: Browser Runtime Extraction Migration Plan
 
 **Current Constraints:**
 - AI Implementor must follow the Engineering Constitution (`AGENTS.md`).
-- No implementation code is to be written until specifications and protocols are locked.
+- Ensure `browser-runtime` package extraction maintains strict dependency isolation and architectural invariants (no package depends on apps/*).
 
 **Next Milestone:**
-Lock Specification Missions (3-8) before beginning code implementation.
+Complete extraction of `packages/browser-runtime` according to ACP-003.

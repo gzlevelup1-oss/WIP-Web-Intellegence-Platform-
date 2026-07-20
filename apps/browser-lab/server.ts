@@ -7,6 +7,7 @@ import { ExecutionKernel } from '@wip/execution-kernel';
 import { DesignTokenExtractor, ComponentMiner, LayoutAnalyzer } from '@wip/workers';
 import { CoordinatorAgent, IExecutionKernelAdapter, IWorkerAdapter } from '@wip/coordinator';
 import { MemoryObservationStore } from '@wip/observation-store';
+import { evaluateSnapshot } from './src/browser-script.js';
 import { chromium, Browser } from 'playwright';
 
 dotenv.config();
@@ -23,7 +24,10 @@ const observationStore = new MemoryObservationStore();
 
 async function getBrowser() {
   if (!browserInstance) {
-    browserInstance = await chromium.launch({ headless: true });
+    browserInstance = await chromium.launch({ 
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+    });
   }
   return browserInstance;
 }
@@ -38,8 +42,6 @@ async function createServer() {
     root: __dirname,
   });
 
-  // Use vite's connect instance as middleware
-  app.use(vite.middlewares);
 
   app.use(express.json());
 
@@ -63,126 +65,15 @@ async function createServer() {
       
       const result = await kernel.executeAction(transaction, async () => {
         try {
-          await page.goto(url, { waitUntil: 'networkidle' });
+          await page.goto(url, { waitUntil: 'load' });
           logs.push('Page loaded successfully via Kernel.');
 
           const snapshotId = `snap-${Date.now()}`;
 
           // Evaluate script in the browser to extract the Observation Graph
-          const graphResult = await page.evaluate(({ snapshotId, url }) => {
-            const graph: any = {
-              snapshot: {
-                id: snapshotId,
-                timestamp: Date.now(),
-                url
-              },
-              nodes: [],
-              edges: []
-            };
-            
-            graph.nodes.push({
-              id: snapshotId,
-              type: 'SnapshotNode',
-              properties: {
-                url,
-                viewportWidth: window.innerWidth,
-                viewportHeight: window.innerHeight
-              }
-            });
-            
-            let nodeIdCounter = 0;
-            
-            const traverse = (el: Element, parentId: string | null, depth: number) => {
-              const domNodeId = `node-${nodeIdCounter++}`;
-              const geoNodeId = `geo-${nodeIdCounter++}`;
-              const styleNodeId = `style-${nodeIdCounter++}`;
-              
-              const classes = el.className && typeof el.className === 'string' ? el.className.split(' ').filter(c => c) : [];
-              
-              let text = '';
-              for (const child of Array.from(el.childNodes)) {
-                if (child.nodeType === Node.TEXT_NODE && child.textContent?.trim()) {
-                  text += child.textContent.trim() + ' ';
-                }
-              }
-              
-              const properties: any = {
-                tagName: el.tagName.toLowerCase(),
-                nodeType: el.nodeType,
-                classes,
-                depth
-              };
-              
-              if (text.trim()) {
-                properties.text = text.trim();
-              }
-              
-              // 1. Add DOMNode
-              graph.nodes.push({
-                id: domNodeId,
-                type: 'DOMNode',
-                properties
-              });
-              
-              // 2. Add GeometryNode
-              const rect = el.getBoundingClientRect();
-              graph.nodes.push({
-                id: geoNodeId,
-                type: 'GeometryNode',
-                properties: {
-                  x: rect.x,
-                  y: rect.y,
-                  width: rect.width,
-                  height: rect.height,
-                  top: rect.top,
-                  right: rect.right,
-                  bottom: rect.bottom,
-                  left: rect.left
-                }
-              });
-              
-              // 3. Add StyleNode (just a few key properties to avoid massive payloads)
-              const computed = window.getComputedStyle(el);
-              graph.nodes.push({
-                id: styleNodeId,
-                type: 'StyleNode',
-                properties: {
-                  display: computed.display,
-                  position: computed.position,
-                  backgroundColor: computed.backgroundColor,
-                  color: computed.color,
-                  fontFamily: computed.fontFamily,
-                  fontSize: computed.fontSize,
-                  margin: computed.margin,
-                  padding: computed.padding,
-                  opacity: computed.opacity,
-                  zIndex: computed.zIndex
-                }
-              });
-              
-              // Edges
-              graph.edges.push({ source: domNodeId, target: geoNodeId, type: 'HAS_GEOMETRY' });
-              graph.edges.push({ source: domNodeId, target: styleNodeId, type: 'HAS_STYLE' });
-              
-              if (parentId) {
-                graph.edges.push({ source: domNodeId, target: parentId, type: 'CHILD_OF' });
-              } else {
-                graph.edges.push({ source: domNodeId, target: snapshotId, type: 'BELONGS_TO' });
-              }
-              
-              for (const child of Array.from(el.children)) {
-                traverse(child, domNodeId, depth + 1);
-              }
-              if (el.shadowRoot) {
-                for (const child of Array.from(el.shadowRoot.children)) {
-                  traverse(child, domNodeId, depth + 1);
-                }
-              }
-            };
-            
-            traverse(document.documentElement, null, 0);
-            return graph;
-          }, { snapshotId, url });
+          const graphResult = await page.evaluate(
+            `(${evaluateSnapshot})({ snapshotId: "${snapshotId}", url: "${url}" })`
+          );
           
           logs.push(`Snapshot extracted. Found ${graphResult.nodes.length} nodes and ${graphResult.edges.length} edges.`);
 
@@ -403,6 +294,9 @@ async function createServer() {
   });
 
   const port = process.env.PORT || 3000;
+  // Use vite's connect instance as middleware
+  app.use(vite.middlewares);
+
   app.listen(port, () => {
     console.log(`[Browser Lab Backend] Server listening on port ${port}`);
   });
