@@ -1,26 +1,25 @@
 # Current Mission
-**Mission:** Retroactive Testing Implementation
-**Status:** LOCKED
-**ID:** M-015
+**Mission:** Observation Store Implementation
+**Status:** APPROVED
+**ID:** M-016
 
 ## References
-- `AGENTS.md` (Section 11: Testing Constitution)
-- `docs/RetroactiveTestingStrategy.md`
-- `governance/DEBT.md` (TD-003)
+- `docs/adr/ADR-001-Observation-Graph.md`
+- `docs/ObservationStoreDesign.md`
+- `governance/ROADMAP.md` (Phase 2)
 
 ## Objective
-Address the violation of the Testing Constitution by backfilling unit and integration tests for the `workers`, `execution-kernel`, and `coordinator` packages. Ensure all core components have a determinable, tested state.
+Implement the Observation Store to manage, persist, and query Observation Graphs captured from the Browser Runtime, providing a robust decoupled fact repository for the Coordinator.
 
 ## Scope
 **In Scope:**
-- Configuring `vitest` for all workspace packages.
-- Writing unit tests for `packages/workers`.
-- Writing unit tests for `packages/execution-kernel`.
-- Writing unit tests for `packages/coordinator`.
+- Initializing `packages/observation-store`.
+- Implementing `MemoryObservationStore`.
+- Writing unit tests using `vitest`.
+- Integrating into `apps/browser-lab`.
 
 **Out of Scope:**
-- End-to-end (E2E) browser testing (Playwright tests against real browsers are deferred).
-- Changes to existing architectural behavior.
+- Persistent relational database engines.
 
 ## Next Steps
-- Obtain user approval for the Retroactive Testing Strategy (`docs/RetroactiveTestingStrategy.md`) and Mission 15 definition.
+- Obtain user approval for the Technical Design (`docs/ObservationStoreDesign.md`) and Mission 16 definition.

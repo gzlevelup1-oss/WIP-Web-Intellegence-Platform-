@@ -32,6 +32,8 @@ locked:
   - Worker Specifications (v1.0.0)
   - Mission 8 (Validation Engine Specification)
   - Validation Engine (v1.0.0)
+  - Mission 15 (Retroactive Testing Implementation)
+  - Mission 16 (Observation Store Implementation)
 active_adrs:
   - ADR-006
   - ADR-001

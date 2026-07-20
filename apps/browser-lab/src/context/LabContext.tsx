@@ -92,7 +92,7 @@ export function LabProvider({ children }: { children: ReactNode }) {
       const res = await fetch('/api/simulator/command', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ command, graph: state.graph }),
+        body: JSON.stringify({ command, snapshotId: state.graph?.snapshot?.id }),
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Command failed');

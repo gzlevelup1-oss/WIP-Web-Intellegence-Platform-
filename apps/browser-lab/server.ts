@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { ExecutionKernel } from '@wip/execution-kernel';
 import { DesignTokenExtractor, ComponentMiner, LayoutAnalyzer } from '@wip/workers';
 import { CoordinatorAgent, IExecutionKernelAdapter, IWorkerAdapter } from '@wip/coordinator';
+import { MemoryObservationStore } from '@wip/observation-store';
 import { chromium, Browser } from 'playwright';
 
 dotenv.config();
@@ -17,6 +18,7 @@ const kernel = new ExecutionKernel();
 const tokenExtractor = new DesignTokenExtractor();
 const componentMiner = new ComponentMiner();
 const layoutAnalyzer = new LayoutAnalyzer();
+const observationStore = new MemoryObservationStore();
 
 
 async function getBrowser() {
@@ -183,6 +185,8 @@ async function createServer() {
           const screenshotBuffer = await page.screenshot({ type: 'png' });
           const screenshotUrl = 'data:image/png;base64,' + screenshotBuffer.toString('base64');
           
+          await observationStore.saveSnapshot(snapshotId, graphResult as any);
+          
           return {
             success: true,
             data: { graph: graphResult, screenshotUrl }
@@ -215,13 +219,18 @@ async function createServer() {
   // API Route: Simulator Command (Gemini Coordinator Sandbox)
   app.post('/api/simulator/command', async (req, res) => {
     try {
-      const { command, graph } = req.body;
+      const { command, snapshotId } = req.body;
       if (!command) {
         return res.status(400).json({ error: 'Command is required' });
       }
 
-      if (!graph) {
+      if (!snapshotId) {
         return res.status(400).json({ error: 'No active session. Navigate to a URL first.' });
+      }
+
+      const graph = await observationStore.getSnapshot(snapshotId);
+      if (!graph) {
+        return res.status(404).json({ error: 'Observation graph not found in store for this session' });
       }
 
       const logs = [`Executing command using Coordinator Sandbox...`];
@@ -286,8 +295,10 @@ async function createServer() {
 
   app.post('/api/workers/tokens', async (req, res) => {
     try {
-      const { graph } = req.body;
-      if (!graph) return res.status(400).json({ error: 'Observation Graph is required' });
+      const { snapshotId } = req.body;
+      if (!snapshotId) return res.status(400).json({ error: 'snapshotId is required' });
+      const graph = await observationStore.getSnapshot(snapshotId);
+      if (!graph) return res.status(404).json({ error: 'Snapshot not found' });
       const result = tokenExtractor.extract(graph);
       res.json(result);
     } catch (e: any) {
@@ -297,8 +308,10 @@ async function createServer() {
 
   app.post('/api/workers/mine', async (req, res) => {
     try {
-      const { graph, containerNodeId } = req.body;
-      if (!graph || !containerNodeId) return res.status(400).json({ error: 'Graph and containerNodeId required' });
+      const { snapshotId, containerNodeId } = req.body;
+      if (!snapshotId || !containerNodeId) return res.status(400).json({ error: 'snapshotId and containerNodeId required' });
+      const graph = await observationStore.getSnapshot(snapshotId);
+      if (!graph) return res.status(404).json({ error: 'Snapshot not found' });
       const result = componentMiner.mine(graph, containerNodeId);
       res.json(result);
     } catch (e: any) {
@@ -308,8 +321,10 @@ async function createServer() {
 
   app.post('/api/workers/layout', async (req, res) => {
     try {
-      const { graph, containerNodeId } = req.body;
-      if (!graph || !containerNodeId) return res.status(400).json({ error: 'Graph and containerNodeId required' });
+      const { snapshotId, containerNodeId } = req.body;
+      if (!snapshotId || !containerNodeId) return res.status(400).json({ error: 'snapshotId and containerNodeId required' });
+      const graph = await observationStore.getSnapshot(snapshotId);
+      if (!graph) return res.status(404).json({ error: 'Snapshot not found' });
       const result = layoutAnalyzer.analyze(graph, containerNodeId);
       res.json(result);
     } catch (e: any) {
@@ -341,13 +356,19 @@ async function createServer() {
 
       const workerAdapter: IWorkerAdapter = {
         extractDesignTokens: async (snapshotId: string) => {
-           return { tokens: 'mock_tokens' };
+           const graph = await observationStore.getSnapshot(snapshotId);
+           if (!graph) throw new Error('Snapshot not found');
+           return tokenExtractor.extract(graph);
         },
         mineComponents: async (snapshotId: string, containerNodeId: string) => {
-           return { components: 'mock_components' };
+           const graph = await observationStore.getSnapshot(snapshotId);
+           if (!graph) throw new Error('Snapshot not found');
+           return componentMiner.mine(graph, containerNodeId);
         },
         analyzeLayout: async (snapshotId: string, containerNodeId: string) => {
-           return { layout: 'mock_layout' };
+           const graph = await observationStore.getSnapshot(snapshotId);
+           if (!graph) throw new Error('Snapshot not found');
+           return layoutAnalyzer.analyze(graph, containerNodeId);
         }
       };
 
@@ -383,3 +404,5 @@ async function createServer() {
 }
 
 createServer();
+
+// To be added inside app routes block

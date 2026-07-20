@@ -20,6 +20,7 @@
     "@wip/execution-kernel": "^1.0.0",
     "@wip/workers": "^1.0.0",
     "@wip/validation-engine": "^1.0.0",
+    "@wip/observation-store": "^1.0.0",
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
     "lucide-react": "^0.546.0",

@@ -13,5 +13,6 @@ This is a governed backlog for technical debt. Instead of using inline comments 
 
 | ID | Resolution Details | Date |
 | :--- | :--- | :--- |
+| TD-004 | Frontend was directly passing the full ObservationGraph JSON to backend API routes, violating the decoupling pattern in ObservationStoreDesign. | 2026-07-20 |
 | TD-003 | Retroactively implemented unit tests for workers, execution-kernel, and coordinator using vitest across the monorepo workspace. | 2026-07-20 |
 | | | |
