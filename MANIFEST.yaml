@@ -9,9 +9,11 @@ governance:
 current_phase:
   Implementation
 current_mission:
+  Validation TED and Shadow DOM
   Validation Engine Implementation
   Browser Laboratory Implementation
 locked:
+  - Mission 17 (Validation TED and Shadow DOM)
   - Mission 10 (Monorepo Migration)
   - Observation Graph (Governance)
   - Validation Protocol (Governance)

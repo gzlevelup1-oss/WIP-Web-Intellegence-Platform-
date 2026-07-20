@@ -6,13 +6,13 @@ This is a governed backlog for technical debt. Instead of using inline comments 
 
 | ID | Reason | Impact | Priority | Owner | Resolution Mission |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| TD-002 | Structural diffing in Validation Engine currently uses basic bounding box and node count checks rather than a robust Tree Edit Distance (TED) algorithm. | False positives/negatives in structural validation of complex layouts. | High | Validation Team | Future Mission |
-| TD-001 | Example: Initial DOM snapshot does not handle Shadow DOM fully. | Reduced accuracy for web components. | Medium | TBD | M-002 |
 
 ## Resolved Debt
 
 | ID | Resolution Details | Date |
 | :--- | :--- | :--- |
+| TD-001 | Updated DOM traversal to recursively extract children from Shadow DOM boundaries. | 2026-07-20 |
+| TD-002 | Replaced naive node counting with constrained Top-Down Tree Edit Distance algorithm. | 2026-07-20 |
 | TD-004 | Frontend was directly passing the full ObservationGraph JSON to backend API routes, violating the decoupling pattern in ObservationStoreDesign. | 2026-07-20 |
 | TD-003 | Retroactively implemented unit tests for workers, execution-kernel, and coordinator using vitest across the monorepo workspace. | 2026-07-20 |
 | | | |

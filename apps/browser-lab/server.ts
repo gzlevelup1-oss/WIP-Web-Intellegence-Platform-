@@ -173,6 +173,11 @@ async function createServer() {
               for (const child of Array.from(el.children)) {
                 traverse(child, domNodeId, depth + 1);
               }
+              if (el.shadowRoot) {
+                for (const child of Array.from(el.shadowRoot.children)) {
+                  traverse(child, domNodeId, depth + 1);
+                }
+              }
             };
             
             traverse(document.documentElement, null, 0);

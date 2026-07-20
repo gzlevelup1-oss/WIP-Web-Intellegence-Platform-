@@ -157,7 +157,15 @@
 [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 16.
 [x] Task 2: Draft Technical Design (`docs/ObservationStoreDesign.md`).
 - [x] Task 3: Obtain user approval for Technical Design.
-- [ ] Task 4: Initialize `packages/observation-store` NPM package.
-- [ ] Task 5: Implement `MemoryObservationStore` and Graph Query interfaces.
+- [x] Task 4: Initialize `packages/observation-store` NPM package.
+- [x] Task 5: Implement `MemoryObservationStore` and Graph Query interfaces.
 - [x] Task 6: Implement unit tests for the Observation Store.
 - [x] Task 7: Integrate Observation Store into Browser Lab.
+
+## Mission 17: Validation TED and Shadow DOM
+*Status: LOCKED*
+- [x] Task 1: Update `MANIFEST.yaml` and `SYSTEM_CONTEXT.md` for Mission 17.
+- [x] Task 2: Implement Shadow DOM traversal in `apps/browser-lab/server.ts`.
+- [x] Task 3: Implement Tree Edit Distance (TED) in `packages/validation-engine/src/structural.ts`.
+- [x] Task 4: Run workspace tests and ensure build succeeds.
+- [x] Task 5: Resolve TD-001 and TD-002 in `governance/DEBT.md`.
