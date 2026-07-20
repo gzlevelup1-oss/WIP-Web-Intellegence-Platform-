@@ -1,25 +1,26 @@
 # Current Mission
-**Mission:** Validation Engine Implementation
+**Mission:** Retroactive Testing Implementation
 **Status:** LOCKED
-**ID:** M-014
+**ID:** M-015
 
 ## References
-- `specs/VALIDATION_ENGINE_SPECIFICATION.md` (to be created, or check if it exists as Mission 8)
+- `AGENTS.md` (Section 11: Testing Constitution)
+- `docs/RetroactiveTestingStrategy.md`
+- `governance/DEBT.md` (TD-003)
 
 ## Objective
-Implement the Validation Engine to compare the original website's Observation Graph against the reconstructed UI. The engine calculates visual and structural discrepancies and generates Discrepancy Reports for the Coordinator Agent to repair.
+Address the violation of the Testing Constitution by backfilling unit and integration tests for the `workers`, `execution-kernel`, and `coordinator` packages. Ensure all core components have a determinable, tested state.
 
 ## Scope
 **In Scope:**
-- Initializing `packages/validation-engine`.
-- Structural Diffing algorithm (comparing DOM trees and styling properties).
-- Visual Comparison logic (Pixel-Level MSE/SSIM).
-- Integration into the `apps/browser-lab` to evaluate reconstructions.
+- Configuring `vitest` for all workspace packages.
+- Writing unit tests for `packages/workers`.
+- Writing unit tests for `packages/execution-kernel`.
+- Writing unit tests for `packages/coordinator`.
 
 **Out of Scope:**
-- The actual Coordinator repair logic (done in M-013).
+- End-to-end (E2E) browser testing (Playwright tests against real browsers are deferred).
+- Changes to existing architectural behavior.
 
 ## Next Steps
-- Draft Technical Design (`docs/ValidationEngineDesign.md`).
-- Define specific tasks in `TASKS.md`.
-- Get user approval to proceed.
+- Obtain user approval for the Retroactive Testing Strategy (`docs/RetroactiveTestingStrategy.md`) and Mission 15 definition.

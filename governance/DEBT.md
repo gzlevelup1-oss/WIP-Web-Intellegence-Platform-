@@ -13,4 +13,5 @@ This is a governed backlog for technical debt. Instead of using inline comments 
 
 | ID | Resolution Details | Date |
 | :--- | :--- | :--- |
+| TD-003 | Retroactively implemented unit tests for workers, execution-kernel, and coordinator using vitest across the monorepo workspace. | 2026-07-20 |
 | | | |

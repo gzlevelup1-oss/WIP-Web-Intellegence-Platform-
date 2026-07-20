@@ -25,3 +25,7 @@ Introduce the AI reasoning layer. Given a Mission, the agent explores, hypothesi
 ## Phase 4 — Validation Loop
 Original Website → Observation → Model → Reconstruction → Validation → Repair → Repeat. The loop ends when predefined quality thresholds (Pixel-Level MSE/SSIM + Structural diffing) are met.
 *   **Mission 14:** Validation Engine Implementation
+
+## Phase 5 — Compliance & Stability
+Resolve architectural debt and enforce the Testing Constitution across all previous implementations.
+*   **Mission 15:** Retroactive Testing Implementation (Workers, Kernel, Coordinator)

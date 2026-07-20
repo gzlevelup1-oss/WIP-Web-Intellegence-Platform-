@@ -1,0 +1,49 @@
+import { describe, it, expect, vi } from 'vitest';
+import { CoordinatorAgent } from '../agent.js';
+import { IExecutionKernelAdapter, IWorkerAdapter } from '../adapter.js';
+
+// Mock genai
+vi.mock('@google/genai', () => {
+  return {
+    GoogleGenAI: class {
+      chats = {
+        create: vi.fn().mockReturnValue({
+          sendMessage: vi.fn().mockResolvedValue({
+            text: 'I will complete the mission.',
+            functionCalls: [
+              {
+                id: 'call-1',
+                name: 'Mission_complete',
+                args: { resultPayload: 'done' }
+              }
+            ]
+          })
+        })
+      };
+    }
+  };
+});
+
+describe('CoordinatorAgent', () => {
+  it('should run loop and handle tool calls', async () => {
+    const mockKernel: IExecutionKernelAdapter = {
+      captureObservation: vi.fn(),
+      click: vi.fn(),
+      type: vi.fn(),
+      goto: vi.fn()
+    };
+    
+    const mockWorkers: IWorkerAdapter = {
+      extractDesignTokens: vi.fn(),
+      mineComponents: vi.fn(),
+      analyzeLayout: vi.fn()
+    };
+    
+    const agent = new CoordinatorAgent('fake-api-key', mockKernel, mockWorkers);
+    
+    const result = await agent.start('test objective');
+    
+    expect(result.status).toBe('completed');
+    expect(result.payload).toBe('done');
+  });
+});

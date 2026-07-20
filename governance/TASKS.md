@@ -141,3 +141,13 @@
 - [x] Task 5: Implement Structural Diffing (Graph matching).
 - [x] Task 6: Implement Visual Comparison logic.
 - [x] Task 7: Integrate Validation Engine into Browser Lab.
+
+## Mission 15: Retroactive Testing Implementation
+*Status: LOCKED*
+- [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 15.
+[x] Task 2: Draft Retroactive Testing Strategy (`docs/RetroactiveTestingStrategy.md`).
+- [x] Task 3: Obtain user approval for Testing Strategy.
+- [x] Task 4: Configure Vitest across the monorepo.
+- [ ] Task 5: Implement tests for `packages/workers`.
+- [ ] Task 6: Implement tests for `packages/execution-kernel`.
+- [ ] Task 7: Implement tests for `packages/coordinator`.
