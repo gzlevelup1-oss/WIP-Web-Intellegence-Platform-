@@ -24,7 +24,7 @@ Extract the Browser Runtime infrastructure from the web host (`apps/browser-lab/
 - Introducing new runtime features.
 - Modifying other domain packages (`coordinator`, `execution-kernel`, etc.).
 
-## Adherence & Compliance Check (IWP & AGENTS.md)
+## Adherence & Compliance Check (AGENTS.md & AVP-001)
 **Date:** 2026-07-20
 **Stage:** Passed Stage 5 (Implementation) -> Stage 6 (Verify) -> Stage 7 (Locked)
 - **Validation Criteria Met:**

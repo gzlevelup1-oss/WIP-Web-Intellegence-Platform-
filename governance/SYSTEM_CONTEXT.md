@@ -13,7 +13,7 @@ Implementation
 Mission 19: Browser Runtime Extraction
 
 **Mission Status:**
-APPROVED
+COMPLETED_AND_LOCKED
 
 **Current Architecture Version:**
 v1.0.0
@@ -42,7 +42,7 @@ v1.0.0
 - Ensure `browser-runtime` package extraction maintains strict dependency isolation and architectural invariants (no package depends on apps/*).
 
 **Next Milestone:**
-Complete extraction of `packages/browser-runtime` according to ACP-003.
+Awaiting next mission assignment.
 
 **System Boundaries & Ownership:**
 *   **Browser Runtime** owns Playwright, Browser lifecycle, Browser sessions, Browser checkpoints.

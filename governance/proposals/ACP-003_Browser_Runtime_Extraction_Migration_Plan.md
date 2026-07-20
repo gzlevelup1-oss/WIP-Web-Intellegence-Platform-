@@ -160,7 +160,7 @@ Per the Engineering Constitution (`AGENTS.md` - Rule 11), the following testing 
 - E2E UI behavior parity is 100% maintained.
 
 ## 10. Error Handling Policies
-Per `WIP_IWP.md` Stage 2 requirements, the `browser-runtime` package will enforce the following error handling semantics:
+Per `ENGINEERING_LIFECYCLE.md` Stage 2 requirements, the `browser-runtime` package will enforce the following error handling semantics:
 
 **Custom Exception Models:**
 - `BrowserLaunchError`: Thrown when the underlying Playwright instance fails to start.
