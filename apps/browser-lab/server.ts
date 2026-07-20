@@ -360,6 +360,22 @@ async function createServer() {
     }
   });
 
+  app.post('/api/validation/evaluate', async (req, res) => {
+    try {
+      const { validate } = await import('@wip/validation-engine');
+      const { originalGraph, reconstructedGraph, originalScreenshotBase64, reconstructedScreenshotBase64 } = req.body;
+      const result = validate({
+        originalGraph,
+        reconstructedGraph,
+        originalScreenshotBase64,
+        reconstructedScreenshotBase64
+      });
+      res.json({ success: true, result });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
     console.log(`[Browser Lab Backend] Server listening on port ${port}`);

@@ -9,7 +9,7 @@ governance:
 current_phase:
   Implementation
 current_mission:
-  Coordinator Agent Implementation
+  Validation Engine Implementation
   Browser Laboratory Implementation
 locked:
   - Mission 10 (Monorepo Migration)

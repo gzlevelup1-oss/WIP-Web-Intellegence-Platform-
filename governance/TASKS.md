@@ -123,7 +123,7 @@
 - [x] Task 8: Integrate Workers into `apps/browser-lab/server.ts` via API routes.
 
 ## Mission 13: Coordinator Agent Implementation
-*Status: DRAFT*
+*Status: COMPLETED*
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 13.
 - [x] Task 2: Draft Technical Design (`docs/CoordinatorDesign.md`) for the Coordinator Agent.
 - [x] Task 3: Obtain user approval for Technical Design.
@@ -131,3 +131,13 @@
 - [x] Task 5: Implement `CoordinatorAgent` core loop (ReAct pattern).
 - [x] Task 6: Implement Tool schemas and handlers mapping to Kernel and Workers.
 - [x] Task 7: Integrate Coordinator into `apps/browser-lab` (API and UI).
+
+## Mission 14: Validation Engine Implementation
+*Status: LOCKED*
+- [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 14.
+- [x] Task 2: Draft Technical Design (`docs/ValidationEngineDesign.md`).
+- [x] Task 3: Obtain user approval for Technical Design.
+- [ ] Task 4: Initialize `packages/validation-engine`.
+- [x] Task 5: Implement Structural Diffing (Graph matching).
+- [x] Task 6: Implement Visual Comparison logic.
+- [x] Task 7: Integrate Validation Engine into Browser Lab.

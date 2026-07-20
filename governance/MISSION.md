@@ -1,25 +1,25 @@
 # Current Mission
-**Mission:** Coordinator Agent Implementation
-**Status:** Ready for Lock
-**ID:** M-013
+**Mission:** Validation Engine Implementation
+**Status:** LOCKED
+**ID:** M-014
 
 ## References
-- `specs/COORDINATOR_PROTOCOL.md`
+- `specs/VALIDATION_ENGINE_SPECIFICATION.md` (to be created, or check if it exists as Mission 8)
 
 ## Objective
-Implement the Coordinator Agent, the AI orchestrator that delegates tasks to specialized workers and manages the overall workflow for the Website Intelligence Platform. The Coordinator operates over the Observation Graph and never manipulates the browser directly, using the Execution Kernel and Workers instead.
+Implement the Validation Engine to compare the original website's Observation Graph against the reconstructed UI. The engine calculates visual and structural discrepancies and generates Discrepancy Reports for the Coordinator Agent to repair.
 
 ## Scope
 **In Scope:**
-- Initializing `packages/coordinator` NPM package.
-- Implementation of the Coordinator AI agent using Gemini SDK (ReAct loop).
-- Integration of Coordinator Protocol (structured tools for Workers, Execution Kernel).
-- Setup of the planning loop logic.
+- Initializing `packages/validation-engine`.
+- Structural Diffing algorithm (comparing DOM trees and styling properties).
+- Visual Comparison logic (Pixel-Level MSE/SSIM).
+- Integration into the `apps/browser-lab` to evaluate reconstructions.
 
 **Out of Scope:**
-- Advanced Validation Loop logic (Repair phase).
-- Scaling/Parallelization.
+- The actual Coordinator repair logic (done in M-013).
 
 ## Next Steps
-- Mission 13 is ready for lock and archiving.
-- Awaiting user review/approval to transition to Mission 14.
+- Draft Technical Design (`docs/ValidationEngineDesign.md`).
+- Define specific tasks in `TASKS.md`.
+- Get user approval to proceed.
