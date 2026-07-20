@@ -10,3 +10,7 @@ export interface IWorkerAdapter {
   mineComponents(snapshotId: string, containerNodeId: string): Promise<any>;
   analyzeLayout(snapshotId: string, containerNodeId: string): Promise<any>;
 }
+
+export interface IValidationAdapter {
+  evaluate(originalSnapshotId: string, reconstructedSnapshotId: string): Promise<any>;
+}

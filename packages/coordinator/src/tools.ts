@@ -80,6 +80,18 @@ export const CoordinatorToolDeclarations: Tool[] = [{
       }
     },
     {
+      name: "Validation_evaluate",
+      description: "Evaluates a reconstructed page against the original using Structural and Visual diffing.",
+      parameters: {
+        type: "OBJECT" as any,
+        properties: {
+          originalSnapshotId: { type: "STRING" as any },
+          reconstructedSnapshotId: { type: "STRING" as any }
+        },
+        required: ["originalSnapshotId", "reconstructedSnapshotId"]
+      }
+    },
+    {
       name: "Mission_complete",
       description: "Marks the mission as successful with the result payload.",
       parameters: {

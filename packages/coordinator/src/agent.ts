@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { CoordinatorToolDeclarations } from './tools.js';
-import { IExecutionKernelAdapter, IWorkerAdapter } from './adapter.js';
+import { IExecutionKernelAdapter, IWorkerAdapter, IValidationAdapter } from './adapter.js';
 
 const SYSTEM_PROMPT = `
 You are the Coordinator Agent for the Website Intelligence Platform.
@@ -17,12 +17,14 @@ export class CoordinatorAgent {
   private ai: GoogleGenAI;
   private kernel: IExecutionKernelAdapter;
   private workers: IWorkerAdapter;
+  private validation?: IValidationAdapter;
   private chat: any;
 
-  constructor(apiKey: string, kernel: IExecutionKernelAdapter, workers: IWorkerAdapter) {
+  constructor(apiKey: string, kernel: IExecutionKernelAdapter, workers: IWorkerAdapter, validation?: IValidationAdapter) {
     this.ai = new GoogleGenAI({ apiKey });
     this.kernel = kernel;
     this.workers = workers;
+    this.validation = validation;
   }
 
   public start(objective: string) {
@@ -85,6 +87,13 @@ export class CoordinatorAgent {
               break;
             case 'Navigation_goto':
               callResult = await this.kernel.goto(call.args.url);
+              break;
+            case 'Validation_evaluate':
+              if (this.validation) {
+                callResult = await this.validation.evaluate(call.args.originalSnapshotId, call.args.reconstructedSnapshotId);
+              } else {
+                callResult = { error: 'Validation Adapter not configured' };
+              }
               break;
             case 'Mission_complete':
               console.log(`[Coordinator] Mission Complete: ${call.args.resultPayload}`);

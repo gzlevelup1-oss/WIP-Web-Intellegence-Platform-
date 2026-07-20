@@ -169,3 +169,11 @@
 - [x] Task 3: Implement Tree Edit Distance (TED) in `packages/validation-engine/src/structural.ts`.
 - [x] Task 4: Run workspace tests and ensure build succeeds.
 - [x] Task 5: Resolve TD-001 and TD-002 in `governance/DEBT.md`.
+
+## Mission 18: Coordinator Validation Loop
+*Status: LOCKED*
+- [x] Task 1: Update `MANIFEST.yaml` and `SYSTEM_CONTEXT.md` for Mission 18.
+- [x] Task 2: Add `Validation_evaluate` tool in `packages/coordinator/src/tools.ts`.
+- [x] Task 3: Update `packages/coordinator/src/adapter.ts` with `IValidationAdapter`.
+- [x] Task 4: Handle tool in `packages/coordinator/src/agent.ts`.
+- [x] Task 5: Run tests.
