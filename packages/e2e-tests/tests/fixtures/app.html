@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test App</title>
+    <style>
+        .container { padding: 20px; background: #eee; }
+        .btn { padding: 10px; background: blue; color: white; border: none; cursor: pointer; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container" id="main">
+        <h1>Hello E2E</h1>
+        <button id="btn1" class="btn">Click Me</button>
+        <p id="msg" class="hidden">Button was clicked!</p>
+    </div>
+    <script>
+        document.getElementById('btn1').addEventListener('click', () => {
+            document.getElementById('msg').classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>

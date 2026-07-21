@@ -10,7 +10,7 @@ To separate observation from reasoning. AI models guess layouts and styles poorl
 Implementation 
 
 **Current Mission:**
-Mission 20: AFR-002 Architecture Conformance Remediation
+Mission 21: Behavior-Driven E2E Testing Strategy Implementation
 
 **Mission Status:**
 ACTIVE

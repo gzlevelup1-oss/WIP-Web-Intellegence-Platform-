@@ -1,30 +1,29 @@
 # Current Mission
 
-**Mission:** AFR-002 Architecture Conformance Remediation
+**Mission:** Behavior-Driven E2E Testing Strategy Implementation
 **Status:** LOCKED
-**ID:** M-020
+**ID:** M-021
 
 ## References
-- `docs/adr/AFR-002-Implementation-Discrepancies.md`
-- `docs/adr/CIR-001-Discrepancy-Remediation-Impact.md`
+- `docs/adr/ACP-004-Behavior-Driven-E2E-Testing.md`
+- `docs/RetroactiveTestingStrategy.md` (Deprecated)
 
 ## Objective
-Remediate the systemic architectural non-conformances identified between the `specs/` directory and the `packages/` implementations, ensuring the system regains full compliance with the WAKE protocol invariants.
+Implement a Behavior-Driven E2E Testing Strategy replacing the deprecated retroactive unit testing approach, ensuring the Validation Engine and Execution Kernel are tested against a real Playwright browser instance using static HTML fixtures.
 
 ## Scope
 **In Scope:**
-- Updating `ValidationEngine` threshold values and evidence persistence.
-- Refactoring `BrowserRuntime` adapters for correct string array translation and exhaustive metadata.
-- Adjusting `ObservationStore` schema for strict discriminated unions.
-- Introducing the `Task` hierarchy into `ExecutionKernel`.
-- Enforcing RBAC policies in `ExecutionKernel`.
-- Rectifying `CoordinatorAgent` to include the mandatory validation loop.
+- Deprecate and remove mocked unit tests in `execution-kernel` and `workers` that violate the architectural philosophy.
+- Setup Playwright E2E test suite in the workspace.
+- Create static HTML fixtures for deterministic testing.
+- Implement E2E tests validating the integration between `execution-kernel`, `observation-store`, and `validation-engine`.
 
 **Out of Scope:**
-- Feature enhancements outside of specification bounds.
-- UI redesign or web client layout changes.
-- Altering core specification schemas without a new AFR/RFC.
+- Changes to the core architecture or specs outside of testing concerns.
+- Testing the React frontend (`apps/browser-lab`).
 
-## Phase 1 Tasks (Current Focus)
-- [x] Task 1: (AFR-002.6) Validation Thresholds
-- [x] Task 2: (AFR-002.10) Tool Contract Mismatch
+## Phase 1 Tasks
+- [ ] Task 1: Clean up deprecated mocked tests from M-015 in `execution-kernel` and `workers`.
+- [ ] Task 2: Configure Playwright for the E2E testing sandbox.
+- [ ] Task 3: Create static HTML fixtures.
+- [ ] Task 4: Implement E2E test for Execution Kernel and Validation Engine.

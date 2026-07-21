@@ -1,6 +1,6 @@
 # Technical Design: Retroactive Testing Strategy
 **Mission:** M-015
-**Status:** LOCKED
+**Status:** DEPRECATED (Superseded by ACP-004)
 **Owner:** Engineering
 
 ## 1. Overview
