@@ -87,7 +87,7 @@ The Observation Model enforces the following foundational laws, which are valida
 9. **Confidence:** Confidence is always exactly `1.0`.
 
 ## 8. What the Observation Model Must Never Contain (Non-Goals)
-The Observation Model must remain a faithful representation of browser-observable reality. It is strictly forbidden to store:
+The Observation Model must remain a faithful representation of browser-observable reality. It must not store:
 - Component inference.
 - Design pattern detection.
 - UI classification.

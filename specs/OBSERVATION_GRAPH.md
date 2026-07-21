@@ -175,5 +175,5 @@ This enables O(1) comparison: if `SubTreeHash(A) == SubTreeHash(B)`, the entire 
 ## 7. Invariants
 - A `DOMNode` must have exactly one `HAS_GEOMETRY` edge (even if the geometry is hidden/zero).
 - A `DOMNode` must have exactly one `HAS_STYLE` edge.
-- AI Hypotheses are strictly forbidden from entering the graph structure.
+- AI Hypotheses must not enter the graph structure.
 - Spatial relationships (`OVERLAPS`) are only computed if explicitly requested, as they carry an O(N^2) derivation cost.

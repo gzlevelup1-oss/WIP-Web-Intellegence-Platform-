@@ -12,7 +12,7 @@ Packages communicate only through explicitly exported public APIs (typically def
 
 ## Rules
 *   Internal folders such as `contracts/`, `internal/`, `adapters/`, `runtime/`, and `services/` must **never** be imported directly from another package unless explicitly designated as public.
-*   Cross-package imports must always resolve to the package root (e.g., `import { IBrowserRuntime } from '@wip/browser-runtime'`). Deep imports (e.g., `import { BrowserService } from '@wip/browser-runtime/src/services/BrowserService'`) are strictly forbidden.
+*   Cross-package imports must always resolve to the package root (e.g., `import { IBrowserRuntime } from '@wip/browser-runtime'`). Deep imports (e.g., `import { BrowserService } from '@wip/browser-runtime/src/services/BrowserService'`) must not be used.
 *   The Composition Root is the only place allowed to wire concrete implementations, and it must still respect package export boundaries where possible.
 
 ## Consequences
