@@ -14,7 +14,7 @@ test.describe('Behavior-Driven E2E: WIP Platform', () => {
         // 1. Initialize real Playwright adapter
         const adapter = new PlaywrightAdapter();
         runtime = new BrowserRuntime(adapter);
-        kernel = new ExecutionKernel(runtime as any); // using runtime as checkpoint adapter
+        kernel = new ExecutionKernel(runtime); // using runtime as checkpoint adapter
     });
 
     test.afterAll(async () => {

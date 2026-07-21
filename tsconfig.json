@@ -1,0 +1,17 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/execution-kernel" },
+    { "path": "./packages/observation-store" },
+    { "path": "./packages/coordinator" },
+    { "path": "./packages/validation-engine" },
+    { "path": "./packages/browser-runtime" },
+    { "path": "./packages/workers" },
+    { "path": "./apps/browser-lab" },
+    { "path": "./packages/e2e-tests" }
+  ],
+  "exclude": [
+    "node_modules",
+    "packages/e2e-tests/tests/fixtures/real-world"
+  ]
+}

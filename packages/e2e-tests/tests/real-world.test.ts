@@ -11,7 +11,7 @@ test.describe('Real-World Fixtures E2E', () => {
     test.beforeAll(async () => {
         const adapter = new PlaywrightAdapter();
         runtime = new BrowserRuntime(adapter);
-        kernel = new ExecutionKernel(runtime as any);
+        kernel = new ExecutionKernel(runtime);
     });
 
     test.afterEach(async () => {
