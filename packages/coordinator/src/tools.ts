@@ -7,7 +7,13 @@ export const CoordinatorToolDeclarations: Tool[] = [{
       description: "Requests a new Snapshot of the current state and returns the Observation Graph snapshotId.",
       parameters: {
         type: "OBJECT" as any,
-        properties: {}
+        properties: {
+          levels: { 
+            type: "ARRAY" as any, 
+            description: "List of extraction levels, e.g., ['DOM', 'A11Y']",
+            items: { type: "STRING" as any }
+          }
+        }
       }
     },
     {

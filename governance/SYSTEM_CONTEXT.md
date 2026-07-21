@@ -10,10 +10,10 @@ To separate observation from reasoning. AI models guess layouts and styles poorl
 Implementation 
 
 **Current Mission:**
-Mission 19: Browser Runtime Extraction
+Mission 20: AFR-002 Architecture Conformance Remediation
 
 **Mission Status:**
-COMPLETED_AND_LOCKED
+ACTIVE
 
 **Current Architecture Version:**
 v1.0.0

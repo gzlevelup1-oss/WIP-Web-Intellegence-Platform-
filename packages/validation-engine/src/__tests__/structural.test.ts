@@ -54,4 +54,26 @@ describe('structuralDiff', () => {
     expect(violations.length).toBeGreaterThan(0);
     expect(violations[0].type).toBe('Structural');
   });
+
+  it('should report violation for 6% structural mismatch (over 5% threshold)', () => {
+    const graph1 = { nodes: [], edges: [] } as any;
+    const graph2 = { nodes: [], edges: [] } as any;
+
+    for (let i = 1; i <= 20; i++) {
+      graph1.nodes.push({ id: String(i), type: 'DOMNode', properties: { tagName: 'div' } });
+      graph2.nodes.push({ id: String(i), type: 'DOMNode', properties: { tagName: 'div' } });
+      if (i > 1) {
+        graph1.edges.push({ source: String(i), target: '1', type: 'CHILD_OF' });
+        graph2.edges.push({ source: String(i), target: '1', type: 'CHILD_OF' });
+      }
+    }
+
+    graph2.nodes[10].properties.tagName = 'span';
+    graph2.nodes[11].properties.tagName = 'p';
+    graph2.nodes[12].properties.tagName = 'a';
+
+    const violations = structuralDiff(graph1, graph2);
+    expect(violations.length).toBeGreaterThan(0);
+    expect(violations[0].message).toContain('exceeded threshold');
+  });
 });

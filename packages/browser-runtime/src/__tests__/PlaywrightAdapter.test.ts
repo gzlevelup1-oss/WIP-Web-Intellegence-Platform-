@@ -16,6 +16,13 @@ describe('PlaywrightAdapter Integration', () => {
     const snap = await adapter.capture(sessionId, [0]);
     expect(snap.graph.nodes.length).toBeGreaterThan(0);
     expect(snap.visual).toContain('data:image/png;base64,');
+    expect(snap.hash).toBeTruthy();
+    expect(snap.metadata).toBeDefined();
+
+    const metadata = await adapter.getMetadata();
+    expect(metadata.platform).toBeTruthy();
+    expect(metadata.viewport).toBeDefined();
+    expect(metadata.userAgent).toBeTruthy();
 
     // Find the IDs from the graph
     let inputNodeId = '';

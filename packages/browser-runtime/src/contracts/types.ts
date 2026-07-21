@@ -2,6 +2,11 @@ export interface RuntimeMetadata {
   name: string;
   version: string;
   backend: string;
+  platform: string;
+  viewport: { width: number, height: number };
+  locale: string;
+  timezone: string;
+  userAgent: string;
 }
 
 export interface RuntimeCapabilities {
@@ -17,6 +22,8 @@ export interface ObservationSnapshot {
   timestamp: number;
   graph: any;
   visual?: string; // base64 screenshot if applicable
+  hash: string;
+  metadata: Record<string, any>;
 }
 
 export interface RuntimeCheckpoint {

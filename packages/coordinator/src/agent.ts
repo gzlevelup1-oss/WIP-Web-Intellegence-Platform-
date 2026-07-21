@@ -68,7 +68,7 @@ export class CoordinatorAgent {
         try {
           switch (call.name) {
             case 'Observation_capture':
-              callResult = await this.kernel.captureObservation();
+              callResult = await this.kernel.captureObservation(call.args.levels);
               break;
             case 'Worker_extractDesignTokens':
               callResult = await this.workers.extractDesignTokens(call.args.snapshotId);

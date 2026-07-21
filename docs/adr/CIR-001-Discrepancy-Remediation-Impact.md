@@ -1,6 +1,6 @@
 # CIR-001: Discrepancy Remediation Impact Analysis
 
-**Status:** Draft
+**Status:** Approved
 **Owner:** Architecture
 
 ## 1. Purpose

@@ -1,5 +1,5 @@
 export interface IExecutionKernelAdapter {
-  captureObservation(): Promise<any>;
+  captureObservation(levels?: string[]): Promise<any>;
   click(nodeId: string): Promise<any>;
   type(nodeId: string, text: string): Promise<any>;
   goto(url: string): Promise<any>;

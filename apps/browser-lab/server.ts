@@ -265,8 +265,16 @@ async function createServer() {
       if (!process.env.GEMINI_API_KEY) return res.status(500).json({ error: 'GEMINI_API_KEY not set' });
       
       const kernelAdapter: IExecutionKernelAdapter = {
-        captureObservation: async () => {
-          const snapshot = await browserRuntime.capture(sessionId, [1]);
+        captureObservation: async (levels?: string[]) => {
+          let numericFlags = [1]; // Default to DOM (1)
+          if (levels && levels.length > 0) {
+            numericFlags = levels.map(l => {
+              if (l === 'DOM') return 1;
+              if (l === 'A11Y') return 2;
+              return 1;
+            });
+          }
+          const snapshot = await browserRuntime.capture(sessionId, numericFlags);
           await observationStore.saveSnapshot(snapshot.snapshotId, snapshot.graph as any);
           return { status: 'captured', snapshotId: snapshot.snapshotId };
         },

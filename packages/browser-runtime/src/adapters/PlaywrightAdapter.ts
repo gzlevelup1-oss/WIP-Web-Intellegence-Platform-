@@ -18,7 +18,12 @@ export class PlaywrightAdapter implements IBrowserAdapter {
     return {
       name: 'Playwright',
       version: '1.61.1',
-      backend: 'chromium'
+      backend: 'chromium',
+      platform: process.platform,
+      viewport: { width: 1280, height: 720 },
+      locale: 'en-US',
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      userAgent: 'Playwright/Chromium'
     };
   }
 
@@ -108,12 +113,20 @@ export class PlaywrightAdapter implements IBrowserAdapter {
       const screenshotBuffer = await page.screenshot({ type: 'png' });
       const visual = 'data:image/png;base64,' + screenshotBuffer.toString('base64');
 
+      const crypto = await import('crypto');
+      const hash = crypto.createHash('sha256').update(JSON.stringify(graphResult)).digest('hex');
+
       return {
         snapshotId,
         url,
         timestamp: Date.now(),
         graph: graphResult,
-        visual
+        visual,
+        hash,
+        metadata: {
+          levels,
+          capturedAt: new Date().toISOString()
+        }
       };
     } catch (err: any) {
       throw new BrowserExecutionError(`Failed to capture snapshot: ${err.message}`);

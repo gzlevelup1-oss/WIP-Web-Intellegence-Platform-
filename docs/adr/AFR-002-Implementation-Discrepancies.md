@@ -1,6 +1,6 @@
 # AFR-002: Specification vs Implementation Discrepancies
 
-**Status:** Draft / Review
+**Status:** Approved
 **Owner:** Architecture
 
 ## 1. Purpose

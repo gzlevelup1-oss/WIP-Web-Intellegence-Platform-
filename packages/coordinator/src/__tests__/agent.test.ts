@@ -13,6 +13,11 @@ vi.mock('@google/genai', () => {
             functionCalls: [
               {
                 id: 'call-1',
+                name: 'Observation_capture',
+                args: { levels: ['DOM', 'A11Y'] }
+              },
+              {
+                id: 'call-2',
                 name: 'Mission_complete',
                 args: { resultPayload: 'done' }
               }
@@ -43,6 +48,7 @@ describe('CoordinatorAgent', () => {
     
     const result = await agent.start('test objective');
     
+    expect(mockKernel.captureObservation).toHaveBeenCalledWith(['DOM', 'A11Y']);
     expect(result.status).toBe('completed');
     expect(result.payload).toBe('done');
   });

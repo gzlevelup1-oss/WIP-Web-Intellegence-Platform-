@@ -101,7 +101,7 @@ export function structuralDiff(originalGraph: any, reconstructedGraph: any): Dis
   
   // Normalized Tree Edit Distance
   if (maxPossibleTED > 0) {
-    const threshold = 0.1; // 10% tolerance for structural differences
+    const threshold = 0.05; // 5% tolerance for structural differences (Architecture Validation Protocol constraint)
     const diffRatio = ted / maxPossibleTED;
     if (diffRatio > threshold) {
       violations.push({
