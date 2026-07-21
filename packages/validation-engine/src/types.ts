@@ -1,5 +1,5 @@
 export interface Discrepancy {
-  type: 'Structural' | 'Visual';
+  type: 'Structural' | 'Visual' | 'Accessibility';
   message: string;
   expectedNodeId?: string;
   actualNodeId?: string;

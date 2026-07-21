@@ -99,11 +99,13 @@ export const CoordinatorToolDeclarations: Tool[] = [{
     },
     {
       name: "Mission_complete",
-      description: "Marks the mission as successful with the result payload.",
+      description: "Marks the mission as successful. Validates the result if snapshot IDs are provided.",
       parameters: {
         type: "OBJECT" as any,
         properties: {
-          resultPayload: { type: "STRING" as any, description: "Summary or code mapping of the completed mission" }
+          resultPayload: { type: "STRING" as any, description: "Summary or code mapping of the completed mission" },
+          originalSnapshotId: { type: "STRING" as any },
+          reconstructedSnapshotId: { type: "STRING" as any }
         },
         required: ["resultPayload"]
       }

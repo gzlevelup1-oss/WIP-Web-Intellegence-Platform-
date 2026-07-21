@@ -231,13 +231,19 @@ Composition Roots must conform to the approved architecture.
 Every mission must execute the repository's Architecture Verification Protocol.
 (See AVP-001 for the specific fitness function checks).
 
+## 23. No Persistent Scratchpads (Anti-Littering Protocol)
+The AI Implementor must **never** commit unowned, ad-hoc execution scripts (e.g., `test_script.js`, `scratch.ts`) to the repository.
+- If a temporary script is required for verification or probing (e.g., to test a calculation or simulate an output), it MUST be created in a transient location or explicitly deleted within the same execution turn.
+- Violating this rule breaches the "No unowned files" invariant (Rule 2). The workspace must remain pristine and reflect only the approved architecture.
+
 
 ## 17. Version History
 **AGENTS.md**
 
-Version 1.8.2
+Version 1.8.3
 
 *   **Change History:**
+    *   **v1.8.3:** Added Rule 23 (No Persistent Scratchpads) to explicitly forbid committing unowned, temporary execution scripts to the workspace.
     *   **v1.8.2:** Delegated artifact routing to GOVERNANCE_MAP.md and added it to the Core Governance Set in WAKE protocol.
     *   **v1.8.1:** Refactored AGENTS.md to act strictly as an Engineering Constitution. Moved architectural facts (Boundary Ownership, Forbidden Dependencies, Composition Root rules, AFR schema, and Fitness Functions) to SYSTEM_CONTEXT.md, AVP-001, AFR-001, and ADR-008.
     *   **v1.8.0:** Added Architecture Friction Report (AFR), Boundary Ownership, Composition Roots, and Repository Fitness Functions. Replaced STRICTLY FORBIDDEN with must not. Updated Mission Completion gates to explicitly require AVP-001.

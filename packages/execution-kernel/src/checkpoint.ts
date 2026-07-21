@@ -1,6 +1,8 @@
 export interface CheckpointData {
   url: string;
   cookies: any[];
+  historyIndex?: number;
+  localStorage?: Record<string, string>;
 }
 
 export interface ICheckpointAdapter {

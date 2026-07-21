@@ -2,16 +2,13 @@ import { GoogleGenAI } from '@google/genai';
 import { CoordinatorToolDeclarations } from './tools.js';
 import { IExecutionKernelAdapter, IWorkerAdapter, IValidationAdapter } from './adapter.js';
 
-const SYSTEM_PROMPT = `
-You are the Coordinator Agent for the Website Intelligence Platform.
+const SYSTEM_PROMPT = `You are the Coordinator Agent for the Website Intelligence Platform.
 Your purpose is to probabilistically orchestrate the extraction of semantic data and interaction with web pages using a deterministic Execution Kernel and Specialized Workers.
-
 RULES:
 1. You MUST NOT generate Playwright, Puppeteer, or JavaScript code.
 2. You MUST reference elements by NodeID provided by the Observation Graph or Workers.
 3. You operate in a Reason + Act loop. You will be given tools to observe, analyze, and interact.
-4. When you have completed the objective, call Mission_complete.
-`;
+4. When you have completed the objective, call Mission_complete. Provide originalSnapshotId and reconstructedSnapshotId if applicable.`;
 
 export class CoordinatorAgent {
   private ai: GoogleGenAI;
@@ -36,12 +33,12 @@ export class CoordinatorAgent {
         temperature: 0.2
       }
     });
-
     return this.runLoop(`Mission Objective: ${objective}`);
   }
 
   private async runLoop(message: string): Promise<any> {
     let currentMessage: any = message;
+    let repairAttempts = 0;
     
     while (true) {
       console.log(`[Coordinator] Sending prompt...`);
@@ -61,6 +58,8 @@ export class CoordinatorAgent {
       }
 
       const results = [];
+      let missionCompleteData: any = null;
+
       for (const call of calls) {
         console.log(`[Coordinator Action]: ${call.name}(${JSON.stringify(call.args)})`);
         let callResult: any = { error: 'Unknown tool' };
@@ -96,19 +95,36 @@ export class CoordinatorAgent {
               }
               break;
             case 'Mission_complete':
+              if (this.validation && call.args.originalSnapshotId && call.args.reconstructedSnapshotId) {
+                const evalResult = await this.validation.evaluate(call.args.originalSnapshotId, call.args.reconstructedSnapshotId);
+                if (evalResult && evalResult.status === 'ValidationFailed' && repairAttempts < 3) {
+                  repairAttempts++;
+                  callResult = { 
+                    error: `ValidationFailed: You must repair the implementation. Attempt ${repairAttempts}/3. Discrepancy report: ${JSON.stringify(evalResult)}` 
+                  };
+                  console.log(`[Coordinator] Repair Loop triggered (${repairAttempts}/3)`);
+                  break; // break out of switch, tool result goes back to agent
+                }
+              }
               console.log(`[Coordinator] Mission Complete: ${call.args.resultPayload}`);
-              return { status: 'completed', payload: call.args.resultPayload };
+              missionCompleteData = { status: 'completed', payload: call.args.resultPayload };
+              break;
           }
         } catch (e: any) {
           callResult = { error: e.message };
         }
         
+        if (missionCompleteData) {
+           return missionCompleteData;
+        }
+
         results.push({
           id: call.id,
           name: call.name,
           response: callResult
         });
       }
+
       currentMessage = results;
     }
   }

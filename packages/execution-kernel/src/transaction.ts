@@ -1,18 +1,26 @@
 import { TransactionStatus } from './types.js';
+import { Task } from './task.js';
 
 export class Transaction {
   public id: string;
   public missionId: string;
   public sessionId: string;
+  public role: string;
   public status: TransactionStatus;
   public startTime: number;
+  public tasks: Task[] = [];
 
-  constructor(missionId: string, sessionId: string) {
+  constructor(missionId: string, sessionId: string, role: string = 'user') {
     this.id = `tx-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     this.missionId = missionId;
     this.sessionId = sessionId;
+    this.role = role;
     this.status = 'PENDING';
     this.startTime = Date.now();
+  }
+
+  public addTask(task: Task) {
+    this.tasks.push(task);
   }
 
   public activate() {
@@ -33,12 +41,11 @@ export class Transaction {
 export class TransactionManager {
   private activeTransactions: Map<string, Transaction> = new Map();
 
-  public async acquireLock(missionId: string, sessionId: string): Promise<Transaction> {
+  public async acquireLock(missionId: string, sessionId: string, role: string = 'user'): Promise<Transaction> {
     if (this.activeTransactions.has(sessionId)) {
       throw new Error(`Session ${sessionId} already has an active transaction.`);
     }
-
-    const tx = new Transaction(missionId, sessionId);
+    const tx = new Transaction(missionId, sessionId, role);
     tx.activate();
     this.activeTransactions.set(sessionId, tx);
     return tx;

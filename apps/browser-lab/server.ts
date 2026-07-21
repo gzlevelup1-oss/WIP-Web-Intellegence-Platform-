@@ -3,7 +3,7 @@ import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import { ExecutionKernel } from '@wip/execution-kernel';
+import { ExecutionKernel, Task, BrowserAction } from '@wip/execution-kernel';
 import { DesignTokenExtractor, ComponentMiner, LayoutAnalyzer } from '@wip/workers';
 import { CoordinatorAgent, IExecutionKernelAdapter, IWorkerAdapter } from '@wip/coordinator';
 import { MemoryObservationStore } from '@wip/observation-store';
@@ -53,9 +53,9 @@ async function createServer() {
       const sessionId = await browserRuntime.createSession();
       // Decoupled Kernel using ICheckpointAdapter
 
-      const transaction = await kernel.beginTransaction('M-011', sessionId);
+      const transaction = await kernel.beginTransaction('M-011', sessionId, 'admin');
       
-      const result = await kernel.executeAction(transaction, async () => {
+      const result = await kernel.executeTask(transaction, new Task([{ type: 'evaluate' }]), async () => {
         try {
           await browserRuntime.navigate(sessionId, url);
           logs.push('Page loaded successfully via Kernel.');
@@ -199,9 +199,9 @@ async function createServer() {
       const sessionId = await browserRuntime.createSession();
       // Decoupled from Playwright
 
-      const transaction = await kernel.beginTransaction('M-011', sessionId);
+      const transaction = await kernel.beginTransaction('M-011', sessionId, 'admin');
       
-      const actionResult = await kernel.executeAction(transaction, async () => {
+      const actionResult = await kernel.executeTask(transaction, new Task([{ type: 'evaluate' }]), async () => {
         return { success: true, data: responseText };
       });
       

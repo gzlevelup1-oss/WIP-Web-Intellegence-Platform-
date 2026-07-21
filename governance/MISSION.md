@@ -1,7 +1,7 @@
 # Current Mission
 
 **Mission:** AFR-002 Architecture Conformance Remediation
-**Status:** ACTIVE
+**Status:** LOCKED
 **ID:** M-020
 
 ## References
@@ -26,5 +26,5 @@ Remediate the systemic architectural non-conformances identified between the `sp
 - Altering core specification schemas without a new AFR/RFC.
 
 ## Phase 1 Tasks (Current Focus)
-- [ ] Task 1: (AFR-002.6) Validation Thresholds
-- [ ] Task 2: (AFR-002.10) Tool Contract Mismatch
+- [x] Task 1: (AFR-002.6) Validation Thresholds
+- [x] Task 2: (AFR-002.10) Tool Contract Mismatch

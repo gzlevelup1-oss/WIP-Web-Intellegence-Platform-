@@ -159,7 +159,17 @@ export class PlaywrightAdapter implements IBrowserAdapter {
     if (!session) throw new Error('Session not found');
     const url = session.page.url();
     const cookies = await session.context.cookies();
-    return { url, cookies };
+    const localStorage = await session.page.evaluate(() => {
+      const ls: Record<string, string> = {};
+      for (let i = 0; i < window.localStorage.length; i++) {
+        const key = window.localStorage.key(i);
+        if (key) ls[key] = window.localStorage.getItem(key) || '';
+      }
+      return ls;
+    }).catch(() => undefined);
+    
+    // Playwright doesn't easily expose history index, so we omit it for now or default to 0
+    return { url, cookies, localStorage, historyIndex: 0 };
   }
 
   public async restoreCheckpoint(sessionId: string, checkpoint: any): Promise<void> {
@@ -169,6 +179,15 @@ export class PlaywrightAdapter implements IBrowserAdapter {
     await session.context.addCookies(checkpoint.cookies);
     if (session.page.url() !== checkpoint.url && checkpoint.url !== 'about:blank') {
       await session.page.goto(checkpoint.url, { waitUntil: 'networkidle' });
+    }
+    
+    if (checkpoint.localStorage) {
+      await session.page.evaluate((ls) => {
+        window.localStorage.clear();
+        for (const [key, value] of Object.entries(ls)) {
+          window.localStorage.setItem(key, value as string);
+        }
+      }, checkpoint.localStorage).catch(() => {});
     }
   }
 
