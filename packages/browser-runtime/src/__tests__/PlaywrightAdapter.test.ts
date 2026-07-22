@@ -40,7 +40,7 @@ describe('PlaywrightAdapter Integration', () => {
     await adapter.scroll(sessionId, 100);
 
     // To verify type actually worked, we can pull the value
-    const page = (adapter as any).getSessionPage(sessionId);
+    const page = (adapter as unknown as { getSessionPage: (id: string) => any }).getSessionPage(sessionId);
     const inputValue = await page.locator(`[data-wip-id="${inputNodeId}"]`).inputValue();
     expect(inputValue).toBe('hello wip');
 

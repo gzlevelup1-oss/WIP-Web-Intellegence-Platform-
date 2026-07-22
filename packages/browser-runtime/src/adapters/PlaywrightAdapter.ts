@@ -137,7 +137,7 @@ export class PlaywrightAdapter implements IBrowserAdapter {
     const page = this.getSessionPage(sessionId);
     try {
       const locator = page.locator(`[data-wip-id="${nodeId}"]`).first();
-      await locator.click({ modifiers: modifiers as any, force: true, timeout: 5000 });
+      await locator.click({ modifiers: modifiers as Array<"Alt" | "Control" | "Meta" | "Shift"> | undefined, force: true, timeout: 5000 });
     } catch (err: any) {
       throw new BrowserExecutionError(`Click failed: ${err.message}`);
     }

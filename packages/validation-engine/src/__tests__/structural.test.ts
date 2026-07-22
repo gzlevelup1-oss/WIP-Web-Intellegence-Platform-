@@ -56,8 +56,8 @@ describe('structuralDiff', () => {
   });
 
   it('should report violation for 6% structural mismatch (over 5% threshold)', () => {
-    const graph1 = { nodes: [], edges: [] } as any;
-    const graph2 = { nodes: [], edges: [] } as any;
+    const graph1 = { nodes: [], edges: [] } as { nodes: any[], edges: any[] };
+    const graph2 = { nodes: [], edges: [] } as { nodes: any[], edges: any[] };
 
     for (let i = 1; i <= 20; i++) {
       graph1.nodes.push({ id: String(i), type: 'DOMNode', properties: { tagName: 'div' } });

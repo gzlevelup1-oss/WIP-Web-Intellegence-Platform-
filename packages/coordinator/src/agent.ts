@@ -108,7 +108,7 @@ export class CoordinatorAgent {
       model: 'gemini-2.5-pro',
       config: {
         systemInstruction: SYSTEM_PROMPT,
-        tools: [callableTool as any],
+        tools: [callableTool],
         temperature: 0.2
       }
     });

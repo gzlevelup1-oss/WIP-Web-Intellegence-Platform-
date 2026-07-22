@@ -18,8 +18,8 @@ export class BrowserRuntime implements IBrowserRuntime {
       await this.adapter.closeSession(sessionId);
     });
 
-    if (typeof (this.adapter as any).setCrashHandler === 'function') {
-      (this.adapter as any).setCrashHandler(() => {
+    if (typeof this.adapter.setCrashHandler === 'function') {
+      this.adapter.setCrashHandler(() => {
         // Evict all on crash? Or how to handle?
         // Actually, PlaywrightAdapter triggers its own cleanup or we can handle it.
       });

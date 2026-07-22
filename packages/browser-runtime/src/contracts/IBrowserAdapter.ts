@@ -12,4 +12,5 @@ export interface IBrowserAdapter {
     scroll(sessionId: string, distanceY: number, behavior?: string): Promise<void>;
     createCheckpoint(sessionId: string): Promise<RuntimeCheckpoint>;
     restoreCheckpoint(sessionId: string, checkpoint: RuntimeCheckpoint): Promise<void>;
+    setCrashHandler?(handler: () => void): void;
 }

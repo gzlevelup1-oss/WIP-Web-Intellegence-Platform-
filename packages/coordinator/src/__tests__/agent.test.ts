@@ -5,6 +5,7 @@ import { IExecutionKernelAdapter, IWorkerAdapter } from '../adapter.js';
 // Mock genai
 vi.mock('@google/genai', () => {
   return {
+    Type: { OBJECT: 'OBJECT', STRING: 'STRING', ARRAY: 'ARRAY' },
     GoogleGenAI: class {
       chats = {
         create: vi.fn().mockImplementation((config) => {
