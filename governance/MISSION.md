@@ -1,7 +1,7 @@
 # Current Mission
 
 **Mission:** NIH Custom Logic Replacement
-**Status:** ACTIVE
+**Status:** LOCKED
 **Evidence Payload:**
 - **Functional Verification:** Complete
 - **Architectural Verification:** Complete

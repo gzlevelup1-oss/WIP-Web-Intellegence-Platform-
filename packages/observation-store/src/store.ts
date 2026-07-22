@@ -37,7 +37,7 @@ export class MemoryObservationStore implements IObservationStore {
     if (!graph) return [];
     
     const results: GraphNode[] = [];
-    graph.forEachNode((node, attributes) => {
+    graph.forEachNode((node: string, attributes: any) => {
       const { nodeType, ...properties } = attributes;
       const graphNode = { id: node, type: nodeType, properties } as GraphNode;
       if (predicate(graphNode)) {
