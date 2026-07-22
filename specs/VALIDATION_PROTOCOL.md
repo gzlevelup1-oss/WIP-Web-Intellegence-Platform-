@@ -6,7 +6,7 @@
 ## 1. Validation Metrics
 The protocol requires dual-layer verification for every completed Mission payload:
 - **Visual Metric:** Structural Similarity Index Measure (SSIM) and Mean Squared Error (MSE) computed from a headless browser screenshot of the generated artifact compared to the target Snapshot.
-- **Structural Metric:** JSON Graph Delta Comparison (`jsondiffpatch`) combined with node normalization, as authorized by ACP-008.
+- **Structural Metric:** JSON Graph Delta Comparison (`jsondiffpatch`) combined with node normalization, as authorized by ACP-011.
 
 ## 2. Thresholds
 Validation is strictly binary (Pass/Fail). To pass, the artifact must meet the following criteria:

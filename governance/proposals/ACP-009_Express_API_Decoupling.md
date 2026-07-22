@@ -1,11 +1,11 @@
-# ACP-006: Express API Decoupling
+# ACP-009: Express API Decoupling
 
 **Status:** APPROVED
 **Date:** 2026-07-22
 **Author:** AI Implementor
 
 ## 1. Context & Motivation
-The previous attempts (ACP-001, ACP-002) at backend decoupling and persistent sessions were drafted before the `browser-runtime` package was extracted (ACP-003) and contained outdated assumptions about Playwright living directly in `server.ts`. Those proposals have been archived.
+The previous attempts (ACP-003, ACP-005) at backend decoupling and persistent sessions were drafted before the `browser-runtime` package was extracted (ACP-006) and contained outdated assumptions about Playwright living directly in `server.ts`. Those proposals have been archived.
 
 Currently, `apps/browser-lab/server.ts` is still a "God Object" integrating the Express API routes directly inline, although Playwright has been successfully extracted to `@wip/browser-runtime`. We also have mocked Coordinator logic inline in the Express API instead of wiring the actual Coordinator.
 

@@ -1,4 +1,4 @@
-# ACP-007: UI/UX Integration Plan
+# ACP-010: UI/UX Integration Plan
 **Status:** APPROVED
 **Date:** 2026-07-22
 
@@ -14,7 +14,7 @@ Currently, the `@wip/browser-lab` frontend has several UI shells (Visual, Inspec
 ## 3. Out of Scope
 * Modifying the core Playwright execution container logic.
 * Adding new UI panels unrelated to the existing core modules.
-* Backend route extraction (already completed in ACP-006).
+* Backend route extraction (already completed in ACP-009).
 
 ## 4. Implementation Steps (Proposed)
 1. **React Context (`LabContext`):** Expand state to handle visual diffs (bounding boxes, match percentage), worker statuses, and actual graph nodes.

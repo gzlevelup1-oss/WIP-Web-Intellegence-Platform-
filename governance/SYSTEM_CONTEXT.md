@@ -35,7 +35,7 @@ v1.0.0
 - AVP-001: Architecture Integrity Verification Protocol
 - AFR-001: Architecture Friction Report Protocol
 - ARCH-002: Corrected Architectural Assessment - Browser Runtime Extraction
-- ACP-003: Browser Runtime Extraction Migration Plan
+- ACP-006: Browser Runtime Extraction Migration Plan
 
 **Current Constraints:**
 - AI Implementor must follow the Engineering Constitution (`AGENTS.md`).

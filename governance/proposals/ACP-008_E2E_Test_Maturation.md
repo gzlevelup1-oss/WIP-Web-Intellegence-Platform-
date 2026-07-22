@@ -1,4 +1,4 @@
-# ACP-005: E2E Test Maturation & Gap Closing
+# ACP-008: E2E Test Maturation & Gap Closing
 
 **Status:** APPROVED
 **Date:** 2026-07-21

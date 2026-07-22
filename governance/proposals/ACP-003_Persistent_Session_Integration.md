@@ -1,5 +1,5 @@
-# ACP-001: Persistent Session & Coordinator Integration
-**Status:** ARCHIVED (Replaced by ACP-006)
+# ACP-003: Persistent Session & Coordinator Integration
+**Status:** ARCHIVED (Replaced by ACP-009)
 **Date:** 2026-07-20
 **Author:** AI Implementor / System Architect
 

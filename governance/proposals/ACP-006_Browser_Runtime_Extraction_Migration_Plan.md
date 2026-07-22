@@ -1,4 +1,4 @@
-# ACP-003: Browser Runtime Extraction Migration Plan
+# ACP-006: Browser Runtime Extraction Migration Plan
 **Status:** APPROVED
 **Date:** 2026-07-20
 **Author:** AI Implementor / System Architect

@@ -1,5 +1,5 @@
-# ACP-002: Backend Decoupling & Persistent Session Implementation
-**Status:** ARCHIVED (Replaced by ACP-006)
+# ACP-005: Backend Decoupling & Persistent Session Implementation
+**Status:** ARCHIVED (Replaced by ACP-009)
 **Date:** 2026-07-20
 **Author:** AI Implementor / System Architect
 
@@ -36,7 +36,7 @@ We will introduce a `backend/` (or `server/`) directory within `apps/browser-lab
 
 ## 3. Definition of Done (DoD)
 
-This proposal combines the Persistent Session intent (from ACP-001) with the Backend Decoupling requirement. The implementation is only considered "Done" when it passes these gates:
+This proposal combines the Persistent Session intent (from ACP-003) with the Backend Decoupling requirement. The implementation is only considered "Done" when it passes these gates:
 
 1. **Architectural Purity Gate**:
    - `server.ts` contains NO business logic, Playwright instances, or AI prompting.

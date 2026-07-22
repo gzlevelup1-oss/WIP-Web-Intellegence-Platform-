@@ -1,4 +1,4 @@
-# Architecture Change Proposal (ACP): Coordinator Validation Loop
+# ACP-004: Coordinator Validation Loop
 **Status:** APPROVED
 **Author:** AI Implementor
 **Date:** 2026-07-20

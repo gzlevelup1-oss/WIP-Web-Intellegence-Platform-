@@ -55,11 +55,11 @@ app.listen(3000);
 ## 4. Conclusion & Recommendation
 **You are entirely correct.** The logic *should* be a separate package. 
 
-Instead of building all the decoupled folders (`adapters/`, `routes/`, `services/`) inside `apps/browser-lab/src/backend/` as proposed in ACP-002, **we should create a dedicated package (e.g., `packages/lab-backend`)**. 
+Instead of building all the decoupled folders (`adapters/`, `routes/`, `services/`) inside `apps/browser-lab/src/backend/` as proposed in ACP-005, **we should create a dedicated package (e.g., `packages/lab-backend`)**. 
 
 This gives us the best of both worlds:
 - Perfect architectural boundaries (the backend is a separate NPM package).
 - Complete reusability (other apps can import the backend API).
 - Seamless deployment (a single Node process on Port 3000 consumes both the UI and the Backend packages).
 
-*Pending User/Product Owner feedback: If you agree with this assessment, I will update ACP-002 to reflect extracting the backend into a brand new package (`@wip/lab-backend`) rather than just creating folders inside the web app.*
+*Pending User/Product Owner feedback: If you agree with this assessment, I will update ACP-005 to reflect extracting the backend into a brand new package (`@wip/lab-backend`) rather than just creating folders inside the web app.*

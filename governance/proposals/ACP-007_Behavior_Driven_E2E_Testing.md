@@ -1,4 +1,4 @@
-# Architecture Change Proposal (ACP): Behavior-Driven E2E Testing Strategy
+# ACP-007: Behavior-Driven E2E Testing Strategy
 
 **Status:** APPROVED
 **Author:** AI Implementor

@@ -1,7 +1,7 @@
 # ADR-007: Execution Kernel and Playwright Decoupling
 
 **Status:** Approved
-**Related:** ADR-002, ADR-005, ACP-003
+**Related:** ADR-002, ADR-005, ACP-006
 
 ## Context
 During the initial implementation of the Execution Kernel (ADR-005), a boundary violation occurred: the Execution Kernel (`@wip/execution-kernel`) directly depended on `playwright` types (`BrowserContext`, `Page`) to implement its CheckpointManager. Additionally, the composition root (`apps/browser-lab/server.ts`) bypassed the abstraction layer by casting the adapter to `any` to extract internal Playwright context (`_getInternalContext`).

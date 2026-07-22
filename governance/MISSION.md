@@ -11,7 +11,7 @@
 **ID:** M-026
 
 ## References
-- `governance/proposals/ACP-008_NIH_Refactoring.md`
+- `governance/proposals/ACP-011_NIH_Refactoring.md`
 - `governance/DEBT.md`
 
 ## Objective

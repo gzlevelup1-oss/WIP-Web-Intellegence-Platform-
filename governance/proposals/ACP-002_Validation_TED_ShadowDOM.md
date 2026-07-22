@@ -1,4 +1,4 @@
-# Architecture Change Proposal (ACP): Proposal A
+# ACP-002: Validation TED and Shadow DOM
 **Status:** APPROVED
 **Author:** AI Implementor
 **Date:** 2026-07-20
