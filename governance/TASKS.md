@@ -206,3 +206,23 @@
 - [x] Task 8: (AFR-002.9) **Coordinator Repair Loop**: Refactor `packages/coordinator/src/agent.ts`. On `Mission_complete`, execute the validation adapter. If `ValidationFailed` is thrown, feed the discrepancy report back into the agent loop up to 3 times (Repair Loop invariant).
 - [x] Task 9: (AFR-002.2) **Kernel Checkpoints**: Expand `CheckpointData` in `execution-kernel` to include `historyIndex` and `localStorage`. Implement capture and restore of these state vectors in the `browser-runtime` adapter.
 - [x] Task 10: (AFR-002.7) **Validation Evidence**: Implement persistence in `validation-engine`. Ensure every `validate` call serializes the discrepancy report and visual diffs to a `logs/evidence/` directory.
+
+## Mission 24: Express API Decoupling
+*Status: LOCKED*
+- [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md` and `TASKS.md`.
+- [x] Task 2: Create `apps/browser-lab/src/backend/routes/` and extract routes (simulator, coordinator, workers, validation).
+- [x] Task 3: Create `apps/browser-lab/src/backend/ServiceLocator.ts` for dependency injection.
+- [x] Task 4: Implement `apps/browser-lab/src/backend/adapters/KernelAdapter.ts` and `WorkerAdapter.ts`.
+- [x] Task 5: Refactor `apps/browser-lab/server.ts` to be purely a Composition Root and route mounter.
+- [x] Task 6: Validate build and types (`npm run build`).
+- [x] Task 7: Execute AVP-001 Architecture Verification and lock the mission.
+
+## Mission 25: UI/UX Integration
+*Status: LOCKED*
+- [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md` and `TASKS.md`.
+- [x] Task 2: Update `LabContext.tsx` state to include rich graph types, diff results, and API integration logic.
+- [x] Task 3: Update `ChatPane.tsx` to send commands to `/api/simulator/command` and handle responses/logs.
+- [x] Task 4: Update `ObservationInspector.tsx` to render the actual DOM nodes from the `ObservationGraph`.
+- [x] Task 5: Update `FileViewer.tsx` to show dynamic bounding boxes in .diff. mode based on validation results.
+- [x] Task 6: Validate build (`npm run build`).
+- [x] Task 7: Execute AVP-001 Architecture Verification and lock the mission.

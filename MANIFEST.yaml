@@ -8,8 +8,10 @@ governance:
   status: frozen
 current_phase:
   Implementation
-current_mission: "Mission 19"
+current_mission: "Mission 25"
 locked:
+  - Mission 25 (UI/UX Integration)
+  - Mission 24 (Express API Decoupling)
   - Mission 18 (Coordinator Validation Loop)
   - Mission 17 (Validation TED and Shadow DOM)
   - Mission 10 (Monorepo Migration)

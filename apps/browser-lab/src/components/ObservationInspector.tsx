@@ -8,13 +8,13 @@ import { useLab, ObservationGraph } from '../context/LabContext';
 interface InspectorRowProps {
   index: number;
   style: React.CSSProperties;
-  data: ObservationGraph['nodes'];
+  data: any[];
 }
 
 const InspectorRow = ({ index, style, data }: InspectorRowProps) => {
   const node = data[index];
   const props = node.properties || {};
-  const depth = props.depth || 0;
+  const depth = node.computedDepth || 0;
   const isDOM = node.type === 'DOMNode';
   
   return (
@@ -34,14 +34,19 @@ const InspectorRow = ({ index, style, data }: InspectorRowProps) => {
             <span className="text-blue-600 dark:text-blue-400 font-medium">
               &lt;{props.tagName}&gt;
             </span>
-            {props.classes && props.classes.length > 0 && (
+            {props.attributes?.id && (
+              <span className="text-purple-600 dark:text-purple-400 ml-2">
+                #{props.attributes.id}
+              </span>
+            )}
+            {props.attributes?.class && (
               <span className="text-amber-600 dark:text-amber-400 ml-2">
-                .{props.classes.join('.')}
+                .{props.attributes.class.split(' ').join('.')}
               </span>
             )}
             {props.text && (
               <span className="text-zinc-500 ml-2 truncate">
-                "{props.text}"
+                "{props.text.length > 30 ? props.text.substring(0, 30) + '...' : props.text}"
               </span>
             )}
           </>
@@ -57,7 +62,51 @@ const InspectorRow = ({ index, style, data }: InspectorRowProps) => {
 
 export function ObservationInspector() {
   const { graph, isLoading } = useLab();
-  const flattenedNodes = useMemo(() => graph ? graph.nodes : [], [graph]);
+
+  const flattenedNodes = useMemo(() => {
+    if (!graph) return [];
+    
+    // Build adjacency list for tree calculation
+    const childrenMap = new Map<string, string[]>();
+    const roots = new Set(graph.nodes.map(n => n.id));
+    
+    for (const edge of graph.edges) {
+      if (edge.type === 'has_child') {
+        if (!childrenMap.has(edge.source)) childrenMap.set(edge.source, []);
+        childrenMap.get(edge.source)!.push(edge.target);
+        roots.delete(edge.target); // If it's a target, it's not a root
+      }
+    }
+
+    const nodeMap = new Map(graph.nodes.map(n => [n.id, n]));
+    const result: any[] = [];
+
+    // DFS to flatten tree and assign depth
+    const traverse = (nodeId: string, depth: number) => {
+      const node = nodeMap.get(nodeId);
+      if (node) {
+        result.push({ ...node, computedDepth: depth });
+        const children = childrenMap.get(nodeId) || [];
+        for (const childId of children) {
+          traverse(childId, depth + 1);
+        }
+      }
+    };
+
+    // Traverse from roots
+    for (const rootId of Array.from(roots)) {
+      traverse(rootId, 0);
+    }
+    
+    // Add any disconnected/non-tree nodes that might have been missed
+    for (const node of graph.nodes) {
+      if (!result.find(r => r.id === node.id)) {
+         result.push({ ...node, computedDepth: 0 });
+      }
+    }
+
+    return result;
+  }, [graph]);
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-zinc-950 w-full overflow-hidden">

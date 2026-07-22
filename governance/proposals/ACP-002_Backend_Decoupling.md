@@ -1,5 +1,5 @@
 # ACP-002: Backend Decoupling & Persistent Session Implementation
-**Status:** DRAFT (Pending Approval)
+**Status:** ARCHIVED (Replaced by ACP-006)
 **Date:** 2026-07-20
 **Author:** AI Implementor / System Architect
 

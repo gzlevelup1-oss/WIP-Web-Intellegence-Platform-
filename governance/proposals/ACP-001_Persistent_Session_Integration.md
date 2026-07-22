@@ -1,5 +1,5 @@
 # ACP-001: Persistent Session & Coordinator Integration
-**Status:** DRAFT (Pending Approval)
+**Status:** ARCHIVED (Replaced by ACP-006)
 **Date:** 2026-07-20
 **Author:** AI Implementor / System Architect
 

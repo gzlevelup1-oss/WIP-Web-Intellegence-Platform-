@@ -10,7 +10,7 @@ export function FileViewer() {
   const [mode, setMode] = useState<ViewMode>('visual');
   const [viewport, setViewport] = useState<ViewportSize>('desktop');
   const [zoom, setZoom] = useState(100);
-  const { currentUrl, isLoading, screenshotUrl, logs, graph } = useLab();
+  const { currentUrl, isLoading, screenshotBase64, logs, graph, validationResult, validateSnapshot } = useLab();
 
   return (
     <div className="flex flex-col h-full bg-zinc-100 dark:bg-zinc-900/50">
@@ -128,8 +128,8 @@ export function FileViewer() {
 
             {/* Empty placeholder for the screenshot */}
             <div className="absolute inset-0 flex items-center justify-center bg-zinc-50 border border-zinc-200">
-              {screenshotUrl ? (
-                <img src={screenshotUrl} alt="Viewport Snapshot" className="w-full h-full object-cover" />
+              {screenshotBase64 ? (
+                <img src={`data:image/png;base64,${screenshotBase64}`} alt="Viewport Snapshot" className="w-full h-full object-cover" />
               ) : (
                 <div className="text-zinc-400 flex flex-col items-center gap-3">
                   <Globe className="w-12 h-12 opacity-50" />
@@ -175,16 +175,38 @@ export function FileViewer() {
                   <p className="text-sm text-zinc-500">Visual comparison between design baseline and current snapshot.</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1 text-xs font-medium text-red-500 bg-red-50 dark:bg-red-500/10 px-2 py-1 rounded border border-red-500/20">
-                    <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                    2 Differences
-                  </span>
-                  <span className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 dark:bg-green-500/10 px-2 py-1 rounded border border-green-500/20">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                    98% Match
-                  </span>
+                  {!validationResult ? (
+                    <button onClick={() => validateSnapshot()} className="px-3 py-1.5 text-xs font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                      Run Validation
+                    </button>
+                  ) : (
+                    <>
+                      <span className="flex items-center gap-1 text-xs font-medium text-red-500 bg-red-50 dark:bg-red-500/10 px-2 py-1 rounded border border-red-500/20">
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                        {validationResult.violations?.length || 0} Differences
+                      </span>
+                      <span className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 dark:bg-green-500/10 px-2 py-1 rounded border border-green-500/20">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                        Match SSIM: {validationResult.ssim ? validationResult.ssim.toFixed(4) : '1.000'}
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
+
+              {validationResult && validationResult.violations?.length > 0 && (
+                <div className="mb-6 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 max-h-[200px] overflow-y-auto shadow-sm">
+                   <h4 className="text-sm font-medium mb-3">Discrepancy Report</h4>
+                   <ul className="flex flex-col gap-2">
+                     {validationResult.violations.map((v: any, i: number) => (
+                        <li key={i} className="text-xs text-zinc-600 dark:text-zinc-400 flex items-start gap-2">
+                          <span className="text-red-500 font-bold shrink-0">[{v.type}]</span>
+                          <span>{v.message}</span>
+                        </li>
+                     ))}
+                   </ul>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-8 flex-1">
                 {/* Baseline */}
@@ -193,9 +215,9 @@ export function FileViewer() {
                     <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Baseline (Expected)</h4>
                   </div>
                   <div className="flex-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden relative shadow-sm">
-                    {screenshotUrl ? (
+                    {screenshotBase64 ? (
                       <div className="relative w-full h-full">
-                        <img src={screenshotUrl} alt="Baseline" className="w-full h-full object-cover opacity-90 filter grayscale-[20%]" />
+                        <img src={`data:image/png;base64,${screenshotBase64}`} alt="Baseline" className="w-full h-full object-contain opacity-90 filter grayscale-[20%]" />
                       </div>
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center text-zinc-400">
@@ -211,12 +233,9 @@ export function FileViewer() {
                     <h4 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Current (Actual)</h4>
                   </div>
                   <div className="flex-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden relative shadow-sm">
-                    {screenshotUrl ? (
+                    {screenshotBase64 ? (
                       <div className="relative w-full h-full">
-                        <img src={screenshotUrl} alt="Current" className="w-full h-full object-cover" />
-                        {/* Fake diff highlights for prototype */}
-                        <div className="absolute top-[20%] left-[30%] w-32 h-12 border-2 border-red-500 bg-red-500/20 rounded animate-pulse"></div>
-                        <div className="absolute top-[60%] left-[10%] w-48 h-24 border-2 border-red-500 bg-red-500/20 rounded animate-pulse"></div>
+                        <img src={`data:image/png;base64,${screenshotBase64}`} alt="Current" className="w-full h-full object-contain" />
                       </div>
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center text-zinc-400">
@@ -229,7 +248,6 @@ export function FileViewer() {
             </div>
           </div>
         )}
-
       </div>
     </div>
   );

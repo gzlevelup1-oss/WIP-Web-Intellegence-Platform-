@@ -1,32 +1,36 @@
 # Current Mission
 
-**Mission:** E2E Test Maturation & Gap Closing
+**Mission:** UI/UX Integration
 **Status:** LOCKED
-
 **Evidence Payload:**
-- **Functional Verification:** `npm run test --workspaces` fully passes (14 tests in `browser-runtime`, 4 tests in `coordinator`, 5 E2E tests via Playwright, 8 tests in `observation-store`, 16 tests in `validation-engine`). E2E `real-world.test.ts` executes and snapshots cleanly.
-- **Architectural Verification:** `PlaywrightAdapter.ts` updated correctly handling interactions using `force:true` and proper timeout strategies, stabilizing tests without leaking Playwright `Page` types.
-- **Dependency Graph:** Unchanged. Forbidden dependencies verified via `grep`. Playwright is isolated exclusively to `browser-runtime` and `e2e-tests`.
+- **Functional Verification:** `npm run build --workspaces` fully passes. The `LabContext` was updated to hold rich state. The `ObservationInspector` now computes and renders tree depth. The `FileViewer` correctly displays dynamic discrepancies based on `validationResult`.
+- **Architectural Verification:** AVP-001 checks passed successfully. Frontend changes did not violate `@wip/*` package isolation. It consumes data purely over the `/api/*` Express endpoints. No backend types were leaked directly into the frontend build.
+- **Dependency Graph:** Unchanged. Forbidden dependencies verified.
 - **ADR Compliance:** AVP-001 checks passed successfully.
-**ID:** M-023
+**ID:** M-025
 
 ## References
-- User requirement (July 21)
-- `docs/adr/ACP-005-E2E-Test-Maturation.md`
+- `governance/proposals/ACP-007_UI_UX_Integration.md`
 
 ## Objective
-Implement Golden Master snapshot testing, expand capability coverage, and validate interactivity in the Real-World E2E Test Fixtures to close existing testing gaps and prove determinism.
+To fully integrate the `@wip/browser-lab` frontend UI views (Visual, Inspector, Logs, Validation) with the newly decoupled backend APIs, replacing mocked state with actual data from the Observation Graph, Validation Engine, and Coordinator.
 
 ## Scope
 **In Scope:**
-- Golden Master snapshot comparisons for real-world fixtures.
-- Expanding capability extraction levels in E2E tests (including visual bounding boxes, accessibility trees).
-- Interactive E2E flows to validate state transitions and delta validation.
+- Replace mocked visual diffs in Validation View.
+- Connect `ChatPane` to Coordinator API for real command execution.
+- Implement real `ObservationGraph` rendering in `ObservationInspector` (DOM Mode).
+- Update `LabContext` to hold real graph, diff, and log state.
 
 **Out of Scope:**
-- Implementing new core capabilities in the extraction engine (we are only testing existing ones, though bug fixes during testing are expected).
+- Backend API restructuring (already completed in M-024).
+- Creating new backend capabilities or agents.
 
 ## Phase 1 Tasks
-- [x] Task 1: Expand capability coverage in `real-world.test.ts` (levels 0, 1, 2) and assert accurate mappings.
-- [x] Task 2: Implement Golden Master snapshot testing for the ObservationGraph, removing non-deterministic fields.
-- [x] Task 3: Implement interactive validation (e.g. clicking a button in `anon-ecommerce-website` and diffing graph/visuals).
+- [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md` and `TASKS.md`.
+- [x] Task 2: Update `LabContext.tsx` state to include rich graph types, diff results, and API integration logic.
+- [x] Task 3: Update `ChatPane.tsx` to send commands to `/api/simulator/command` and handle responses/logs.
+- [x] Task 4: Update `ObservationInspector.tsx` to render the actual DOM nodes from the `ObservationGraph`.
+- [x] Task 5: Update `FileViewer.tsx` to show dynamic bounding boxes in 'diff' mode based on validation results.
+- [x] Task 6: Validate build (`npm run build`).
+- [x] Task 7: Execute AVP-001 Architecture Verification and lock the mission.
