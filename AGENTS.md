@@ -240,9 +240,10 @@ The AI Implementor must **never** commit unowned, ad-hoc execution scripts (e.g.
 ## 17. Version History
 **AGENTS.md**
 
-Version 1.8.3
+Version 1.8.4
 
 *   **Change History:**
+    *   **v1.8.4:** Added Rule 24 (Anti-Assumption Directory & ID Protocol) to explicitly forbid assuming artifact IDs and file paths without probing.
     *   **v1.8.3:** Added Rule 23 (No Persistent Scratchpads) to explicitly forbid committing unowned, temporary execution scripts to the workspace.
     *   **v1.8.2:** Delegated artifact routing to GOVERNANCE_MAP.md and added it to the Core Governance Set in WAKE protocol.
     *   **v1.8.1:** Refactored AGENTS.md to act strictly as an Engineering Constitution. Moved architectural facts (Boundary Ownership, Forbidden Dependencies, Composition Root rules, AFR schema, and Fitness Functions) to SYSTEM_CONTEXT.md, AVP-001, AFR-001, and ADR-008.
@@ -259,3 +260,8 @@ Version 1.8.3
     *   **v1.2.0:** Added AI Contribution Rules.
     *   **v1.1.0:** Added Artifact Governance, Document Hierarchy, Stable Naming, Architecture Invariants, Evidence Chain, Proposal Lifecycle, Testing Constitution, and Repository Principle.
     *   **v1.0.0:** Initial adoption of Engineering Constitution, replacing Implementation Workflow Protocol. Added strict constraints around explicit roles, scope protection, evidence-based authorization, and change control.
+
+## 24. Anti-Assumption Directory & ID Protocol
+The AI Implementor must **never assume** file paths or the availability of numeric IDs for artifacts (ACPs, ADRs, RFCs).
+- Before creating a new proposal, the AI Implementor MUST list the contents of both `governance/proposals/` and `docs/adr/` to determine the correct next sequential ID.
+- Avoid creating nested duplicate folder structures (e.g., `app/applet/app/...`). Always verify paths relative to the current workspace root.

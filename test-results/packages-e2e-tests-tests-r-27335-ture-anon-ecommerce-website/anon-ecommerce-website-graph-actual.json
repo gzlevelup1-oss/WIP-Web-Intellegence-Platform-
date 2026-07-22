@@ -1,0 +1,312 @@
+{
+  "snapshot": {
+    "id": "static-snapshot-id",
+    "timestamp": 1234567890,
+    "url": "file://REDACTED"
+  },
+  "nodes": [
+    {
+      "id": "static-snapshot-id",
+      "type": "SnapshotNode",
+      "properties": {
+        "url": "file://REDACTED",
+        "viewportWidth": 0,
+        "viewportHeight": 0
+      }
+    },
+    {
+      "id": "node-0",
+      "type": "DOMNode",
+      "properties": {
+        "tagName": "html",
+        "nodeType": 1,
+        "classes": [],
+        "depth": 0
+      }
+    },
+    {
+      "id": "geo-1",
+      "type": "GeometryNode",
+      "properties": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "id": "style-2",
+      "type": "StyleNode",
+      "properties": {
+        "display": "block",
+        "position": "static",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Times New Roman\"",
+        "fontSize": "16px",
+        "margin": "0px",
+        "padding": "0px",
+        "opacity": "1",
+        "zIndex": "auto"
+      }
+    },
+    {
+      "id": "node-4",
+      "type": "DOMNode",
+      "properties": {
+        "tagName": "head",
+        "nodeType": 1,
+        "classes": [],
+        "depth": 1
+      }
+    },
+    {
+      "id": "geo-5",
+      "type": "GeometryNode",
+      "properties": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "id": "style-6",
+      "type": "StyleNode",
+      "properties": {
+        "display": "none",
+        "position": "static",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Times New Roman\"",
+        "fontSize": "16px",
+        "margin": "0px",
+        "padding": "0px",
+        "opacity": "1",
+        "zIndex": "auto"
+      }
+    },
+    {
+      "id": "node-8",
+      "type": "DOMNode",
+      "properties": {
+        "tagName": "body",
+        "nodeType": 1,
+        "classes": [],
+        "depth": 1
+      }
+    },
+    {
+      "id": "geo-9",
+      "type": "GeometryNode",
+      "properties": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "id": "style-10",
+      "type": "StyleNode",
+      "properties": {
+        "display": "block",
+        "position": "static",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Times New Roman\"",
+        "fontSize": "16px",
+        "margin": "8px",
+        "padding": "0px",
+        "opacity": "1",
+        "zIndex": "auto"
+      }
+    },
+    {
+      "id": "node-12",
+      "type": "DOMNode",
+      "properties": {
+        "tagName": "h1",
+        "nodeType": 1,
+        "classes": [],
+        "depth": 2,
+        "text": "Ecommerce"
+      }
+    },
+    {
+      "id": "geo-13",
+      "type": "GeometryNode",
+      "properties": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "id": "style-14",
+      "type": "StyleNode",
+      "properties": {
+        "display": "block",
+        "position": "static",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "\"Times New Roman\"",
+        "fontSize": "32px",
+        "margin": "21.44px 0px",
+        "padding": "0px",
+        "opacity": "1",
+        "zIndex": "auto"
+      }
+    },
+    {
+      "id": "node-16",
+      "type": "DOMNode",
+      "properties": {
+        "tagName": "button",
+        "nodeType": 1,
+        "classes": [],
+        "depth": 2,
+        "text": "Click Me"
+      }
+    },
+    {
+      "id": "geo-17",
+      "type": "GeometryNode",
+      "properties": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "id": "style-18",
+      "type": "StyleNode",
+      "properties": {
+        "display": "inline-block",
+        "position": "static",
+        "backgroundColor": "rgb(239, 239, 239)",
+        "color": "rgb(0, 0, 0)",
+        "fontFamily": "Arial",
+        "fontSize": "13.3333px",
+        "margin": "0px",
+        "padding": "1px 6px",
+        "opacity": "1",
+        "zIndex": "auto"
+      }
+    },
+    {
+      "id": "a11y-19",
+      "type": "AccessibilityNode",
+      "properties": {
+        "role": "button",
+        "ariaLabel": "",
+        "ariaHidden": false,
+        "alt": ""
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "node-0",
+      "target": "static-snapshot-id",
+      "type": "BELONGS_TO"
+    },
+    {
+      "source": "node-0",
+      "target": "geo-1",
+      "type": "HAS_GEOMETRY"
+    },
+    {
+      "source": "node-0",
+      "target": "style-2",
+      "type": "HAS_STYLE"
+    },
+    {
+      "source": "node-4",
+      "target": "node-0",
+      "type": "CHILD_OF"
+    },
+    {
+      "source": "node-4",
+      "target": "geo-5",
+      "type": "HAS_GEOMETRY"
+    },
+    {
+      "source": "node-4",
+      "target": "style-6",
+      "type": "HAS_STYLE"
+    },
+    {
+      "source": "node-8",
+      "target": "node-0",
+      "type": "CHILD_OF"
+    },
+    {
+      "source": "node-8",
+      "target": "geo-9",
+      "type": "HAS_GEOMETRY"
+    },
+    {
+      "source": "node-8",
+      "target": "style-10",
+      "type": "HAS_STYLE"
+    },
+    {
+      "source": "node-12",
+      "target": "node-8",
+      "type": "CHILD_OF"
+    },
+    {
+      "source": "node-12",
+      "target": "geo-13",
+      "type": "HAS_GEOMETRY"
+    },
+    {
+      "source": "node-12",
+      "target": "style-14",
+      "type": "HAS_STYLE"
+    },
+    {
+      "source": "node-16",
+      "target": "node-8",
+      "type": "CHILD_OF"
+    },
+    {
+      "source": "node-16",
+      "target": "geo-17",
+      "type": "HAS_GEOMETRY"
+    },
+    {
+      "source": "node-16",
+      "target": "style-18",
+      "type": "HAS_STYLE"
+    },
+    {
+      "source": "node-16",
+      "target": "a11y-19",
+      "type": "HAS_A11Y"
+    }
+  ]
+}

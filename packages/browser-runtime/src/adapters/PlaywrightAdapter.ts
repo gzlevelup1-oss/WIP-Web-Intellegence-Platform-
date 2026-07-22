@@ -107,7 +107,7 @@ export class PlaywrightAdapter implements IBrowserAdapter {
       const url = page.url();
       
       const graphResult = await page.evaluate(
-        `(${evaluateSnapshot})({ snapshotId: "${snapshotId}", url: "${url}" })`
+        `(${evaluateSnapshot})({ snapshotId: "${snapshotId}", url: "${url}", levels: ${JSON.stringify(levels)} })`
       );
 
       const screenshotBuffer = await page.screenshot({ type: 'png' });
@@ -137,7 +137,7 @@ export class PlaywrightAdapter implements IBrowserAdapter {
     const page = this.getSessionPage(sessionId);
     try {
       const locator = page.locator(`[data-wip-id="${nodeId}"]`).first();
-      await locator.click({ modifiers: modifiers as any });
+      await locator.click({ modifiers: modifiers as any, force: true, timeout: 5000 });
     } catch (err: any) {
       throw new BrowserExecutionError(`Click failed: ${err.message}`);
     }
@@ -147,7 +147,7 @@ export class PlaywrightAdapter implements IBrowserAdapter {
     const page = this.getSessionPage(sessionId);
     try {
       const locator = page.locator(`[data-wip-id="${nodeId}"]`).first();
-      await locator.pressSequentially(text, { delay });
+      await locator.pressSequentially(text, { delay, timeout: 5000 });
     } catch (err: any) {
       throw new BrowserExecutionError(`Type failed: ${err.message}`);
     }

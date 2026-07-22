@@ -1,5 +1,4 @@
-export const evaluateSnapshot = `
-({ snapshotId, url }) => {
+export const evaluateSnapshot = `({ snapshotId, url, levels = [0] }) => {
   const graph = {
     snapshot: {
       id: snapshotId,
@@ -24,8 +23,6 @@ export const evaluateSnapshot = `
   
   const traverse = (el, parentId, depth) => {
     const domNodeId = 'node-' + (nodeIdCounter++);
-    const geoNodeId = 'geo-' + (nodeIdCounter++);
-    const styleNodeId = 'style-' + (nodeIdCounter++);
     
     if (el.setAttribute) {
       el.setAttribute('data-wip-id', domNodeId);
@@ -41,7 +38,7 @@ export const evaluateSnapshot = `
     }
     
     const properties = {
-      tagName: el.tagName.toLowerCase(),
+      tagName: el.tagName ? el.tagName.toLowerCase() : '',
       nodeType: el.nodeType,
       classes,
       depth
@@ -58,55 +55,91 @@ export const evaluateSnapshot = `
       properties
     });
     
-    // 2. Add GeometryNode
-    const rect = el.getBoundingClientRect();
-    graph.nodes.push({
-      id: geoNodeId,
-      type: 'GeometryNode',
-      properties: {
-        x: rect.x,
-        y: rect.y,
-        width: rect.width,
-        height: rect.height,
-        top: rect.top,
-        right: rect.right,
-        bottom: rect.bottom,
-        left: rect.left
-      }
-    });
-    
-    // 3. Add StyleNode (just a few key properties to avoid massive payloads)
-    const computed = window.getComputedStyle(el);
-    graph.nodes.push({
-      id: styleNodeId,
-      type: 'StyleNode',
-      properties: {
-        display: computed.display,
-        position: computed.position,
-        backgroundColor: computed.backgroundColor,
-        color: computed.color,
-        fontFamily: computed.fontFamily,
-        fontSize: computed.fontSize,
-        margin: computed.margin,
-        padding: computed.padding,
-        opacity: computed.opacity,
-        zIndex: computed.zIndex
-      }
-    });
-    
-    // Edges
-    graph.edges.push({ source: domNodeId, target: geoNodeId, type: 'HAS_GEOMETRY' });
-    graph.edges.push({ source: domNodeId, target: styleNodeId, type: 'HAS_STYLE' });
-    
     if (parentId) {
       graph.edges.push({ source: domNodeId, target: parentId, type: 'CHILD_OF' });
     } else {
       graph.edges.push({ source: domNodeId, target: snapshotId, type: 'BELONGS_TO' });
     }
     
+    // Level 1: Visual / Geometry
+    if (levels.includes(1) && el.getBoundingClientRect && window.getComputedStyle) {
+      const geoNodeId = 'geo-' + (nodeIdCounter++);
+      const styleNodeId = 'style-' + (nodeIdCounter++);
+      const rect = el.getBoundingClientRect();
+      
+      graph.nodes.push({
+        id: geoNodeId,
+        type: 'GeometryNode',
+        properties: {
+          x: rect.x,
+          y: rect.y,
+          width: rect.width,
+          height: rect.height,
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
+          left: rect.left
+        }
+      });
+      
+      const computed = window.getComputedStyle(el);
+      graph.nodes.push({
+        id: styleNodeId,
+        type: 'StyleNode',
+        properties: {
+          display: computed.display,
+          position: computed.position,
+          backgroundColor: computed.backgroundColor,
+          color: computed.color,
+          fontFamily: computed.fontFamily,
+          fontSize: computed.fontSize,
+          margin: computed.margin,
+          padding: computed.padding,
+          opacity: computed.opacity,
+          zIndex: computed.zIndex
+        }
+      });
+      
+      graph.edges.push({ source: domNodeId, target: geoNodeId, type: 'HAS_GEOMETRY' });
+      graph.edges.push({ source: domNodeId, target: styleNodeId, type: 'HAS_STYLE' });
+    }
+
+    // Level 2: Accessibility
+    if (levels.includes(2) && el.hasAttribute) {
+      const a11yNodeId = 'a11y-' + (nodeIdCounter++);
+      const role = el.getAttribute('role') || '';
+      const ariaLabel = el.getAttribute('aria-label') || '';
+      const ariaHidden = el.getAttribute('aria-hidden') === 'true';
+      const alt = el.getAttribute('alt') || '';
+      
+      // Implicit roles for some elements
+      let computedRole = role;
+      if (!computedRole) {
+        if (properties.tagName === 'button') computedRole = 'button';
+        else if (properties.tagName === 'a' && el.hasAttribute('href')) computedRole = 'link';
+        else if (properties.tagName === 'input') computedRole = 'textbox';
+        else if (properties.tagName === 'img') computedRole = 'img';
+      }
+
+      if (computedRole || ariaLabel || ariaHidden || alt) {
+        graph.nodes.push({
+          id: a11yNodeId,
+          type: 'AccessibilityNode',
+          properties: {
+            role: computedRole,
+            ariaLabel,
+            ariaHidden,
+            alt
+          }
+        });
+        graph.edges.push({ source: domNodeId, target: a11yNodeId, type: 'HAS_A11Y' });
+      }
+    }
+    
     for (const child of Array.from(el.children)) {
       traverse(child, domNodeId, depth + 1);
     }
+    
     if (el.shadowRoot) {
       for (const child of Array.from(el.shadowRoot.children)) {
         traverse(child, domNodeId, depth + 1);
@@ -116,5 +149,4 @@ export const evaluateSnapshot = `
   
   traverse(document.documentElement, null, 0);
   return graph;
-}
-`;
+}`;

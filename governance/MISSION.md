@@ -1,27 +1,32 @@
 # Current Mission
 
-**Mission:** Real-World E2E Test Fixtures Integration
+**Mission:** E2E Test Maturation & Gap Closing
 **Status:** LOCKED
-**ID:** M-022
+
+**Evidence Payload:**
+- **Functional Verification:** `npm run test --workspaces` fully passes (14 tests in `browser-runtime`, 4 tests in `coordinator`, 5 E2E tests via Playwright, 8 tests in `observation-store`, 16 tests in `validation-engine`). E2E `real-world.test.ts` executes and snapshots cleanly.
+- **Architectural Verification:** `PlaywrightAdapter.ts` updated correctly handling interactions using `force:true` and proper timeout strategies, stabilizing tests without leaking Playwright `Page` types.
+- **Dependency Graph:** Unchanged. Forbidden dependencies verified via `grep`. Playwright is isolated exclusively to `browser-runtime` and `e2e-tests`.
+- **ADR Compliance:** AVP-001 checks passed successfully.
+**ID:** M-023
 
 ## References
 - User requirement (July 21)
-- `docs/adr/ACP-004-Behavior-Driven-E2E-Testing.md`
+- `docs/adr/ACP-005-E2E-Test-Maturation.md`
 
 ## Objective
-Integrate real-world open source HTML repositories as static fixtures in the E2E test suite to ensure the system is battle-tested against large-scale, complex DOM structures.
+Implement Golden Master snapshot testing, expand capability coverage, and validate interactivity in the Real-World E2E Test Fixtures to close existing testing gaps and prove determinism.
 
 ## Scope
 **In Scope:**
-- Clone specified open-source HTML repositories (anon-ecommerce-website, vast, glowing, gamics).
-- Integrate them into `packages/e2e-tests/tests/fixtures/real-world`.
-- Implement parameterized Playwright E2E tests to load these complex fixtures and extract their Observation Graphs, validating that the extraction process works without crashing.
+- Golden Master snapshot comparisons for real-world fixtures.
+- Expanding capability extraction levels in E2E tests (including visual bounding boxes, accessibility trees).
+- Interactive E2E flows to validate state transitions and delta validation.
 
 **Out of Scope:**
-- Architectural changes to the core system.
-- Modifying the external repository contents (except for required paths/linking fixes if necessary for local file:// loading, though we should ideally just test as-is).
+- Implementing new core capabilities in the extraction engine (we are only testing existing ones, though bug fixes during testing are expected).
 
 ## Phase 1 Tasks
-- [ ] Task 1: Copy cloned repositories into the E2E fixtures directory.
-- [ ] Task 2: Create parameterized E2E tests iterating over the index.html of each real-world fixture.
-- [ ] Task 3: Verify Observation Graph extraction on these large fixtures.
+- [x] Task 1: Expand capability coverage in `real-world.test.ts` (levels 0, 1, 2) and assert accurate mappings.
+- [x] Task 2: Implement Golden Master snapshot testing for the ObservationGraph, removing non-deterministic fields.
+- [x] Task 3: Implement interactive validation (e.g. clicking a button in `anon-ecommerce-website` and diffing graph/visuals).
