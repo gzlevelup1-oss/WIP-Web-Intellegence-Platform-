@@ -39,7 +39,7 @@ simulatorRouter.post('/snapshot', async (req, res) => {
         success: true,
         snapshotId: result.data.snapshotId,
         graph: result.data.graph,
-        screenshotBase64: result.data.screenshotBase64,
+        screenshotBase64: result.data.visual,
         sessionId,
         logs
       });
@@ -132,7 +132,7 @@ simulatorRouter.post('/command', async (req, res) => {
       logs,
       snapshotId: snapshot.snapshotId,
       graph: snapshot.graph,
-      screenshotBase64: snapshot.screenshotBase64,
+      screenshotBase64: snapshot.visual,
     });
   } catch (e: any) {
     res.status(500).json({ error: e.message });

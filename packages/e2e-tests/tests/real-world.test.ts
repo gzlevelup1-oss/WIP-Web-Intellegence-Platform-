@@ -12,7 +12,21 @@ test.describe('Real-World Fixtures E2E', () => {
     test.beforeAll(async () => {
         const adapter = new PlaywrightAdapter();
         runtime = new BrowserRuntime(adapter);
-        kernel = new ExecutionKernel(runtime);
+        kernel = new ExecutionKernel({
+            createCheckpoint: async (id: string) => {
+                const rc = await runtime.createCheckpoint(id);
+                return {
+                    checkpointId: "chk-" + Date.now(),
+                    sessionId: id,
+                    timestamp: Date.now(),
+                    url: rc.url,
+                    cookies: rc.cookies,
+                    historyIndex: (rc as any).historyIndex,
+                    localStorage: (rc as any).localStorage
+                };
+            },
+            restoreCheckpoint: async (id: string, cp: any) => await runtime.restoreCheckpoint(id, cp)
+        });
     });
 
     test.afterEach(async () => {

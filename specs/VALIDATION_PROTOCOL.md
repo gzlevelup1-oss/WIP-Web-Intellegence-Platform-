@@ -6,12 +6,12 @@
 ## 1. Validation Metrics
 The protocol requires dual-layer verification for every completed Mission payload:
 - **Visual Metric:** Structural Similarity Index Measure (SSIM) and Mean Squared Error (MSE) computed from a headless browser screenshot of the generated artifact compared to the target Snapshot.
-- **Structural Metric:** Tree Edit Distance (TED) and Node Hashing computed on the generated Observation Graph versus the target Observation Graph.
+- **Structural Metric:** JSON Graph Delta Comparison (`jsondiffpatch`) combined with node normalization, as authorized by ACP-008.
 
 ## 2. Thresholds
 Validation is strictly binary (Pass/Fail). To pass, the artifact must meet the following criteria:
 - **Visual Threshold:** `SSIM > 0.98` and `MSE < 0.05` across all configured viewports.
-- **Structural Threshold:** `TED < 5%` (allowing for dynamic ID stripping).
+- **Structural Threshold:** Normalized Delta Discrepancy Ratio < 0.05 (5%) computed over total graph nodes and edges.
 - **Accessibility Threshold:** 100% match on critical ARIA roles and tab indices.
 
 ## 3. Repair Loop

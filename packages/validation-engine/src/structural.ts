@@ -34,7 +34,7 @@ export function structuralDiff(originalGraph: any, reconstructedGraph: any): Dis
     if (diffRatio > threshold) {
       violations.push({
         type: 'Structural',
-        message: `Tree Edit Distance exceeded threshold. Distance: ${numChanges}. Normalized difference: ${(diffRatio * 100).toFixed(2)}%.`
+        message: `Structural discrepancy exceeded threshold. Delta count: ${numChanges}. Normalized difference: ${(diffRatio * 100).toFixed(2)}%.`
       });
     }
   }

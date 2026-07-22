@@ -325,7 +325,7 @@ These are lightning-fast local algorithms designed to execute mathematical clust
 #### Worker Specification & Algorithms
 
 1.  **Component Miner (Clustering Engine):**
-    *   *Algorithm:* Computes tree-distance metrics (Tree Edit Distance) combined with Style Vector Cosine Similarity.
+    *   *Algorithm:* Computes tree-distance metrics (JSON Graph Delta Comparison via `jsondiffpatch`) combined with Style Vector Cosine Similarity.
     *   *Result:* Groups elements (like 48 product cards in a list) into a single logical "Component Class" with an extracted variation matrix.
 2.  **Design Token Extractor (The Tokenizer):**
     *   *Algorithm:* Parses the global CSS properties, calculates frequency distributions, clusters adjacent color codes using Delta-E (CIE76) color difference formulas, and generates the active color and type palette.

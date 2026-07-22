@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "playwright test", "build": "echo \"No build step for e2e tests\""
+    "test": "playwright test", "build": "echo \"No build step for e2e tests\"", "lint": "tsc --noEmit"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",

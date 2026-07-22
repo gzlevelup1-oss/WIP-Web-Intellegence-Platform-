@@ -68,7 +68,7 @@ export function ObservationInspector() {
     
     // Build adjacency list for tree calculation
     const childrenMap = new Map<string, string[]>();
-    const roots = new Set(graph.nodes.map(n => n.id));
+    const roots = new Set<string>(graph.nodes.map(n => n.id));
     
     for (const edge of graph.edges) {
       if (edge.type === 'has_child') {
@@ -78,7 +78,7 @@ export function ObservationInspector() {
       }
     }
 
-    const nodeMap = new Map(graph.nodes.map(n => [n.id, n]));
+    const nodeMap = new Map<string, any>(graph.nodes.map(n => [n.id, n]));
     const result: any[] = [];
 
     // DFS to flatten tree and assign depth

@@ -19,7 +19,16 @@ export class ServiceLocator {
     
     this.executionKernel = new ExecutionKernel({
       createCheckpoint: async (sessionId: string) => {
-        return await this.browserRuntime.createCheckpoint(sessionId);
+        const rc = await this.browserRuntime.createCheckpoint(sessionId);
+        return {
+          checkpointId: "chk-" + Date.now().toString(),
+          sessionId,
+          timestamp: Date.now(),
+          url: rc.url,
+          cookies: rc.cookies,
+          historyIndex: (rc as any).historyIndex,
+          localStorage: (rc as any).localStorage
+        };
       },
       restoreCheckpoint: async (sessionId: string, checkpoint: any) => {
         await this.browserRuntime.restoreCheckpoint(sessionId, checkpoint);
