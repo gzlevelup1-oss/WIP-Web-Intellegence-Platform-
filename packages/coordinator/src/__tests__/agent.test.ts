@@ -7,22 +7,28 @@ vi.mock('@google/genai', () => {
   return {
     GoogleGenAI: class {
       chats = {
-        create: vi.fn().mockReturnValue({
-          sendMessage: vi.fn().mockResolvedValue({
-            text: 'I will complete the mission.',
-            functionCalls: [
-              {
-                id: 'call-1',
-                name: 'Observation_capture',
-                args: { levels: ['DOM', 'A11Y'] }
-              },
-              {
-                id: 'call-2',
-                name: 'Mission_complete',
-                args: { resultPayload: 'done' }
+        create: vi.fn().mockImplementation((config) => {
+          return {
+            sendMessage: vi.fn().mockImplementation(async () => {
+              const callable = config.config.tools[0];
+              const calls = [
+                {
+                  id: 'call-1',
+                  name: 'Observation_capture',
+                  args: { levels: ['DOM', 'A11Y'] }
+                },
+                {
+                  id: 'call-2',
+                  name: 'Mission_complete',
+                  args: { resultPayload: 'done' }
+                }
+              ];
+              if (callable && callable.callTool) {
+                await callable.callTool(calls);
               }
-            ]
-          })
+              return { text: 'I will complete the mission.' };
+            })
+          };
         })
       };
     }

@@ -14,5 +14,9 @@
     "@types/node": "^20.0.0",
     "typescript": "^5.2.2",
     "vitest": "^4.1.10"
+  },
+  "dependencies": {
+    "p-queue": "^9.3.3",
+    "p-retry": "^8.0.0"
   }
 }

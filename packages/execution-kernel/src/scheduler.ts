@@ -1,55 +1,47 @@
 import { BrowserAction, ActionResult } from './types.js';
 import { Task } from './task.js';
+import pRetry from 'p-retry';
+import PQueue from 'p-queue';
 
 export class Scheduler {
+  private queue = new PQueue({ concurrency: 1 });
+
   public async executeTaskWithRetry(
     task: Task,
     actionExecutor: (action: BrowserAction) => Promise<ActionResult>,
     maxRetries: number = 3,
     baseDelayMs: number = 500
   ): Promise<ActionResult> {
-    let attempt = 0;
-    while (attempt < maxRetries) {
+    return this.queue.add(async () => {
       task.status = 'RUNNING';
-      let taskSuccess = true;
-      let lastError = '';
-      let lastData = null;
-
-      for (const action of task.actions) {
-        try {
-          const result = await actionExecutor(action);
-          if (!result.success) {
-            taskSuccess = false;
-            lastError = result.error || 'Action failed';
-            break;
+      try {
+        const result = await pRetry(
+          async () => {
+            let lastData = null;
+            for (const action of task.actions) {
+              const res = await actionExecutor(action);
+              if (!res.success) {
+                throw new Error(res.error || 'Action failed');
+              }
+              lastData = res.data;
+            }
+            return { success: true, data: lastData } as ActionResult;
+          },
+          {
+            retries: maxRetries,
+            minTimeout: baseDelayMs,
+            factor: 2,
+            onFailedAttempt: (error) => {
+              // Logging could go here
+            }
           }
-          lastData = result.data;
-        } catch (error: any) {
-          taskSuccess = false;
-          lastError = error.message;
-          break;
-        }
-      }
-
-      if (taskSuccess) {
+        );
         task.status = 'COMPLETED';
-        return { success: true, data: lastData };
-      }
-
-      attempt++;
-      if (attempt >= maxRetries) {
+        return result;
+      } catch (error: any) {
         task.status = 'FAILED';
-        return { success: false, error: `Task failed after ${maxRetries} attempts. Last error: ${lastError}` };
+        return { success: false, error: `Task failed after ${maxRetries} attempts. Last error: ${error.message}` };
       }
-      
-      // Rollback or Reset could go here, but for now we just delay and retry the whole task
-      await this.delay(baseDelayMs * Math.pow(2, attempt - 1));
-    }
-    task.status = 'FAILED';
-    return { success: false, error: 'Unknown scheduler error' };
-  }
-
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    });
   }
 }

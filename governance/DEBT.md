@@ -6,6 +6,11 @@ This is a governed backlog for technical debt. Instead of using inline comments 
 
 | ID | Reason | Impact | Priority | Owner | Resolution Mission |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| TD-005 | Observation Graph Merkle-tree hashing missing (uses naive full JSON hash instead of Node/Subtree hashing). | Breaks O(1) subtree comparison capabilities and performance. | High | Architecture | TBD |
+| TD-006 | Node Types mismatch (AccessibilityNode instead of A11yNode) and missing `attributes` map in DOMNode extraction. | Fails specification schema; loses semantic DOM context. | High | Architecture | TBD |
+| TD-007 | DOMNode HAS_GEOMETRY and HAS_STYLE edges are conditional, breaking strict structural invariants. | Corrupts downstream graph traversals expecting mandatory layout data. | High | Architecture | TBD |
+| TD-008 | MemoryObservationStore lacks JSON Schema validation before saving snapshots. | Allows malformed graph structures to pollute storage. | Medium | Architecture | TBD |
+
 
 ## Resolved Debt
 

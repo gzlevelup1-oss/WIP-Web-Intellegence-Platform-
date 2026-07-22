@@ -226,3 +226,13 @@
 - [x] Task 5: Update `FileViewer.tsx` to show dynamic bounding boxes in .diff. mode based on validation results.
 - [x] Task 6: Validate build (`npm run build`).
 - [x] Task 7: Execute AVP-001 Architecture Verification and lock the mission.
+
+## Mission 26: NIH Custom Logic Replacement
+*Status: LOCKED*
+- [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md` and `TASKS.md` for Mission 26.
+- [x] Task 2: Install required NPM packages (`graphology`, `jsondiffpatch`, `p-retry`, `p-queue`).
+- [x] Task 3: Refactor `packages/observation-store` to utilize `graphology`.
+- [x] Task 4: Refactor `packages/validation-engine` structural diffing to use `jsondiffpatch`.
+- [x] Task 5: Refactor `packages/execution-kernel` scheduling to use `p-retry` and `p-queue`.
+- [x] Task 6: Refactor `packages/coordinator` to use `@google/genai` native function calling.
+- [x] Task 7: Run workspace tests, execute AVP-001, and lock the mission.

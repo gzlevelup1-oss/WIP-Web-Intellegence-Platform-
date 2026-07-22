@@ -1,4 +1,4 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, Type, FunctionCall, Part } from '@google/genai';
 import { CoordinatorToolDeclarations } from './tools.js';
 import { IExecutionKernelAdapter, IWorkerAdapter, IValidationAdapter } from './adapter.js';
 
@@ -16,6 +16,7 @@ export class CoordinatorAgent {
   private workers: IWorkerAdapter;
   private validation?: IValidationAdapter;
   private chat: any;
+  private missionCompleteData: any = null;
 
   constructor(apiKey: string, kernel: IExecutionKernelAdapter, workers: IWorkerAdapter, validation?: IValidationAdapter) {
     this.ai = new GoogleGenAI({ apiKey });
@@ -24,108 +25,101 @@ export class CoordinatorAgent {
     this.validation = validation;
   }
 
-  public start(objective: string) {
+  public async start(objective: string) {
+    this.missionCompleteData = null;
+    let repairAttempts = 0;
+
+    const self = this;
+
+    const callableTool = {
+      tool: async () => CoordinatorToolDeclarations[0],
+      callTool: async (calls: FunctionCall[]): Promise<Part[]> => {
+        const parts: Part[] = [];
+        
+        for (const call of calls) {
+          console.log(`[Coordinator Action]: ${call.name}(${JSON.stringify(call.args!)})`);
+          let callResult: any = { error: 'Unknown tool' };
+          
+          try {
+            switch (call.name) {
+              case 'Observation_capture':
+                callResult = await self.kernel.captureObservation(call.args!.levels as string[]);
+                break;
+              case 'Worker_extractDesignTokens':
+                callResult = await self.workers.extractDesignTokens(call.args!.snapshotId as string);
+                break;
+              case 'Worker_mineComponents':
+                callResult = await self.workers.mineComponents(call.args!.snapshotId as string, call.args!.containerNodeId as string);
+                break;
+              case 'Worker_analyzeLayout':
+                callResult = await self.workers.analyzeLayout(call.args!.snapshotId as string, call.args!.containerNodeId as string);
+                break;
+              case 'Interaction_click':
+                callResult = await self.kernel.click(call.args!.nodeId as string);
+                break;
+              case 'Interaction_type':
+                callResult = await self.kernel.type(call.args!.nodeId as string, call.args!.text as string);
+                break;
+              case 'Navigation_goto':
+                callResult = await self.kernel.goto(call.args!.url as string);
+                break;
+              case 'Validation_evaluate':
+                if (self.validation) {
+                  callResult = await self.validation.evaluate(call.args!.originalSnapshotId as string, call.args!.reconstructedSnapshotId as string);
+                } else {
+                  callResult = { error: 'Validation Adapter not configured' };
+                }
+                break;
+              case 'Mission_complete':
+                if (self.validation && call.args!.originalSnapshotId && call.args!.reconstructedSnapshotId) {
+                  const evalResult = await self.validation.evaluate(call.args!.originalSnapshotId as string, call.args!.reconstructedSnapshotId as string);
+                  if (evalResult && evalResult.status === 'ValidationFailed' && repairAttempts < 3) {
+                    repairAttempts++;
+                    callResult = { 
+                       error: `ValidationFailed: You must repair the implementation. Attempt ${repairAttempts}/3. Discrepancy report: ${JSON.stringify(evalResult)}` 
+                     };
+                    console.log(`[Coordinator] Repair Loop triggered (${repairAttempts}/3)`);
+                    break;
+                  }
+                }
+                console.log(`[Coordinator] Mission Complete: ${call.args!.resultPayload}`);
+                self.missionCompleteData = { status: 'completed', payload: call.args!.resultPayload };
+                break;
+            }
+          } catch (e: any) {
+            callResult = { error: e.message };
+          }
+
+          // Use the `Part` factory or just construct the object
+          parts.push({
+            functionResponse: {
+              id: call.id,
+              name: call.name,
+              response: callResult
+            }
+          } as Part);
+        }
+        
+        return parts;
+      }
+    };
+
     this.chat = this.ai.chats.create({
       model: 'gemini-2.5-pro',
       config: {
         systemInstruction: SYSTEM_PROMPT,
-        tools: CoordinatorToolDeclarations,
+        tools: [callableTool as any],
         temperature: 0.2
       }
     });
-    return this.runLoop(`Mission Objective: ${objective}`);
-  }
 
-  private async runLoop(message: string): Promise<any> {
-    let currentMessage: any = message;
-    let repairAttempts = 0;
+    console.log(`[Coordinator] Starting automated ReAct loop...`);
+    const response = await this.chat.sendMessage({ message: `Mission Objective: ${objective}` });
     
-    while (true) {
-      console.log(`[Coordinator] Sending prompt...`);
-      const response = await this.chat.sendMessage({ message: currentMessage });
-      console.log(`[Coordinator] Received response.`);
-      
-      if (response.text) {
-        console.log(`[Coordinator Thought]: ${response.text}`);
-      }
-
-      const calls = response.functionCalls;
-      if (!calls || calls.length === 0) {
-        if (response.text) {
-          return { status: 'stopped', message: response.text };
-        }
-        break;
-      }
-
-      const results = [];
-      let missionCompleteData: any = null;
-
-      for (const call of calls) {
-        console.log(`[Coordinator Action]: ${call.name}(${JSON.stringify(call.args)})`);
-        let callResult: any = { error: 'Unknown tool' };
-        
-        try {
-          switch (call.name) {
-            case 'Observation_capture':
-              callResult = await this.kernel.captureObservation(call.args.levels);
-              break;
-            case 'Worker_extractDesignTokens':
-              callResult = await this.workers.extractDesignTokens(call.args.snapshotId);
-              break;
-            case 'Worker_mineComponents':
-              callResult = await this.workers.mineComponents(call.args.snapshotId, call.args.containerNodeId);
-              break;
-            case 'Worker_analyzeLayout':
-              callResult = await this.workers.analyzeLayout(call.args.snapshotId, call.args.containerNodeId);
-              break;
-            case 'Interaction_click':
-              callResult = await this.kernel.click(call.args.nodeId);
-              break;
-            case 'Interaction_type':
-              callResult = await this.kernel.type(call.args.nodeId, call.args.text);
-              break;
-            case 'Navigation_goto':
-              callResult = await this.kernel.goto(call.args.url);
-              break;
-            case 'Validation_evaluate':
-              if (this.validation) {
-                callResult = await this.validation.evaluate(call.args.originalSnapshotId, call.args.reconstructedSnapshotId);
-              } else {
-                callResult = { error: 'Validation Adapter not configured' };
-              }
-              break;
-            case 'Mission_complete':
-              if (this.validation && call.args.originalSnapshotId && call.args.reconstructedSnapshotId) {
-                const evalResult = await this.validation.evaluate(call.args.originalSnapshotId, call.args.reconstructedSnapshotId);
-                if (evalResult && evalResult.status === 'ValidationFailed' && repairAttempts < 3) {
-                  repairAttempts++;
-                  callResult = { 
-                    error: `ValidationFailed: You must repair the implementation. Attempt ${repairAttempts}/3. Discrepancy report: ${JSON.stringify(evalResult)}` 
-                  };
-                  console.log(`[Coordinator] Repair Loop triggered (${repairAttempts}/3)`);
-                  break; // break out of switch, tool result goes back to agent
-                }
-              }
-              console.log(`[Coordinator] Mission Complete: ${call.args.resultPayload}`);
-              missionCompleteData = { status: 'completed', payload: call.args.resultPayload };
-              break;
-          }
-        } catch (e: any) {
-          callResult = { error: e.message };
-        }
-        
-        if (missionCompleteData) {
-           return missionCompleteData;
-        }
-
-        results.push({
-          id: call.id,
-          name: call.name,
-          response: callResult
-        });
-      }
-
-      currentMessage = results;
+    if (this.missionCompleteData) {
+      return this.missionCompleteData;
     }
+    
+    return { status: 'stopped', message: response.text };
   }
 }
