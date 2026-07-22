@@ -62,7 +62,7 @@ export const evaluateSnapshot = `({ snapshotId, url, levels = [0] }) => {
     }
     
     // Level 1: Visual / Geometry
-    if (levels.includes(1) && el.getBoundingClientRect && window.getComputedStyle) {
+    if ((levels.includes(1) || levels.includes('STYLE') || levels.includes('GEOMETRY') || levels.includes('VISUAL')) && el.getBoundingClientRect && window.getComputedStyle) {
       const geoNodeId = 'geo-' + (nodeIdCounter++);
       const styleNodeId = 'style-' + (nodeIdCounter++);
       const rect = el.getBoundingClientRect();
@@ -105,7 +105,7 @@ export const evaluateSnapshot = `({ snapshotId, url, levels = [0] }) => {
     }
 
     // Level 2: Accessibility
-    if (levels.includes(2) && el.hasAttribute) {
+    if ((levels.includes(2) || levels.includes('A11Y')) && el.hasAttribute) {
       const a11yNodeId = 'a11y-' + (nodeIdCounter++);
       const role = el.getAttribute('role') || '';
       const ariaLabel = el.getAttribute('aria-label') || '';

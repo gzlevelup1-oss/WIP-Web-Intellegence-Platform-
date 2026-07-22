@@ -16,7 +16,7 @@ export class BrowserService {
     await this.adapter.navigate(sessionId, url);
   }
 
-  public async capture(sessionId: string, levels: number[]): Promise<ObservationSnapshot> {
+  public async capture(sessionId: string, levels: (number | string)[]): Promise<ObservationSnapshot> {
     this.sessionManager.touchSession(sessionId);
     return await this.adapter.capture(sessionId, levels);
   }

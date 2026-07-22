@@ -18,7 +18,7 @@ This Architecture Friction Report (AFR) captures the systemic architectural non-
 * **Evidence:** `RuntimeMetadata` missing `Platform`, `Viewport`, `Locale`, `Timezone`, and `User Agent`. `ObservationSnapshot` missing `Hash` and `Metadata`.
 * **Why implementation cannot proceed:** The API does not expose all required metadata and hashing guarantees for the Coordinator to function deterministically.
 * **Proposed resolution / Candidate Solutions:** Update `RuntimeMetadata` and `ObservationSnapshot` interfaces in `types.ts` to reflect the specification, and update adapters (e.g., `PlaywrightAdapter`) to supply this data.
-* **Status:** Draft
+* **Status:** Resolved
 
 ### Discrepancy 2
 * **ID:** AFR-002.2
@@ -30,7 +30,7 @@ This Architecture Friction Report (AFR) captures the systemic architectural non-
 * **Evidence:** `CheckpointData` only contains `url` and `cookies`, missing `checkpointId`, `sessionId`, `timestamp`, `historyIndex`, `localStorage`, and `snapshotHash`.
 * **Why implementation cannot proceed:** Transactions cannot be safely rolled back in their entirety if local storage and history index are not preserved.
 * **Proposed resolution / Candidate Solutions:** Expand `CheckpointData` interface and implement capture/restore of local storage and full state in the browser adapter.
-* **Status:** Draft
+* **Status:** Resolved
 
 ### Discrepancy 3
 * **ID:** AFR-002.3
@@ -42,7 +42,7 @@ This Architecture Friction Report (AFR) captures the systemic architectural non-
 * **Evidence:** The `Task` abstraction is missing entirely. `Transaction` maps directly to `Action`.
 * **Why implementation cannot proceed:** Retries and scheduling cannot be applied at the logical `Task` grouping level as intended by the design.
 * **Proposed resolution / Candidate Solutions:** Introduce `Task` entity in the kernel to group actions and manage retries at the task level rather than at the individual action level.
-* **Status:** Draft
+* **Status:** Resolved
 
 ### Discrepancy 4
 * **ID:** AFR-002.4
@@ -54,7 +54,7 @@ This Architecture Friction Report (AFR) captures the systemic architectural non-
 * **Evidence:** No RBAC/policy enforcement logic exists when a transaction is submitted.
 * **Why implementation cannot proceed:** The kernel fails its primary responsibility of validating requests against a security policy before execution.
 * **Proposed resolution / Candidate Solutions:** Introduce `SecurityPolicy` evaluation in `kernel.beginTransaction` or `kernel.executeAction` based on the active mission's permissions.
-* **Status:** Draft
+* **Status:** Resolved
 
 ### Discrepancy 5
 * **ID:** AFR-002.5
@@ -66,7 +66,7 @@ This Architecture Friction Report (AFR) captures the systemic architectural non-
 * **Evidence:** Loose typing (`type: string`, `properties: Record<string, any>`) instead of strictly enumerated types (`DOMNode`, `StyleNode`) and structured property schemas.
 * **Why implementation cannot proceed:** Loose typing allows invalid graphs to be stored and processed by downstream workers, violating data integrity.
 * **Proposed resolution / Candidate Solutions:** Implement exact TypeScript interfaces matching the JSON schema defined in the specification.
-* **Status:** Draft
+* **Status:** Resolved
 
 ### Discrepancy 6
 * **ID:** AFR-002.6
@@ -78,7 +78,7 @@ This Architecture Friction Report (AFR) captures the systemic architectural non-
 * **Evidence:** Implementation uses a `10%` (`0.1`) threshold for Tree Edit Distance, whereas the specification strictly demands `< 5%`.
 * **Why implementation cannot proceed:** The Validation Engine passes lower quality results than the architecture permits.
 * **Proposed resolution / Candidate Solutions:** Change threshold in `structural.ts` to `0.05`.
-* **Status:** Draft
+* **Status:** Resolved
 
 ### Discrepancy 7
 * **ID:** AFR-002.7
@@ -90,7 +90,7 @@ This Architecture Friction Report (AFR) captures the systemic architectural non-
 * **Evidence:** The validation engine does not persist any Evidence Records to the disk (`governance/` or `logs/`).
 * **Why implementation cannot proceed:** Breaks the architectural rule that the Validation Engine's decisions must be auditable.
 * **Proposed resolution / Candidate Solutions:** Inject a logger or storage adapter into the `validate` function to serialize and save the `DiscrepancyReport` along with diff artifacts to `logs/`.
-* **Status:** Draft
+* **Status:** Resolved
 
 ### Discrepancy 8
 * **ID:** AFR-002.8
@@ -102,7 +102,7 @@ This Architecture Friction Report (AFR) captures the systemic architectural non-
 * **Evidence:** There is no logic comparing ARIA roles and tab indices.
 * **Why implementation cannot proceed:** Cannot guarantee accessibility validation.
 * **Proposed resolution / Candidate Solutions:** Add an `accessibilityDiff` function that specifically verifies `A11yNode` matches in the graphs.
-* **Status:** Draft
+* **Status:** Resolved
 
 ### Discrepancy 9
 * **ID:** AFR-002.9
@@ -114,7 +114,7 @@ This Architecture Friction Report (AFR) captures the systemic architectural non-
 * **Evidence:** `Mission_complete` terminates the loop immediately without triggering the Validation Engine, preventing the Repair Loop (up to 3 repairs).
 * **Why implementation cannot proceed:** The Coordinator bypasses mandatory quality control checks entirely.
 * **Proposed resolution / Candidate Solutions:** In `agent.ts`, when `Mission_complete` is called, explicitly call the validation adapter. If it fails, feed the error back into `currentMessage` and keep the loop running.
-* **Status:** Draft
+* **Status:** Resolved
 
 ### Discrepancy 10
 * **ID:** AFR-002.10
@@ -126,4 +126,4 @@ This Architecture Friction Report (AFR) captures the systemic architectural non-
 * **Evidence:** The spec defines levels as string enums (`["DOM", "A11Y"]`), but the browser runtime `capture` method expects `levels: number[]`.
 * **Why implementation cannot proceed:** When the Coordinator calls `Observation_capture` with `levels: ["DOM"]`, it will cause a type mismatch / runtime error in the adapter.
 * **Proposed resolution / Candidate Solutions:** Update the kernel adapter logic to map string enums from the Coordinator payload to the numeric flags required by the browser runtime, OR update the runtime API to use string enums.
-* **Status:** Draft
+* **Status:** Resolved

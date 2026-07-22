@@ -1,4 +1,8 @@
 export interface CheckpointData {
+  checkpointId: string;
+  sessionId: string;
+  timestamp: number;
+  snapshotHash?: string;
   url: string;
   cookies: any[];
   historyIndex?: number;

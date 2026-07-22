@@ -100,7 +100,7 @@ export class PlaywrightAdapter implements IBrowserAdapter {
     }
   }
 
-  public async capture(sessionId: string, levels: number[]): Promise<ObservationSnapshot> {
+  public async capture(sessionId: string, levels: (number | string)[]): Promise<ObservationSnapshot> {
     const page = this.getSessionPage(sessionId);
     try {
       const snapshotId = `snap-${Date.now()}`;
@@ -169,7 +169,7 @@ export class PlaywrightAdapter implements IBrowserAdapter {
     }).catch(() => undefined);
     
     // Playwright doesn't easily expose history index, so we omit it for now or default to 0
-    return { url, cookies, localStorage, historyIndex: 0 };
+    return { checkpointId: `cp-${Date.now()}`, sessionId, timestamp: Date.now(), url, cookies, localStorage, historyIndex: 0 };
   }
 
   public async restoreCheckpoint(sessionId: string, checkpoint: any): Promise<void> {

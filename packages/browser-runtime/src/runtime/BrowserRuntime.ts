@@ -48,7 +48,7 @@ export class BrowserRuntime implements IBrowserRuntime {
     await this.browserService.navigate(sessionId, url);
   }
 
-  public async capture(sessionId: string, levels: number[]): Promise<ObservationSnapshot> {
+  public async capture(sessionId: string, levels: (number | string)[]): Promise<ObservationSnapshot> {
     return await this.browserService.capture(sessionId, levels);
   }
 

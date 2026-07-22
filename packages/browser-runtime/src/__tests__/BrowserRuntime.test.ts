@@ -9,7 +9,7 @@ class MockAdapter implements IBrowserAdapter {
   async createSession(): Promise<string> { return 's1'; }
   async closeSession(id: string): Promise<void> {}
   async navigate(id: string, url: string): Promise<void> {}
-  async capture(id: string, levels: number[]): Promise<ObservationSnapshot> { return {} as ObservationSnapshot; }
+  async capture(id: string, levels: (number | string)[]): Promise<ObservationSnapshot> { return {} as ObservationSnapshot; }
   async click(id: string, n: string, modifiers?: string[]): Promise<void> {}
   async type(id: string, n: string, text: string, delay?: number): Promise<void> {}
   async scroll(id: string, dy: number, behavior?: string): Promise<void> {}
