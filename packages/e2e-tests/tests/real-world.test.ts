@@ -55,6 +55,9 @@ test.describe('Real-World Fixtures E2E', () => {
             // Clean float/geometry non-determinism
             graphJson = graphJson.replace(/"(x|y|width|height|top|right|bottom|left|viewportWidth|viewportHeight)": [\d\.]+/g, '"$1": 0');
             
+            // Clean animation non-determinism
+            graphJson = graphJson.replace(/\"opacity\":\s*\"[\d\.]+\"/g, `"opacity": "0"`);
+
             // Playwright Snapshot matcher
             expect(graphJson).toMatchSnapshot(`${fixture}-graph.json`);
             

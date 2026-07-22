@@ -49,7 +49,7 @@ test.describe('Behavior-Driven E2E: WIP Platform', () => {
             // For simplicity, we just pass CSS selector to our adapter
             // The PlaywrightAdapter click method expects a nodeId which it uses to map to a handle
             // Or we just find the button in the baseline and click it
-        console.log("Nodes:", JSON.stringify(baselineSnapshot.graph.nodes.map(n => n.properties), null, 2));
+        console.log("Nodes:", JSON.stringify(baselineSnapshot.graph.nodes.map((n: any) => n.properties), null, 2));
             const btnNode = baselineSnapshot.graph.nodes.find((n: any) => n.properties?.text === 'Click Me');
             if (btnNode) {
                 await runtime.click(sessionId, btnNode.id);
@@ -66,8 +66,8 @@ test.describe('Behavior-Driven E2E: WIP Platform', () => {
         const report = validate({
             originalGraph: baselineSnapshot.graph,
             reconstructedGraph: newSnapshot.graph,
-            originalScreenshotBase64: baselineSnapshot.imagePayload,
-            reconstructedScreenshotBase64: newSnapshot.imagePayload
+            originalScreenshotBase64: baselineSnapshot.visual || "",
+            reconstructedScreenshotBase64: newSnapshot.visual || ""
         });
         
         // Validation should reflect structural diffs because a new element is now visible/added.

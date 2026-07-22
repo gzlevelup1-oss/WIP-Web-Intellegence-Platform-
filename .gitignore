@@ -8,4 +8,4 @@ coverage/
 !.env.example
 bun.lock
 logs/
-packages/e2e-tests/tests/fixtures/real-world/
+!packages/e2e-tests/tests/fixtures/**
