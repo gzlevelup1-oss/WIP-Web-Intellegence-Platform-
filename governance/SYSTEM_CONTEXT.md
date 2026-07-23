@@ -13,7 +13,7 @@ Implementation
 None
 
 **Mission Status:**
-LOCKED
+NONE
 
 **Current Architecture Version:**
 v1.0.0
@@ -21,6 +21,12 @@ v1.0.0
 **Locked Interfaces:**
 - Browser Runtime API Specification (v1.0.0)
 - Browser Runtime Protocol Specification (v1.0.0)
+- Observation Model Specification (v1.0.0)
+- Observation Graph Specification (v1.0.0)
+- Execution Kernel Specification (v1.0.0)
+- Coordinator Protocol Specification (v1.0.0)
+- Worker Specifications (v1.0.0)
+- Validation Engine Specification (v1.0.0)
 
 **Active ADRs:**
 - ADR-001: Observation Graph & Model
@@ -34,8 +40,18 @@ v1.0.0
 - ADR-009: Public API Principle
 - AVP-001: Architecture Integrity Verification Protocol
 - AFR-001: Architecture Friction Report Protocol
+- AFR-002: Specification vs Implementation Discrepancies
+- CIR-001: Discrepancy Remediation Impact Analysis
+
+**Active Proposals:**
 - ARCH-002: Corrected Architectural Assessment - Browser Runtime Extraction
 - ACP-006: Browser Runtime Extraction Migration Plan
+- ACP-007: Behavior-Driven E2E Testing Strategy
+- ACP-008: E2E Test Maturation & Gap Closing
+- ACP-009: Express API Decoupling
+- ACP-010: UI/UX Integration Plan
+- ACP-011: NIH Custom Logic Replacement
+- ACP-012: Governance Synchronization and Discrepancy Reconciliation
 
 **Current Constraints:**
 - AI Implementor must follow the Engineering Constitution (`AGENTS.md`).

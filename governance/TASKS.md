@@ -81,7 +81,7 @@
 - [x] Task 4: Review and prepare spec for locking.
 
 ## Mission 9: Browser Laboratory Implementation
-*Status: COMPLETED*
+*Status: LOCKED*
 
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 9.
 - [x] Task 2: Draft Technical Design for the Browser Laboratory.
@@ -95,14 +95,14 @@
 ## Future Missions (Implementation)
 
 ## Mission 10: Monorepo Architecture Migration
-*Status: COMPLETED*
+*Status: LOCKED*
 - [x] Task 1: Update `MANIFEST.yaml` and `MISSION.md` for Mission 10.
 - [x] Task 2: Create `apps/browser-lab` and move current implementation.
 - [x] Task 3: Update root `package.json` with workspace configuration.
 - [x] Task 4: Verify `npm install` and ensure dev servers are working.
 
 ## Mission 11: Execution Kernel Implementation
-*Status: COMPLETED*
+*Status: LOCKED*
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 11.
 - [x] Task 2: Draft Technical Design for the Execution Kernel (Kernel, Scheduler, Transaction Manager).
 - [x] Task 3: Obtain user approval for Technical Design.
@@ -112,7 +112,7 @@
 - [x] Task 7: Implement Request Proxying from Coordinator to Browser Runtime.
 
 ## Mission 12: Specialized Deterministic Workers Implementation
-*Status: COMPLETED*
+*Status: LOCKED*
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 12.
 - [x] Task 2: Draft Technical Design (`docs/WorkersDesign.md`) for the 3 Specialized Workers.
 - [x] Task 3: Obtain user approval for Technical Design.
@@ -123,7 +123,7 @@
 - [x] Task 8: Integrate Workers into `apps/browser-lab/server.ts` via API routes.
 
 ## Mission 13: Coordinator Agent Implementation
-*Status: COMPLETED*
+*Status: LOCKED*
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 13.
 - [x] Task 2: Draft Technical Design (`docs/CoordinatorDesign.md`) for the Coordinator Agent.
 - [x] Task 3: Obtain user approval for Technical Design.
@@ -153,7 +153,7 @@
 - [x] Task 7: Implement tests for `packages/coordinator`.
 
 ## Mission 16: Observation Store Implementation
-*Status: APPROVED*
+*Status: LOCKED*
 [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 16.
 [x] Task 2: Draft Technical Design (`docs/ObservationStoreDesign.md`).
 - [x] Task 3: Obtain user approval for Technical Design.
@@ -179,7 +179,7 @@
 - [x] Task 5: Run tests.
 
 ## Mission 19: Browser Runtime Extraction
-*Status: COMPLETED*
+*Status: LOCKED*
 
 - [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md`, and `MISSION.md` for Mission 19.
 - [x] Task 2: Initialize `packages/browser-runtime` package (package.json, tsconfig.json).
@@ -192,7 +192,7 @@
 - [x] Task 9: Validate implementation (UI functions identically, architecture invariants met).
 # AFR-002 Remediation Tasks
 
-**Pending Approval of AFR-002 and CIR-001**
+*Status: LOCKED*
 
 ## Mission: AFR-002 Architecture Conformance Remediation
 
@@ -236,3 +236,12 @@
 - [x] Task 5: Refactor `packages/execution-kernel` scheduling to use `p-retry` and `p-queue`.
 - [x] Task 6: Refactor `packages/coordinator` to use `@google/genai` native function calling.
 - [x] Task 7: Run workspace tests, execute AVP-001, and lock the mission.
+
+## Mission 27: Governance Synchronization
+*Status: LOCKED*
+- [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md` and `TASKS.md` for Mission 27.
+- [x] Task 2: Sync Active ADRs and Proposals in `SYSTEM_CONTEXT.md` and `MANIFEST.yaml` (AFR-002, CIR-001, ACP-007 to ACP-012).
+- [x] Task 3: Sync `locked` missions list in `MANIFEST.yaml` with completed missions in `TASKS.md`.
+- [x] Task 4: Mark AFR-002 Remediation Mission as `LOCKED` in `TASKS.md` and remove pending approval text.
+- [x] Task 5: Add AFR-002 Remediation to `ROADMAP.md` under Phase 5.
+- [x] Task 6: Complete mission, execute AVP-001 checks, and lock.

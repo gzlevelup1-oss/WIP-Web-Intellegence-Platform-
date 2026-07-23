@@ -32,6 +32,7 @@ Original Website → Observation → Model → Reconstruction → Validation →
 Resolve architectural debt and enforce the Testing Constitution across all previous implementations.
 *   **Mission 15:** Retroactive Testing Implementation (Workers, Kernel, Coordinator)
 *   **Mission 16:** Observation Store Implementation
+*   **Mission:** AFR-002 Architecture Conformance Remediation
 
 ## Phase 6 — Decoupling & Modular Architecture
 Extract and decouple core systems into standalone packages and establish the frontend interface.

@@ -11,11 +11,19 @@ current_phase:
 current_mission: ""
 locked:
   - Mission 26 (NIH Custom Logic Replacement)
+  - Mission 27 (Governance Synchronization)
   - Mission 25 (UI/UX Integration)
   - Mission 24 (Express API Decoupling)
   - Mission 18 (Coordinator Validation Loop)
   - Mission 17 (Validation TED and Shadow DOM)
   - Mission 10 (Monorepo Migration)
+  - Mission 9 (Browser Laboratory Implementation)
+  - Mission 11 (Execution Kernel Implementation)
+  - Mission 12 (Specialized Deterministic Workers Implementation)
+  - Mission 13 (Coordinator Agent Implementation)
+  - Mission 14 (Validation Engine Implementation)
+  - Mission 19 (Browser Runtime Extraction)
+  - Mission AFR-002 (Architecture Conformance Remediation)
   - Observation Graph (Governance)
   - Validation Protocol (Governance)
   - Session Manager (Governance)
@@ -49,7 +57,16 @@ active_adrs:
   - ADR-009
   - AVP-001
   - AFR-001
+  - AFR-002
+  - CIR-001
+active_proposals:
   - ARCH-002
   - ACP-006
+  - ACP-007
+  - ACP-008
+  - ACP-009
+  - ACP-010
+  - ACP-011
+  - ACP-012
 status:
   implementation: true
