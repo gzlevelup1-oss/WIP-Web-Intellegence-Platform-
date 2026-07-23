@@ -121,52 +121,52 @@ BrowserLaunchError: Failed to launch browser: browserType.launch: Executable doe
   92  |         try {
   93  |             const snapshotId = `snap-${Date.now()}`;
   94  |             const url = page.url();
-  95  |             const graphResult = await page.evaluate(`(${evaluateSnapshot})({ snapshotId: "${snapshotId}", url: "${url}", levels: ${JSON.stringify(levels)} })`);
-  96  |             const screenshotBuffer = await page.screenshot({ type: 'png' });
-  97  |             const visual = 'data:image/png;base64,' + screenshotBuffer.toString('base64');
-  98  |             const crypto = await import('crypto');
-  99  |             const hash = crypto.createHash('sha256').update(JSON.stringify(graphResult)).digest('hex');
-  100 |             return {
-  101 |                 snapshotId,
-  102 |                 url,
-  103 |                 timestamp: Date.now(),
-  104 |                 graph: graphResult,
-  105 |                 visual,
-  106 |                 hash,
-  107 |                 metadata: {
-  108 |                     levels,
-  109 |                     capturedAt: new Date().toISOString()
-  110 |                 }
-  111 |             };
-  112 |         }
-  113 |         catch (err) {
-  114 |             throw new BrowserExecutionError(`Failed to capture snapshot: ${err.message}`);
-  115 |         }
-  116 |     }
-  117 |     async click(sessionId, nodeId, modifiers) {
-  118 |         const page = this.getSessionPage(sessionId);
-  119 |         try {
-  120 |             const locator = page.locator(`[data-wip-id="${nodeId}"]`).first();
-  121 |             await locator.click({ modifiers: modifiers, force: true, timeout: 5000 });
-  122 |         }
-  123 |         catch (err) {
-  124 |             throw new BrowserExecutionError(`Click failed: ${err.message}`);
-  125 |         }
-  126 |     }
-  127 |     async type(sessionId, nodeId, text, delay) {
-  128 |         const page = this.getSessionPage(sessionId);
-  129 |         try {
-  130 |             const locator = page.locator(`[data-wip-id="${nodeId}"]`).first();
-  131 |             await locator.pressSequentially(text, { delay, timeout: 5000 });
-  132 |         }
-  133 |         catch (err) {
-  134 |             throw new BrowserExecutionError(`Type failed: ${err.message}`);
-  135 |         }
-  136 |     }
-  137 |     async createCheckpoint(sessionId) {
-  138 |         const session = this.sessions.get(sessionId);
-  139 |         if (!session)
-  140 |             throw new Error('Session not found');
-  141 |         const url = session.page.url();
-  142 |         const cookies = await session.context.cookies();
+  95  |             const graphResult = {
+  96  |                 snapshot: { id: snapshotId, timestamp: Date.now(), url },
+  97  |                 nodes: [],
+  98  |                 edges: []
+  99  |             };
+  100 |             graphResult.nodes.push({
+  101 |                 id: snapshotId,
+  102 |                 type: 'SnapshotNode',
+  103 |                 properties: { url, viewportWidth: page.viewportSize()?.width || 0, viewportHeight: page.viewportSize()?.height || 0 }
+  104 |             });
+  105 |             const traverseFrame = async (frame, parentIframeWipId, offsetX, offsetY) => {
+  106 |                 try {
+  107 |                     const frameGraph = await frame.evaluate(`(${evaluateSnapshot})({ snapshotId: "${snapshotId}", url: "${frame.url()}", levels: ${JSON.stringify(levels)} })`);
+  108 |                     let rootNodeId = null;
+  109 |                     // filter out the SnapshotNode and BELONGS_TO edges to it, since we already have one
+  110 |                     for (const node of frameGraph.nodes) {
+  111 |                         if (node.type === 'SnapshotNode')
+  112 |                             continue;
+  113 |                         if (node.type === 'DOMNode' && node.properties.tagName === 'html') {
+  114 |                             rootNodeId = node.id;
+  115 |                         }
+  116 |                         if (node.type === 'GeometryNode') {
+  117 |                             node.properties.x += offsetX;
+  118 |                             node.properties.y += offsetY;
+  119 |                             if (node.properties.top !== undefined)
+  120 |                                 node.properties.top += offsetY;
+  121 |                             if (node.properties.bottom !== undefined)
+  122 |                                 node.properties.bottom += offsetY;
+  123 |                             if (node.properties.left !== undefined)
+  124 |                                 node.properties.left += offsetX;
+  125 |                             if (node.properties.right !== undefined)
+  126 |                                 node.properties.right += offsetX;
+  127 |                         }
+  128 |                         graphResult.nodes.push(node);
+  129 |                     }
+  130 |                     for (const edge of frameGraph.edges) {
+  131 |                         graphResult.edges.push(edge);
+  132 |                     }
+  133 |                     if (parentIframeWipId && rootNodeId) {
+  134 |                         graphResult.edges.push({ source: parentIframeWipId, target: rootNodeId, type: 'CONTAINS_IFRAME' });
+  135 |                     }
+  136 |                     const childFrames = frame.childFrames();
+  137 |                     for (const child of childFrames) {
+  138 |                         let childOffsetX = offsetX;
+  139 |                         let childOffsetY = offsetY;
+  140 |                         let iframeWipId = null;
+  141 |                         try {
+  142 |                             const frameElement = await child.frameElement();
 ```

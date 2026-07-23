@@ -100,22 +100,88 @@ export class PlaywrightAdapter implements IBrowserAdapter {
     }
   }
 
-  public async capture(sessionId: string, levels: (number | string)[]): Promise<ObservationSnapshot> {
+    public async capture(sessionId: string, levels: (number | string)[]): Promise<ObservationSnapshot> {
     const page = this.getSessionPage(sessionId);
     try {
       const snapshotId = `snap-${Date.now()}`;
       const url = page.url();
       
-      const graphResult = await page.evaluate(
-        `(${evaluateSnapshot})({ snapshotId: "${snapshotId}", url: "${url}", levels: ${JSON.stringify(levels)} })`
-      );
+            const graphResult: { snapshot: any, nodes: any[], edges: any[] } = {
+        snapshot: { id: snapshotId, timestamp: Date.now(), url },
+        nodes: [],
+        edges: []
+      };
+
+      graphResult.nodes.push({
+        id: snapshotId,
+        type: 'SnapshotNode',
+        properties: { url, viewportWidth: page.viewportSize()?.width || 0, viewportHeight: page.viewportSize()?.height || 0 }
+      });
+
+      const traverseFrame = async (frame: import('playwright').Frame, parentIframeWipId: string | null, offsetX: number, offsetY: number) => {
+        try {
+          const frameGraph = await frame.evaluate(
+            `(${evaluateSnapshot})({ snapshotId: "${snapshotId}", url: "${frame.url()}", levels: ${JSON.stringify(levels)} })`
+          ) as any;
+          
+          let rootNodeId = null;
+          
+          // filter out the SnapshotNode and BELONGS_TO edges to it, since we already have one
+          for (const node of frameGraph.nodes) {
+            if (node.type === 'SnapshotNode') continue;
+            
+            if (node.type === 'DOMNode' && node.properties.tagName === 'html') {
+              rootNodeId = node.id;
+            }
+            
+            if (node.type === 'GeometryNode') {
+              node.properties.x += offsetX;
+              node.properties.y += offsetY;
+              if (node.properties.top !== undefined) node.properties.top += offsetY;
+              if (node.properties.bottom !== undefined) node.properties.bottom += offsetY;
+              if (node.properties.left !== undefined) node.properties.left += offsetX;
+              if (node.properties.right !== undefined) node.properties.right += offsetX;
+            }
+            graphResult.nodes.push(node);
+          }
+          
+          for (const edge of frameGraph.edges) {
+            graphResult.edges.push(edge);
+          }
+          
+          if (parentIframeWipId && rootNodeId) {
+            graphResult.edges.push({ source: parentIframeWipId, target: rootNodeId, type: 'CONTAINS_IFRAME' });
+          }
+          
+          const childFrames = frame.childFrames();
+          for (const child of childFrames) {
+            let childOffsetX = offsetX;
+            let childOffsetY = offsetY;
+            let iframeWipId = null;
+            try {
+              const frameElement = await child.frameElement();
+              if (frameElement) {
+                const box = await frameElement.boundingBox();
+                if (box) {
+                  childOffsetX += box.x;
+                  childOffsetY += box.y;
+                }
+                iframeWipId = await frameElement.getAttribute('data-wip-id');
+              }
+            } catch(e) {}
+            await traverseFrame(child, iframeWipId, childOffsetX, childOffsetY);
+          }
+        } catch (e) {
+          // Frame might be detached or inaccessible
+        }
+      };
+
+      await traverseFrame(page.mainFrame(), null, 0, 0);
 
       const screenshotBuffer = await page.screenshot({ type: 'png' });
       const visual = 'data:image/png;base64,' + screenshotBuffer.toString('base64');
-
       const crypto = await import('crypto');
       const hash = crypto.createHash('sha256').update(JSON.stringify(graphResult)).digest('hex');
-
       return {
         snapshotId,
         url,

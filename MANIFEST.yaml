@@ -10,7 +10,8 @@ current_phase:
   Implementation
 current_mission: ""
 locked:
-  - Mission 28 (Native Playwright Storage State Integration)
+  - ACP-013
+  - ACP-014 Implementation
   - Mission 26 (NIH Custom Logic Replacement)
   - Mission 27 (Governance Synchronization)
   - Mission 25 (UI/UX Integration)

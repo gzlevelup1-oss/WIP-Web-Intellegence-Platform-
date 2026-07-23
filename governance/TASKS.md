@@ -245,3 +245,13 @@
 - [x] Task 4: Mark AFR-002 Remediation Mission as `LOCKED` in `TASKS.md` and remove pending approval text.
 - [x] Task 5: Add AFR-002 Remediation to `ROADMAP.md` under Phase 5.
 - [x] Task 6: Complete mission, execute AVP-001 checks, and lock.
+
+## Mission 28: Technical Debt Resolution
+*Status: LOCKED*
+- [x] Task 1: Update `MANIFEST.yaml`, `SYSTEM_CONTEXT.md` and `TASKS.md` for Mission 28.
+- [x] Task 2: (TD-005) Implement Merkle-tree hashing from the ground up natively in `packages/observation-store/src/MemoryObservationStore.ts` or a new utility.
+- [x] Task 3: (TD-008) Integrate `ajv` JSON Schema validator in `MemoryObservationStore` for incoming snapshots.
+- [x] Task 4: (TD-009) Implement cross-origin iframe coordinate stitching in `packages/browser-runtime/src/adapters/PlaywrightAdapter.ts`.
+- [x] Task 5: (TD-006) Fix `A11yNode` naming and add `attributes` extraction in `browser-script.ts`.
+- [x] Task 6: (TD-007) Fix conditional structural edges (`HAS_GEOMETRY`, `HAS_STYLE`) to guarantee invariants during graph insertion.
+- [x] Task 7: Execute AVP-001 checks, update DEBT.md, and lock the mission.

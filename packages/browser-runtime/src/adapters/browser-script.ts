@@ -37,10 +37,22 @@ export const evaluateSnapshot = `({ snapshotId, url, levels = [0] }) => {
       }
     }
     
+    
+    const attributes = {};
+    if (el.attributes) {
+      for (let i = 0; i < el.attributes.length; i++) {
+        const attr = el.attributes[i];
+        if (attr.name !== 'data-wip-id') {
+          attributes[attr.name] = attr.value;
+        }
+      }
+    }
+    
     const properties = {
       tagName: el.tagName ? el.tagName.toLowerCase() : '',
       nodeType: el.nodeType,
       classes,
+      attributes,
       depth
     };
     
@@ -61,48 +73,33 @@ export const evaluateSnapshot = `({ snapshotId, url, levels = [0] }) => {
       graph.edges.push({ source: domNodeId, target: snapshotId, type: 'BELONGS_TO' });
     }
     
-    // Level 1: Visual / Geometry
+    
+    let geoProperties = { x: 0, y: 0, width: 0, height: 0, top: 0, right: 0, bottom: 0, left: 0 };
+    let styleProperties = { display: 'none', position: 'static', backgroundColor: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: '16px', margin: '0px', padding: '0px', opacity: '1', zIndex: 'auto' };
+
     if ((levels.includes(1) || levels.includes('STYLE') || levels.includes('GEOMETRY') || levels.includes('VISUAL')) && el.getBoundingClientRect && window.getComputedStyle) {
-      const geoNodeId = 'geo-' + (nodeIdCounter++);
-      const styleNodeId = 'style-' + (nodeIdCounter++);
       const rect = el.getBoundingClientRect();
-      
-      graph.nodes.push({
-        id: geoNodeId,
-        type: 'GeometryNode',
-        properties: {
-          x: rect.x,
-          y: rect.y,
-          width: rect.width,
-          height: rect.height,
-          top: rect.top,
-          right: rect.right,
-          bottom: rect.bottom,
-          left: rect.left
-        }
-      });
+      geoProperties = {
+        x: rect.x, y: rect.y, width: rect.width, height: rect.height,
+        top: rect.top, right: rect.right, bottom: rect.bottom, left: rect.left
+      };
       
       const computed = window.getComputedStyle(el);
-      graph.nodes.push({
-        id: styleNodeId,
-        type: 'StyleNode',
-        properties: {
-          display: computed.display,
-          position: computed.position,
-          backgroundColor: computed.backgroundColor,
-          color: computed.color,
-          fontFamily: computed.fontFamily,
-          fontSize: computed.fontSize,
-          margin: computed.margin,
-          padding: computed.padding,
-          opacity: computed.opacity,
-          zIndex: computed.zIndex
-        }
-      });
-      
-      graph.edges.push({ source: domNodeId, target: geoNodeId, type: 'HAS_GEOMETRY' });
-      graph.edges.push({ source: domNodeId, target: styleNodeId, type: 'HAS_STYLE' });
+      styleProperties = {
+        display: computed.display, position: computed.position, backgroundColor: computed.backgroundColor,
+        color: computed.color, fontFamily: computed.fontFamily, fontSize: computed.fontSize,
+        margin: computed.margin, padding: computed.padding, opacity: computed.opacity, zIndex: computed.zIndex
+      };
     }
+
+    const geoNodeId = 'geo-' + (nodeIdCounter++);
+    const styleNodeId = 'style-' + (nodeIdCounter++);
+    
+    graph.nodes.push({ id: geoNodeId, type: 'GeometryNode', properties: geoProperties });
+    graph.nodes.push({ id: styleNodeId, type: 'StyleNode', properties: styleProperties });
+    graph.edges.push({ source: domNodeId, target: geoNodeId, type: 'HAS_GEOMETRY' });
+    graph.edges.push({ source: domNodeId, target: styleNodeId, type: 'HAS_STYLE' });
+
 
     // Level 2: Accessibility
     if ((levels.includes(2) || levels.includes('A11Y')) && el.hasAttribute) {
@@ -124,7 +121,7 @@ export const evaluateSnapshot = `({ snapshotId, url, levels = [0] }) => {
       if (computedRole || ariaLabel || ariaHidden || alt) {
         graph.nodes.push({
           id: a11yNodeId,
-          type: 'AccessibilityNode',
+          type: 'A11yNode',
           properties: {
             role: computedRole,
             ariaLabel,

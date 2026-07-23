@@ -53,6 +53,7 @@ v1.0.0
 - ACP-011: NIH Custom Logic Replacement
 - ACP-012: Governance Synchronization and Discrepancy Reconciliation
 - ACP-013: Native Playwright Storage State Integration
+- ACP-014: Technical Debt Resolution Strategy (TD-005 - TD-009)
 
 **Current Constraints:**
 - AI Implementor must follow the Engineering Constitution (`AGENTS.md`).

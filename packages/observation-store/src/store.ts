@@ -1,11 +1,24 @@
 import { IObservationStore, ObservationGraph, GraphNode } from './types.js';
 import Graph from 'graphology';
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
+import { observationGraphSchema } from './schema.js';
+import * as crypto from 'crypto';
+
+const ajv = new Ajv();
+addFormats(ajv);
+const validateGraph = ajv.compile(observationGraphSchema);
 
 export class MemoryObservationStore implements IObservationStore {
   private snapshots = new Map<string, ObservationGraph>();
   private graphs = new Map<string, Graph>();
 
   public async saveSnapshot(snapshotId: string, graphData: ObservationGraph): Promise<void> {
+    const valid = validateGraph(graphData);
+    if (!valid) {
+      throw new Error("Invalid ObservationGraph schema: " + ajv.errorsText(validateGraph.errors));
+    }
+
     this.snapshots.set(snapshotId, graphData);
     
     const graph = new Graph({ multi: true, type: 'directed' });
