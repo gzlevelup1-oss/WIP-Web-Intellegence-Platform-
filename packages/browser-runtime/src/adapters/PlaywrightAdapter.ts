@@ -13,6 +13,8 @@ export class PlaywrightAdapter implements IBrowserAdapter {
   private browser: Browser | null = null;
   private sessions: Map<string, PlaywrightSession> = new Map();
   private onBrowserCrash?: () => void;
+  private networkEventHandler?: (sessionId: string, eventName: string, eventData: any) => void;
+  private bufferedRequests: Map<string, any[]> = new Map();
 
   public async getMetadata(): Promise<RuntimeMetadata> {
     return {
@@ -61,6 +63,31 @@ export class PlaywrightAdapter implements IBrowserAdapter {
       const context = await browser.newContext();
       const page = await context.newPage();
       this.sessions.set(sessionId, { context, page });
+      this.bufferedRequests.set(sessionId, []);
+      
+      page.on('request', (request) => {
+        const reqData = {
+          id: `req-${Date.now()}-${Math.random().toString(36).substring(2,7)}`,
+          url: request.url(),
+          method: request.method(),
+          resourceType: request.resourceType(),
+          timestamp: Date.now()
+        };
+        this.bufferedRequests.get(sessionId)?.push(reqData);
+        if (this.networkEventHandler) {
+          this.networkEventHandler(sessionId, 'Event.Network.RequestSent', reqData);
+        }
+      });
+      
+      page.on('response', (response) => {
+        if (this.networkEventHandler) {
+          this.networkEventHandler(sessionId, 'Event.Network.ResponseReceived', {
+            url: response.url(),
+            status: response.status(),
+            timestamp: Date.now()
+          });
+        }
+      });
       return sessionId;
     } catch (err: any) {
       throw new BrowserLaunchError(`Failed to create session context: ${err.message}`);
@@ -71,11 +98,15 @@ export class PlaywrightAdapter implements IBrowserAdapter {
     const session = this.sessions.get(sessionId);
     if (session) {
       this.sessions.delete(sessionId);
+      this.bufferedRequests.delete(sessionId);
       await session.page.close().catch(() => {});
       await session.context.close().catch(() => {});
     }
   }
 
+  public onNetworkEvent(handler: (sessionId: string, eventName: string, eventData: any) => void): void {
+    this.networkEventHandler = handler;
+  }
   public setCrashHandler(handler: () => void): void {
     this.onBrowserCrash = handler;
   }
@@ -178,6 +209,25 @@ export class PlaywrightAdapter implements IBrowserAdapter {
 
       await traverseFrame(page.mainFrame(), null, 0, 0);
 
+      
+      // Inject NetworkRequestNodes
+      const requests = this.bufferedRequests.get(sessionId) || [];
+      requests.forEach((req) => {
+        const reqNodeId = 'network-' + Date.now() + '-' + Math.random().toString(36).substring(2,7);
+        graphResult.nodes.push({
+          id: reqNodeId,
+          type: 'NetworkRequestNode',
+          properties: {
+            url: req.url,
+            method: req.method,
+            resourceType: req.resourceType
+          }
+        });
+        graphResult.edges.push({ source: snapshotId, target: reqNodeId, type: 'HAS_NETWORK_REQUEST' });
+      });
+      // Clear buffer after capture
+      this.bufferedRequests.set(sessionId, []);
+
       const screenshotBuffer = await page.screenshot({ type: 'png' });
       const visual = 'data:image/png;base64,' + screenshotBuffer.toString('base64');
       const crypto = await import('crypto');
@@ -226,23 +276,54 @@ export class PlaywrightAdapter implements IBrowserAdapter {
     const url = session.page.url();
     const state = await session.context.storageState();
     
-    return { checkpointId: `cp-${Date.now()}`, sessionId, timestamp: Date.now(), url, cookies: state.cookies, origins: state.origins, historyIndex: 0 };
+    const historyIndex = await session.page.evaluate(() => window.history.length).catch(() => 0);
+    const domState = await session.page.evaluate(() => {
+      return {
+        html: document.documentElement.innerHTML,
+        scrollX: window.scrollX,
+        scrollY: window.scrollY
+      };
+    }).catch(() => ({ html: undefined, scrollX: 0, scrollY: 0 }));
+    
+    return { 
+      checkpointId: `cp-${Date.now()}`, 
+      sessionId, 
+      timestamp: Date.now(), 
+      url, 
+      cookies: state.cookies, 
+      origins: state.origins, 
+      historyIndex,
+      domHtml: domState.html,
+      scrollX: domState.scrollX,
+      scrollY: domState.scrollY
+    };
   }
 
-  public async restoreCheckpoint(sessionId: string, checkpoint: any): Promise<void> {
+  public async restoreCheckpoint(sessionId: string, checkpoint: any, options?: { soft?: boolean }): Promise<void> {
     const session = this.sessions.get(sessionId);
     if (!session) throw new Error('Session not found');
     
-    await session.context.clearCookies();
-    if (checkpoint.cookies && checkpoint.cookies.length > 0) {
-      await session.context.addCookies(checkpoint.cookies);
+    if (!options?.soft) {
+      await session.context.clearCookies();
+      if (checkpoint.cookies && checkpoint.cookies.length > 0) {
+        await session.context.addCookies(checkpoint.cookies);
+      }
+    }
+    
+    if (checkpoint.historyIndex !== undefined) {
+      const currentHistoryIndex = await session.page.evaluate(() => window.history.length).catch(() => 0);
+      const delta = checkpoint.historyIndex - currentHistoryIndex;
+      if (delta !== 0) {
+        await session.page.evaluate((d) => window.history.go(d), delta).catch(() => {});
+        await session.page.waitForLoadState('networkidle').catch(() => {});
+      }
     }
     
     if (session.page.url() !== checkpoint.url && checkpoint.url !== 'about:blank') {
       await session.page.goto(checkpoint.url, { waitUntil: 'networkidle' });
     }
     
-    if (checkpoint.origins) {
+    if (!options?.soft && checkpoint.origins) {
       try {
         const currentOrigin = new URL(session.page.url()).origin;
         const originState = checkpoint.origins.find((o: any) => o.origin === currentOrigin);
@@ -257,7 +338,7 @@ export class PlaywrightAdapter implements IBrowserAdapter {
       } catch (err) {
         // ignore invalid URL errors
       }
-    } else if (checkpoint.localStorage) {
+    } else if (!options?.soft && checkpoint.localStorage) {
       // Backwards compatibility
       await session.page.evaluate((ls) => {
         window.localStorage.clear();
@@ -265,6 +346,13 @@ export class PlaywrightAdapter implements IBrowserAdapter {
           window.localStorage.setItem(key, value as string);
         }
       }, checkpoint.localStorage).catch(() => {});
+    }
+    
+    if (checkpoint.domHtml !== undefined) {
+      await session.page.evaluate(({ html, sx, sy }) => {
+        document.documentElement.innerHTML = html;
+        window.scrollTo(sx, sy);
+      }, { html: checkpoint.domHtml, sx: checkpoint.scrollX || 0, sy: checkpoint.scrollY || 0 }).catch(() => {});
     }
   }
 

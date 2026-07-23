@@ -8,8 +8,10 @@ governance:
   status: frozen
 current_phase:
   Implementation
-current_mission: ""
+current_mission: "Mission 30: Specification Fulfillment (TD-010)"
 locked:
+  - Mission 29 (E2E Test Maturation)
+  - Mission 28 (Technical Debt Resolution)
   - ACP-013
   - ACP-014 Implementation
   - Mission 26 (NIH Custom Logic Replacement)
@@ -62,6 +64,7 @@ active_adrs:
   - AFR-002
   - CIR-001
 active_proposals:
+  - ARCH-003
   - ARCH-002
   - ACP-006
   - ACP-007

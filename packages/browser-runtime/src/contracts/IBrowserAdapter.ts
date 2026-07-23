@@ -13,4 +13,5 @@ export interface IBrowserAdapter {
     createCheckpoint(sessionId: string): Promise<RuntimeCheckpoint>;
     restoreCheckpoint(sessionId: string, checkpoint: RuntimeCheckpoint): Promise<void>;
     setCrashHandler?(handler: () => void): void;
+    onNetworkEvent?(handler: (sessionId: string, eventName: string, eventData: any) => void): void;
 }

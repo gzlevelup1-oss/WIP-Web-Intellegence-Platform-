@@ -19,7 +19,15 @@ function calculateSSIM(diffPixels: number, totalPixels: number): number {
   return 1 - (diffPixels / totalPixels);
 }
 
-export function visualDiff(originalBase64: string, reconstructedBase64: string): VisualDiffResult {
+export interface MaskRegion {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  isDynamic?: boolean;
+}
+
+export function visualDiff(originalBase64: string, reconstructedBase64: string, maskRegions: MaskRegion[] = []): VisualDiffResult {
   if (!originalBase64 || !reconstructedBase64) {
     return { mse: 1, ssim: 0, numDiffPixels: -1 };
   }
@@ -33,6 +41,20 @@ export function visualDiff(originalBase64: string, reconstructedBase64: string):
 
     const { width, height } = img1;
     const diff = new PNG({ width, height });
+
+    // Apply masks (zero out diff pixels in masked regions)
+    if (maskRegions && maskRegions.length > 0) {
+      for (const region of maskRegions) {
+        for (let y = Math.max(0, region.y); y < Math.min(height, region.y + region.height); y++) {
+          for (let x = Math.max(0, region.x); x < Math.min(width, region.x + region.width); x++) {
+            const idx = (width * y + x) << 2;
+            // Set pixels to black/transparent in both images so they match exactly
+            img1.data[idx] = 0; img1.data[idx+1] = 0; img1.data[idx+2] = 0; img1.data[idx+3] = 0;
+            img2.data[idx] = 0; img2.data[idx+1] = 0; img2.data[idx+2] = 0; img2.data[idx+3] = 0;
+          }
+        }
+      }
+    }
 
     // Compare with pixelmatch
     // If dimensions don't match, pixelmatch will throw an error. We can catch it.

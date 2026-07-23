@@ -60,7 +60,15 @@ test.describe('Real-World Fixtures E2E', () => {
             expect(baselineSnapshot.graph.nodes.length).toBeGreaterThan(0);
             
             // Gap 1: Golden Master snapshot testing
-            let graphJson = JSON.stringify(baselineSnapshot.graph, null, 2);
+            
+            // Strip non-deterministic network nodes
+            const deterministicGraph = {
+                ...baselineSnapshot.graph,
+                nodes: baselineSnapshot.graph.nodes.filter((n: any) => n.type !== 'NetworkRequestNode'),
+                edges: baselineSnapshot.graph.edges.filter((e: any) => e.type !== 'HAS_NETWORK_REQUEST')
+            };
+            let graphJson = JSON.stringify(deterministicGraph, null, 2);
+  
             // Clean non-deterministic fields
             graphJson = graphJson.replace(new RegExp(baselineSnapshot.snapshotId, 'g'), 'static-snapshot-id');
             graphJson = graphJson.replace(/"timestamp": \d+/g, '"timestamp": 1234567890');

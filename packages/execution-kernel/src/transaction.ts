@@ -1,20 +1,24 @@
 import { TransactionStatus } from './types.js';
 import { Task } from './task.js';
 
+export type IsolationLevel = 'Isolated' | 'Shared';
+
 export class Transaction {
   public id: string;
   public missionId: string;
   public sessionId: string;
   public role: string;
+  public isolationLevel: IsolationLevel;
   public status: TransactionStatus;
   public startTime: number;
   public tasks: Task[] = [];
 
-  constructor(missionId: string, sessionId: string, role: string = 'user') {
+  constructor(missionId: string, sessionId: string, role: string = 'user', isolationLevel: IsolationLevel = 'Isolated') {
     this.id = `tx-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     this.missionId = missionId;
     this.sessionId = sessionId;
     this.role = role;
+    this.isolationLevel = isolationLevel;
     this.status = 'PENDING';
     this.startTime = Date.now();
   }
@@ -41,11 +45,11 @@ export class Transaction {
 export class TransactionManager {
   private activeTransactions: Map<string, Transaction> = new Map();
 
-  public async acquireLock(missionId: string, sessionId: string, role: string = 'user'): Promise<Transaction> {
+  public async acquireLock(missionId: string, sessionId: string, role: string = 'user', isolationLevel: IsolationLevel = 'Isolated'): Promise<Transaction> {
     if (this.activeTransactions.has(sessionId)) {
       throw new Error(`Session ${sessionId} already has an active transaction.`);
     }
-    const tx = new Transaction(missionId, sessionId, role);
+    const tx = new Transaction(missionId, sessionId, role, isolationLevel);
     tx.activate();
     this.activeTransactions.set(sessionId, tx);
     return tx;

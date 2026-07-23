@@ -1,14 +1,22 @@
+import { EventEmitter } from 'events';
 import { IBrowserAdapter } from '../contracts/IBrowserAdapter.js';
 import { SessionManager } from '../runtime/SessionManager.js';
 import { ObservationSnapshot } from '../contracts/types.js';
 
-export class BrowserService {
+export class BrowserService extends EventEmitter {
   private adapter: IBrowserAdapter;
   private sessionManager: SessionManager;
 
   constructor(adapter: IBrowserAdapter, sessionManager: SessionManager) {
+    super();
     this.adapter = adapter;
     this.sessionManager = sessionManager;
+    if (this.adapter.onNetworkEvent) {
+      this.adapter.onNetworkEvent((sessionId, eventName, eventData) => {
+        this.emit('networkEvent', { sessionId, eventName, eventData });
+        this.emit(eventName, { sessionId, ...eventData });
+      });
+    }
   }
 
   public async navigate(sessionId: string, url: string): Promise<void> {

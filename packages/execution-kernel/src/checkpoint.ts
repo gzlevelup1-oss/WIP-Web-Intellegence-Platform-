@@ -18,6 +18,9 @@ export interface CheckpointOriginStorage {
 }
 
 export interface CheckpointData {
+  domHtml?: string;
+  scrollX?: number;
+  scrollY?: number;
   checkpointId: string;
   sessionId: string;
   timestamp: number;
@@ -31,5 +34,5 @@ export interface CheckpointData {
 
 export interface ICheckpointAdapter {
   createCheckpoint(sessionId: string): Promise<CheckpointData>;
-  restoreCheckpoint(sessionId: string, checkpoint: CheckpointData): Promise<void>;
+  restoreCheckpoint(sessionId: string, checkpoint: CheckpointData, options?: { soft?: boolean }): Promise<void>;
 }

@@ -1,6 +1,8 @@
+import { EventEmitter } from 'events';
 import { GoogleGenAI, Type, FunctionCall, Part } from '@google/genai';
 import { CoordinatorToolDeclarations } from './tools.js';
 import { IExecutionKernelAdapter, IWorkerAdapter, IValidationAdapter } from './adapter.js';
+import { ExperienceGraph } from './experience-graph.js';
 
 const SYSTEM_PROMPT = `You are the Coordinator Agent for the Website Intelligence Platform.
 Your purpose is to probabilistically orchestrate the extraction of semantic data and interaction with web pages using a deterministic Execution Kernel and Specialized Workers.
@@ -10,19 +12,38 @@ RULES:
 3. You operate in a Reason + Act loop. You will be given tools to observe, analyze, and interact.
 4. When you have completed the objective, call Mission_complete. Provide originalSnapshotId and reconstructedSnapshotId if applicable.`;
 
-export class CoordinatorAgent {
+export class CoordinatorAgent extends EventEmitter {
   private ai: GoogleGenAI;
   private kernel: IExecutionKernelAdapter;
   private workers: IWorkerAdapter;
   private validation?: IValidationAdapter;
   private chat: any;
   private missionCompleteData: any = null;
+  public experienceGraph: ExperienceGraph = new ExperienceGraph();
 
   constructor(apiKey: string, kernel: IExecutionKernelAdapter, workers: IWorkerAdapter, validation?: IValidationAdapter) {
+    super();
     this.ai = new GoogleGenAI({ apiKey });
     this.kernel = kernel;
     this.workers = workers;
     this.validation = validation;
+  }
+
+  public enablePassiveMode(handler?: (event: any) => void) {
+    // Wait for the passive stream. We assume the system will send Events to the coordinator instance.
+    this.on('Event.Interaction.Recorded', (event) => {
+      if (handler) handler(event);
+      // Auto-form hypothesis based on recorded interaction
+      if (event.nodeId) {
+        this.experienceGraph.addHypothesis({
+          snapshotId: event.snapshotId || 'unknown',
+          nodeId: event.nodeId,
+          semanticRole: 'interacted-element',
+          confidence: 1.0
+        });
+        this.emit('Event.Mission.HypothesisFormed', { hypothesis: `Passive interaction on node ${event.nodeId}` });
+      }
+    });
   }
 
   public async start(objective: string) {
@@ -114,7 +135,8 @@ export class CoordinatorAgent {
     });
 
     console.log(`[Coordinator] Starting automated ReAct loop...`);
-    const response = await this.chat.sendMessage({ message: `Mission Objective: ${objective}` });
+    const response = await this.chat.sendMessage({ message: `Mission Objective: ${objective}\n\nCurrent Hypotheses: ${JSON.stringify(this.experienceGraph.getAllHypotheses())}` });
+    this.emit('Event.Mission.HypothesisFormed', { hypothesis: response.text });
     
     if (this.missionCompleteData) {
       return this.missionCompleteData;

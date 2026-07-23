@@ -1,29 +1,30 @@
 # Current Mission
 
-**Mission:** Mission 28: Technical Debt Resolution
+**Mission:** Mission 33: Soft Checkpointing & State Persistence (TD-013)
 **Status:** LOCKED
 **Evidence Payload:**
-- **Functional Verification:** Passed (All structural updates integrated without breaking types or build)
-- **Architectural Verification:** Passed (AVP-001 checked, no boundary leaks, Playwright and AJV appropriately contained)
-- **Dependency Graph:** Passed (Only explicitly requested community packages ajv and ajv-formats were introduced where strictly required)
-- **ADR Compliance:** Passed (Complies with ACP-014 Technical Debt Resolution Strategy)
-**ID:** M-28
+- **Functional Verification:** Pending
+- **Architectural Verification:** Pending
+- **Dependency Graph:** Pending
+- **ADR Compliance:** Pending
+
+**ID:** M-33
 
 ## References
-- ACP-014: Technical Debt Resolution Strategy
-- governance/DEBT.md (TD-005, TD-006, TD-007, TD-008, TD-009)
+- ACP-018: Soft Checkpointing & State Persistence
+- ARCH-003: Specification vs. Implementation Gaps Report
+- EXECUTION_KERNEL.md
 
 ## Objective
-Implement resolution strategies for the accumulated technical debt items according to the approved ACP-014. This includes implementing ground-up logic for specific architectural constraints and leveraging community packages where standard.
+Implement soft rollback capabilities within the Execution Kernel and Checkpoint Adapter, allowing the Coordinator to non-destructively revert browser state upon transaction failure. This resolves TD-013.
 
 ## Scope
+
 **In Scope:**
-- Resolving TD-005 (Merkle hashing).
-- Resolving TD-008 (JSON schema validation via `ajv`).
-- Resolving TD-009 (Cross-origin iframe stitching in PlaywrightAdapter).
-- Resolving TD-006 and TD-007 (Node typing and edge invariants).
+- Update `ICheckpointAdapter` and `CheckpointData` interfaces.
+- Implement soft state restoration (DOM HTML, scroll positions) for Playwright.
+- Update `ExecutionKernel.abortTransaction(transaction, soft)` to invoke restoration logic when `soft = true`.
+- Update `MANIFEST.yaml`, `DEBT.md`, and `TASKS.md`.
 
 **Out of Scope:**
-- Writing new UI features.
-- Changing the overall architecture or introducing new databases.
-- Replacing Playwright.
+- Full VM snapshotting/memory dumps (too heavy for this iteration).
