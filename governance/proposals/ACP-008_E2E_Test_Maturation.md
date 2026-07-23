@@ -33,4 +33,4 @@ During the integration of real-world E2E test fixtures, three critical gaps were
 - Implementing new core capabilities in the extraction engine (we are only testing existing ones, though bug fixes during testing are expected).
 
 ## 4. Required Approvals
-This ACP requires explicit approval from the User / Product Owner before it can be converted into an active Mission (`governance/MISSION.md`) and implemented.
+Approved by User/Product Owner. Implementation has been completed and locked.

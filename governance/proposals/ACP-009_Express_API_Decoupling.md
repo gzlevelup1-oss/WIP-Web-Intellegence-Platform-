@@ -43,4 +43,4 @@ To make the Browser Laboratory functionally usable and maintainable, the Express
 - Re-introducing Playwright into `apps/browser-lab`.
 
 ## 4. Required Approvals
-This ACP requires explicit approval from the User / Product Owner before it can be converted into an active Mission (`governance/MISSION.md`) and implemented.
+Approved by User/Product Owner. Implementation has been completed and locked.
