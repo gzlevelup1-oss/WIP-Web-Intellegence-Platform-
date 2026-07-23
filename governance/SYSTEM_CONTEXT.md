@@ -52,6 +52,7 @@ v1.0.0
 - ACP-010: UI/UX Integration Plan
 - ACP-011: NIH Custom Logic Replacement
 - ACP-012: Governance Synchronization and Discrepancy Reconciliation
+- ACP-013: Native Playwright Storage State Integration
 
 **Current Constraints:**
 - AI Implementor must follow the Engineering Constitution (`AGENTS.md`).

@@ -26,7 +26,28 @@ export interface ObservationSnapshot {
   metadata: Record<string, any>;
 }
 
+export interface RuntimeCookie {
+  name: string;
+  value: string;
+  domain: string;
+  path: string;
+  expires: number;
+  httpOnly: boolean;
+  secure: boolean;
+  sameSite: "Strict" | "Lax" | "None";
+}
+
+export interface RuntimeOriginStorage {
+  origin: string;
+  localStorage: Array<{
+    name: string;
+    value: string;
+  }>;
+}
+
 export interface RuntimeCheckpoint {
   url: string;
-  cookies: any[];
+  cookies: RuntimeCookie[];
+  origins?: RuntimeOriginStorage[];
+  historyIndex?: number;
 }

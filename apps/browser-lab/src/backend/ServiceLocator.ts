@@ -26,8 +26,9 @@ export class ServiceLocator {
           timestamp: Date.now(),
           url: rc.url,
           cookies: rc.cookies,
-          historyIndex: (rc as any).historyIndex,
-          localStorage: (rc as any).localStorage
+          historyIndex: rc.historyIndex,
+          localStorage: (rc as any).localStorage,
+          origins: rc.origins
         };
       },
       restoreCheckpoint: async (sessionId: string, checkpoint: any) => {

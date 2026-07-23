@@ -158,30 +158,41 @@ export class PlaywrightAdapter implements IBrowserAdapter {
     const session = this.sessions.get(sessionId);
     if (!session) throw new Error('Session not found');
     const url = session.page.url();
-    const cookies = await session.context.cookies();
-    const localStorage = await session.page.evaluate(() => {
-      const ls: Record<string, string> = {};
-      for (let i = 0; i < window.localStorage.length; i++) {
-        const key = window.localStorage.key(i);
-        if (key) ls[key] = window.localStorage.getItem(key) || '';
-      }
-      return ls;
-    }).catch(() => undefined);
+    const state = await session.context.storageState();
     
-    // Playwright doesn't easily expose history index, so we omit it for now or default to 0
-    return { checkpointId: `cp-${Date.now()}`, sessionId, timestamp: Date.now(), url, cookies, localStorage, historyIndex: 0 };
+    return { checkpointId: `cp-${Date.now()}`, sessionId, timestamp: Date.now(), url, cookies: state.cookies, origins: state.origins, historyIndex: 0 };
   }
 
   public async restoreCheckpoint(sessionId: string, checkpoint: any): Promise<void> {
     const session = this.sessions.get(sessionId);
     if (!session) throw new Error('Session not found');
+    
     await session.context.clearCookies();
-    await session.context.addCookies(checkpoint.cookies);
+    if (checkpoint.cookies && checkpoint.cookies.length > 0) {
+      await session.context.addCookies(checkpoint.cookies);
+    }
+    
     if (session.page.url() !== checkpoint.url && checkpoint.url !== 'about:blank') {
       await session.page.goto(checkpoint.url, { waitUntil: 'networkidle' });
     }
     
-    if (checkpoint.localStorage) {
+    if (checkpoint.origins) {
+      try {
+        const currentOrigin = new URL(session.page.url()).origin;
+        const originState = checkpoint.origins.find((o: any) => o.origin === currentOrigin);
+        if (originState && originState.localStorage) {
+          await session.page.evaluate((lsArray) => {
+            window.localStorage.clear();
+            for (const item of lsArray) {
+              window.localStorage.setItem(item.name, item.value);
+            }
+          }, originState.localStorage).catch(() => {});
+        }
+      } catch (err) {
+        // ignore invalid URL errors
+      }
+    } else if (checkpoint.localStorage) {
+      // Backwards compatibility
       await session.page.evaluate((ls) => {
         window.localStorage.clear();
         for (const [key, value] of Object.entries(ls)) {
