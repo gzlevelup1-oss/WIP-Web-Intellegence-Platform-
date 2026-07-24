@@ -36,6 +36,15 @@ Release
 
 Every feature follows this pipeline.
 
+## Future Mission Lifecycle Gates (ACP-019)
+
+All future missions must pass five explicit gates before transitioning to `LOCKED` or `RELEASED`:
+1. **Proposal Gate:** Approved ACP/RFC defining architectural bounds.
+2. **Boundary Gate:** Verified zero forbidden package dependencies (AVP-001).
+3. **Verification Gate:** Passing build, lint (`npm run lint`), unit (`vitest`), and E2E (`playwright`) tests.
+4. **Evidence Payload Gate:** Documented test and compliance evidence in `MISSION.md`.
+5. **Approval Gate:** Explicit Product Owner approval before closing.
+
 ## Request for Comments (RFC)
 
 Before architectural decisions are made (ADR), an RFC documents possible solutions.

@@ -8,8 +8,8 @@ describe('ValidationEngine', () => {
     const b1 = PNG.sync.write(png).toString('base64');
     
     const request = {
-      originalGraph: { nodes: [] },
-      reconstructedGraph: { nodes: [] },
+      originalGraph: { nodes: [], edges: [] },
+      reconstructedGraph: { nodes: [], edges: [] },
       originalScreenshotBase64: b1,
       reconstructedScreenshotBase64: b1
     };

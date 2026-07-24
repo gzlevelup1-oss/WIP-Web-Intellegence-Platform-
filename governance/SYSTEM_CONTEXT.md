@@ -10,10 +10,10 @@ To separate observation from reasoning. AI models guess layouts and styles poorl
 Implementation 
 
 **Current Mission:**
-None
+Mission 33: Soft Checkpointing & State Persistence (TD-013)
 
 **Mission Status:**
-NONE
+LOCKED
 
 **Current Architecture Version:**
 v1.0.0
@@ -54,10 +54,13 @@ v1.0.0
 - ACP-012: Governance Synchronization and Discrepancy Reconciliation
 - ACP-013: Native Playwright Storage State Integration
 - ACP-014: Technical Debt Resolution Strategy (TD-005 - TD-009)
+- ACP-018: Soft Checkpointing & State Persistence (TD-013)
+- ACP-019: Future Mission Lifecycle Gating Protocol
 
 **Current Constraints:**
 - AI Implementor must follow the Engineering Constitution (`AGENTS.md`).
 - Ensure `browser-runtime` package extraction maintains strict dependency isolation and architectural invariants (no package depends on apps/*).
+- All future development missions and features are strictly gated under ACP-019 and AVP-001 (Proposal -> Verification -> Evidence Payload -> Approval).
 
 **Next Milestone:**
 Awaiting next mission assignment.
