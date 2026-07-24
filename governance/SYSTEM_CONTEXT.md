@@ -7,13 +7,13 @@ Website Intelligence Platform (WIP) is a Web Intelligence Operating System. It e
 To separate observation from reasoning. AI models guess layouts and styles poorly. By using a browser as a deterministic instrument, we can provide AI with precise, measured facts instead of relying on hallucinated inferences.
 
 **Current Phase:**
-Implementation 
+Planning 
 
 **Current Mission:**
-Mission 33: Soft Checkpointing & State Persistence (TD-013)
+Mission 35: Kernel Capability Validation
 
 **Mission Status:**
-LOCKED
+Draft
 
 **Current Architecture Version:**
 v1.0.0
@@ -56,6 +56,9 @@ v1.0.0
 - ACP-014: Technical Debt Resolution Strategy (TD-005 - TD-009)
 - ACP-018: Soft Checkpointing & State Persistence (TD-013)
 - ACP-019: Future Mission Lifecycle Gating Protocol
+- ACP-020: Browser Runtime Specification Alignment
+- ACP-021: Kernel Capability Validation
+- ACP-022: Coordinator Planning Alignment
 
 **Current Constraints:**
 - AI Implementor must follow the Engineering Constitution (`AGENTS.md`).

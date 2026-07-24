@@ -37,17 +37,20 @@ Observations output an immutable Snapshot reference.
 
 - **Request:** `Observation.capture`
   - *Params:* `{"sessionId": "sess-123", "levels": [0, 1, 2, 3]}`
-- **Response:** 
+- **Response:**
   ```json
   {
     "snapshotId": "snap-abc",
     "timestamp": 1690000001,
     "hash": "sha256-xyz...",
-    "data": {
-      "domTree": [{ "nodeId": "1", "tag": "body" }],
-      "accessibilityTree": [{ "nodeId": "a1", "role": "document" }],
-      "computedStyles": { "1": { "display": "block", "color": "#000" } },
-      "geometry": { "1": { "x": 0, "y": 0, "width": 800, "height": 600 } }
+    "graph": {
+      "nodes": [
+        { "id": "node-1", "type": "DOMNode", "properties": { "tagName": "body" } },
+        { "id": "a1", "type": "A11yNode", "properties": { "role": "document" } }
+      ],
+      "edges": [
+        { "source": "node-1", "target": "a1", "type": "HAS_A11Y" }
+      ]
     }
   }
   ```

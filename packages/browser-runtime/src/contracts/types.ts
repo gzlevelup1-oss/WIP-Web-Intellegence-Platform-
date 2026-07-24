@@ -1,7 +1,9 @@
+import { ObservationGraph } from '@wip/observation-store';
+
 export interface RuntimeMetadata {
-  name: string;
-  version: string;
-  backend: string;
+  runtimeId: string;
+  browserVersion: string;
+  protocolVersion: string;
   platform: string;
   viewport: { width: number, height: number };
   locale: string;
@@ -10,17 +12,14 @@ export interface RuntimeMetadata {
 }
 
 export interface RuntimeCapabilities {
-  canClick: boolean;
-  canType: boolean;
-  canScroll: boolean;
-  canCapture: boolean;
+  capabilities: Record<string, boolean>;
 }
 
 export interface ObservationSnapshot {
   snapshotId: string;
   url: string;
   timestamp: number;
-  graph: any;
+  graph: ObservationGraph;
   visual?: string; // base64 screenshot if applicable
   hash: string;
   metadata: Record<string, any>;

@@ -18,9 +18,9 @@ export class PlaywrightAdapter implements IBrowserAdapter {
 
   public async getMetadata(): Promise<RuntimeMetadata> {
     return {
-      name: 'Playwright',
-      version: '1.61.1',
-      backend: 'chromium',
+      runtimeId: 'playwright-runtime',
+      browserVersion: 'chromium-1.61.1',
+      protocolVersion: '1.0',
       platform: process.platform,
       viewport: { width: 1280, height: 720 },
       locale: 'en-US',
@@ -31,10 +31,13 @@ export class PlaywrightAdapter implements IBrowserAdapter {
 
   public async getCapabilities(): Promise<RuntimeCapabilities> {
     return {
-      canClick: true,
-      canType: true,
-      canScroll: true,
-      canCapture: true
+      capabilities: {
+        Navigation: true,
+        Accessibility: true,
+        WebGL: false,
+        Interaction: true,
+        Observation: true
+      }
     };
   }
 

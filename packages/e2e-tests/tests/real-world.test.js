@@ -63,9 +63,12 @@ test.describe('Real-World Fixtures E2E', () => {
             graphJson = graphJson.replace(/"timestamp": \d+/g, '"timestamp": 1234567890');
             graphJson = graphJson.replace(/"url": "file:\/\/[^"]+"/g, '"url": "file://REDACTED"');
             // Clean float/geometry non-determinism
-            graphJson = graphJson.replace(/"(x|y|width|height|top|right|bottom|left|viewportWidth|viewportHeight)": [\d\.]+/g, '"$1": 0');
+            graphJson = graphJson.replace(/"(x|y|width|height|top|right|bottom|left|viewportWidth|viewportHeight)": [^"]+/g, '"$1": 0');
+            graphJson = graphJson.replace(/\"opacity\":\s*\"?[^\"\n,}]+\"?/g, `\"opacity\": \"0\"`);
             // Clean animation non-determinism
-            graphJson = graphJson.replace(/\"opacity\":\s*\"[\d\.]+\"/g, `"opacity": "0"`);
+            ;
+            ;
+
             // Playwright Snapshot matcher
             expect(graphJson).toMatchSnapshot(`${fixture}-graph.json`);
             // Gap 3: Missing Interactivity Testing

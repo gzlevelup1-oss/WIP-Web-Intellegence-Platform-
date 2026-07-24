@@ -3,6 +3,7 @@ export interface IExecutionKernelAdapter {
   click(nodeId: string): Promise<any>;
   type(nodeId: string, text: string): Promise<any>;
   goto(url: string): Promise<any>;
+  getCapabilities?(): Promise<Record<string, boolean>>;
 }
 
 export interface IWorkerAdapter {

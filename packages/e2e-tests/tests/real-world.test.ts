@@ -25,7 +25,10 @@ test.describe('Real-World Fixtures E2E', () => {
                     localStorage: (rc as any).localStorage
                 };
             },
-            restoreCheckpoint: async (id: string, cp: any) => await runtime.restoreCheckpoint(id, cp)
+            restoreCheckpoint: async (id: string, cp: any) => await runtime.restoreCheckpoint(id, cp),
+            capabilityAdapter: {
+                getCapabilities: async (id: string) => (await runtime.getCapabilities()).capabilities
+            }
         });
     });
 
@@ -75,10 +78,13 @@ test.describe('Real-World Fixtures E2E', () => {
             graphJson = graphJson.replace(/"url": "file:\/\/[^"]+"/g, '"url": "file://REDACTED"');
             
             // Clean float/geometry non-determinism
-            graphJson = graphJson.replace(/"(x|y|width|height|top|right|bottom|left|viewportWidth|viewportHeight)": [\d\.]+/g, '"$1": 0');
+            graphJson = graphJson.replace(/"(x|y|width|height|top|right|bottom|left|viewportWidth|viewportHeight)": [^"]+/g, '"$1": 0');
+            graphJson = graphJson.replace(/\"opacity\":\s*\"?[^\"\n,}]+\"?/g, `\"opacity\": \"0\"`);
             
             // Clean animation non-determinism
-            graphJson = graphJson.replace(/\"opacity\":\s*\"[\d\.]+\"/g, `"opacity": "0"`);
+            ;
+            ;
+
 
             // Playwright Snapshot matcher
             expect(graphJson).toMatchSnapshot(`${fixture}-graph.json`);

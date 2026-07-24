@@ -4,8 +4,8 @@ import { IBrowserAdapter } from '../contracts/IBrowserAdapter.js';
 import { RuntimeMetadata, RuntimeCapabilities, ObservationSnapshot } from '../contracts/types.js';
 
 class MockAdapter implements IBrowserAdapter {
-  async getMetadata(): Promise<RuntimeMetadata> { return { name: 'm', version: '1', backend: 'm', platform: 'test', viewport: { width: 800, height: 600 }, locale: 'en-US', timezone: 'UTC', userAgent: 'test' }; }
-  async getCapabilities(): Promise<RuntimeCapabilities> { return { canClick: true, canType: true, canScroll: true, canCapture: true }; }
+  async getMetadata(): Promise<RuntimeMetadata> { return { runtimeId: 'test-rt', browserVersion: '1.0', protocolVersion: '1.0', platform: 'test', viewport: { width: 800, height: 600 }, locale: 'en-US', timezone: 'UTC', userAgent: 'test' }; }
+  async getCapabilities(): Promise<RuntimeCapabilities> { return { capabilities: { Navigation: true, Accessibility: true } }; }
   async createSession(): Promise<string> { return 's1'; }
   async closeSession(id: string): Promise<void> {}
   async navigate(id: string, url: string): Promise<void> {}
@@ -23,10 +23,10 @@ describe('BrowserRuntime', () => {
     const runtime = new BrowserRuntime(adapter);
     
     const meta = await runtime.getMetadata();
-    expect(meta.name).toBe('m');
+    expect(meta.runtimeId).toBe('m');
 
     const caps = await runtime.getCapabilities();
-    expect(caps.canClick).toBe(true);
+    expect(caps.capabilities.Navigation).toBe(true);
     
     const id = await runtime.createSession();
     expect(id).toBe('s1');

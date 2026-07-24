@@ -11,7 +11,8 @@ export interface IBrowserAdapter {
     type(sessionId: string, nodeId: string, text: string, delay?: number): Promise<void>;
     scroll(sessionId: string, distanceY: number, behavior?: string): Promise<void>;
     createCheckpoint(sessionId: string): Promise<RuntimeCheckpoint>;
-    restoreCheckpoint(sessionId: string, checkpoint: RuntimeCheckpoint): Promise<void>;
+    restoreCheckpoint(sessionId: string, checkpoint: RuntimeCheckpoint, options?: { soft?: boolean }): Promise<void>;
+    
     setCrashHandler?(handler: () => void): void;
     onNetworkEvent?(handler: (sessionId: string, eventName: string, eventData: any) => void): void;
 }

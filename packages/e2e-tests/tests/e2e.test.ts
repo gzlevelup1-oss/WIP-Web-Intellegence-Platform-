@@ -27,7 +27,10 @@ test.describe('Behavior-Driven E2E: WIP Platform', () => {
                     localStorage: (rc as any).localStorage
                 };
             },
-            restoreCheckpoint: async (id: string, cp: any) => await runtime.restoreCheckpoint(id, cp)
+            restoreCheckpoint: async (id: string, cp: any) => await runtime.restoreCheckpoint(id, cp),
+            capabilityAdapter: {
+                getCapabilities: async (id: string) => (await runtime.getCapabilities()).capabilities
+            }
         }); // using runtime as checkpoint adapter
     });
 

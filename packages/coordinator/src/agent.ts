@@ -1,11 +1,12 @@
 import { EventEmitter } from 'events';
-import { GoogleGenAI, Type, FunctionCall, Part } from '@google/genai';
+import { GoogleGenAI, Type, FunctionCall, Part, Tool } from '@google/genai';
 import { CoordinatorToolDeclarations } from './tools.js';
 import { IExecutionKernelAdapter, IWorkerAdapter, IValidationAdapter } from './adapter.js';
 import { ExperienceGraph } from './experience-graph.js';
 
 const SYSTEM_PROMPT = `You are the Coordinator Agent for the Website Intelligence Platform.
 Your purpose is to probabilistically orchestrate the extraction of semantic data and interaction with web pages using a deterministic Execution Kernel and Specialized Workers.
+
 RULES:
 1. You MUST NOT generate Playwright, Puppeteer, or JavaScript code.
 2. You MUST reference elements by NodeID provided by the Observation Graph or Workers.
@@ -49,11 +50,31 @@ export class CoordinatorAgent extends EventEmitter {
   public async start(objective: string) {
     this.missionCompleteData = null;
     let repairAttempts = 0;
-
     const self = this;
+    
+    // Capability Check
+    let capabilities: Record<string, boolean> = {
+        'Navigation': true,
+        'Interaction': true,
+        'Observation': true,
+        'ScriptExecution': true
+    };
+    
+    if (this.kernel.getCapabilities) {
+        capabilities = await this.kernel.getCapabilities();
+    }
+    
+    // Prune tools based on capabilities
+    let activeTools = CoordinatorToolDeclarations.filter((decl: any) => {
+        if (!capabilities['Interaction'] && (decl.name === 'Interaction_click' || decl.name === 'Interaction_type')) return false;
+        if (!capabilities['Navigation'] && decl.name === 'Navigation_goto') return false;
+        if (!capabilities['Observation'] && decl.name === 'Observation_capture') return false;
+        if (!capabilities['ScriptExecution'] && decl.name === 'Validation_evaluate') return false;
+        return true;
+    });
 
     const callableTool = {
-      tool: async () => CoordinatorToolDeclarations[0],
+      tool: async () => ({ functionDeclarations: activeTools }),
       callTool: async (calls: FunctionCall[]): Promise<Part[]> => {
         const parts: Part[] = [];
         
@@ -96,9 +117,9 @@ export class CoordinatorAgent extends EventEmitter {
                   const evalResult = await self.validation.evaluate(call.args!.originalSnapshotId as string, call.args!.reconstructedSnapshotId as string);
                   if (evalResult && evalResult.status === 'ValidationFailed' && repairAttempts < 3) {
                     repairAttempts++;
-                    callResult = { 
-                       error: `ValidationFailed: You must repair the implementation. Attempt ${repairAttempts}/3. Discrepancy report: ${JSON.stringify(evalResult)}` 
-                     };
+                    callResult = {
+                        error: `ValidationFailed: You must repair the implementation. Attempt ${repairAttempts}/3. Discrepancy report: ${JSON.stringify(evalResult)}`
+                      };
                     console.log(`[Coordinator] Repair Loop triggered (${repairAttempts}/3)`);
                     break;
                   }
@@ -111,7 +132,6 @@ export class CoordinatorAgent extends EventEmitter {
             callResult = { error: e.message };
           }
 
-          // Use the `Part` factory or just construct the object
           parts.push({
             functionResponse: {
               id: call.id,
@@ -124,12 +144,15 @@ export class CoordinatorAgent extends EventEmitter {
         return parts;
       }
     };
+    
+    // Add environment capabilities to context
+    const dynamicPrompt = `${SYSTEM_PROMPT}\n\nENVIRONMENT CAPABILITIES:\n${JSON.stringify(capabilities, null, 2)}\nIf a capability is false, tools related to it will be unavailable.`;
 
     this.chat = this.ai.chats.create({
       model: 'gemini-2.5-pro',
       config: {
-        systemInstruction: SYSTEM_PROMPT,
-        tools: [callableTool],
+        systemInstruction: dynamicPrompt,
+        tools: [callableTool as any],
         temperature: 0.2
       }
     });
