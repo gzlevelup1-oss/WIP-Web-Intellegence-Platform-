@@ -6,3 +6,7 @@ export * from './runtime/SessionManager.js';
 export * from './runtime/errors.js';
 export * from './services/BrowserService.js';
 export * from './adapters/PlaywrightAdapter.js';
+export * from './runtime/errors.js';
+export * from './runtime/JsonRpcClient.js';
+export * from './runtime/JsonRpcServer.js';
+export * from './runtime/jsonRpcTypes.js';

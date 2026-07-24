@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { BrowserRuntime, PlaywrightAdapter } from '@wip/browser-runtime';
+import { BrowserRuntime, PlaywrightAdapter, JsonRpcServer, JsonRpcClient } from '@wip/browser-runtime';
 import { ExecutionKernel, Task } from '@wip/execution-kernel';
 import { validate } from '@wip/validation-engine';
 import path from 'path';
@@ -13,7 +13,10 @@ test.describe('Behavior-Driven E2E: WIP Platform', () => {
     test.beforeAll(async () => {
         // 1. Initialize real Playwright adapter
         const adapter = new PlaywrightAdapter();
-        runtime = new BrowserRuntime(adapter);
+        const internalRuntime = new BrowserRuntime(adapter);
+        const server = new JsonRpcServer(internalRuntime, (msg) => client.handleMessage(msg));
+        const client = new JsonRpcClient((msg) => server.handleMessage(msg));
+        runtime = client as unknown as BrowserRuntime;
         kernel = new ExecutionKernel({
             createCheckpoint: async (id: string) => {
                 const rc = await runtime.createCheckpoint(id);

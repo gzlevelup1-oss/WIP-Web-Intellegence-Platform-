@@ -23,7 +23,7 @@ describe('BrowserRuntime', () => {
     const runtime = new BrowserRuntime(adapter);
     
     const meta = await runtime.getMetadata();
-    expect(meta.runtimeId).toBe('m');
+    expect(meta.runtimeId).toBe('test-rt');
 
     const caps = await runtime.getCapabilities();
     expect(caps.capabilities.Navigation).toBe(true);

@@ -1,33 +1,32 @@
 # Current Mission
 
-**Mission:** Mission 36: Coordinator Planning Alignment (TD-015)
+**Mission:** Mission 37: Browser Runtime Error Model and JSON-RPC Alignment
 **Status:** Locked
 **Evidence Payload:**
-- **Functional Verification:** Pending
-- **Architectural Verification:** Pending
-- **Dependency Graph:** Pending
-- **ADR Compliance:** Pending
-
-**ID:** M-36
+- **Functional Verification:** Passed
+- **Architectural Verification:** Passed
+- **Dependency Graph:** Clean
+- **ADR Compliance:** Yes (ACP-023)
+**ID:** M-37
 
 ## References
-- ACP-022: Coordinator Planning Alignment
+- ACP-023: Browser Runtime Error Model and JSON-RPC Alignment
+- AFR-004: Browser Runtime API Error Model Discrepancy
+- AFR-005: Browser Runtime Protocol JSON-RPC Discrepancy
 - ADR-002: Browser Runtime
-- DEBT.md (TD-015)
+- specs/BROWSER_RUNTIME_API.md
+- specs/BrowserRuntime.protocol.md
 
 ## Objective
-Enhance the `Coordinator` to dynamically omit unavailable tool sets from its ReAct prompt based on the capabilities returned by the `ExecutionKernel`. This resolves the architectural gap of "throw it at the wall" execution planning and resolves TD-015.
-
-## Future Mission Governance
-All future missions and capabilities are gated under ACP-019 (Future Mission Lifecycle Gating Protocol) and AVP-001. No un-gated or ad-hoc missions may proceed without an approved ACP, verified Evidence Payload, and explicit user approval.
+Implement a deterministic error hierarchy and a JSON-RPC 2.0 transport layer within `browser-runtime`, ensuring strict alignment with the specifications and enabling out-of-process Extension Runtimes.
 
 ## Scope
-
 **In Scope:**
-- Expand `IExecutionKernelAdapter` to expose runtime capabilities.
-- Dynamically prune the tool payload sent to the Gemini API in `packages/coordinator/src/agent.ts`.
-- Append environment capabilities to the LLM system prompt context.
-- Add unit tests verifying dynamic capability pruning in the Coordinator.
+- Create `RuntimeError` hierarchy in `packages/browser-runtime/src/runtime/errors.ts`.
+- Map Playwright exceptions to `RuntimeError` subclasses in `PlaywrightAdapter.ts`.
+- Implement a JSON-RPC 2.0 adapter/wrapper around `BrowserRuntime`.
+- Standardize all inbound/outbound messages to conform to JSON-RPC 2.0.
 
 **Out of Scope:**
-- Modifying the actual capability definitions inside `browser-runtime` (completed in M-35).
+- Modifying the underlying Extension Runtime implementation (this mission only paves the way).
+- Changes to the Coordinator's tool schema generation (handled in M-36).

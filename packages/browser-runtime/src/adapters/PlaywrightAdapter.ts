@@ -1,7 +1,7 @@
 import { chromium, Browser, BrowserContext, Page } from 'playwright';
 import { IBrowserAdapter } from '../contracts/IBrowserAdapter.js';
 import { RuntimeMetadata, RuntimeCapabilities, ObservationSnapshot, RuntimeCheckpoint } from '../contracts/types.js';
-import { BrowserLaunchError, SessionNotFoundError, NavigationTimeoutError, BrowserExecutionError } from '../runtime/errors.js';
+import { BrowserLaunchError, SessionNotFoundError, TimeoutError, RuntimeError } from '../runtime/errors.js';
 import { evaluateSnapshot } from './browser-script.js';
 
 interface PlaywrightSession {
@@ -128,9 +128,9 @@ export class PlaywrightAdapter implements IBrowserAdapter {
       await page.goto(url, { waitUntil: 'load', timeout: 30000 });
     } catch (err: any) {
       if (err.message.includes('timeout')) {
-        throw new NavigationTimeoutError(`Timeout navigating to ${url}`);
+        throw new TimeoutError(`Timeout navigating to ${url}`);
       }
-      throw new BrowserExecutionError(`Failed to navigate: ${err.message}`);
+      throw new RuntimeError(`Failed to navigate: ${err.message}`);
     }
   }
 
@@ -248,7 +248,7 @@ export class PlaywrightAdapter implements IBrowserAdapter {
         }
       };
     } catch (err: any) {
-      throw new BrowserExecutionError(`Failed to capture snapshot: ${err.message}`);
+      throw new RuntimeError(`Failed to capture snapshot: ${err.message}`);
     }
   }
 
@@ -258,7 +258,7 @@ export class PlaywrightAdapter implements IBrowserAdapter {
       const locator = page.locator(`[data-wip-id="${nodeId}"]`).first();
       await locator.click({ modifiers: modifiers as Array<"Alt" | "Control" | "Meta" | "Shift"> | undefined, force: true, timeout: 5000 });
     } catch (err: any) {
-      throw new BrowserExecutionError(`Click failed: ${err.message}`);
+      throw new RuntimeError(`Click failed: ${err.message}`);
     }
   }
 
@@ -268,14 +268,14 @@ export class PlaywrightAdapter implements IBrowserAdapter {
       const locator = page.locator(`[data-wip-id="${nodeId}"]`).first();
       await locator.pressSequentially(text, { delay, timeout: 5000 });
     } catch (err: any) {
-      throw new BrowserExecutionError(`Type failed: ${err.message}`);
+      throw new RuntimeError(`Type failed: ${err.message}`);
     }
   }
 
   
   public async createCheckpoint(sessionId: string): Promise<any> {
     const session = this.sessions.get(sessionId);
-    if (!session) throw new Error('Session not found');
+    if (!session) throw new SessionNotFoundError('Session not found');
     const url = session.page.url();
     const state = await session.context.storageState();
     
@@ -304,7 +304,7 @@ export class PlaywrightAdapter implements IBrowserAdapter {
 
   public async restoreCheckpoint(sessionId: string, checkpoint: any, options?: { soft?: boolean }): Promise<void> {
     const session = this.sessions.get(sessionId);
-    if (!session) throw new Error('Session not found');
+    if (!session) throw new SessionNotFoundError('Session not found');
     
     if (!options?.soft) {
       await session.context.clearCookies();
@@ -364,7 +364,7 @@ export class PlaywrightAdapter implements IBrowserAdapter {
     try {
       await page.mouse.wheel(0, distanceY);
     } catch (err: any) {
-      throw new BrowserExecutionError(`Scroll failed: ${err.message}`);
+      throw new RuntimeError(`Scroll failed: ${err.message}`);
     }
   }
 
